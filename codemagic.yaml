@@ -51,6 +51,5 @@ workflows:
         issuer_id: $APP_STORE_CONNECT_ISSUER_ID
         key_id: $APP_STORE_CONNECT_KEY_ID
         api_key: $APP_STORE_CONNECT_PRIVATE_KEY
-        clean_command: false
         submit_to_testflight: true
         submit_to_app_store: false
