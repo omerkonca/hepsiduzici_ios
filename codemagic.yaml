@@ -11,6 +11,10 @@ workflows:
       vars:
         APP_ID: "net.hepsiduzici.hepsiDuzici"
         TEAM_ID: "7RJ993N2DP"
+      certificates:
+        - "Hepsi Duzici Dist" # Codemagic panelinde ürettiğimiz sertifikanın referans adı
+      provisioning_profiles:
+        - "Hepsi Duzici App Store" # Codemagic panelinde ürettiğimiz profilin referans adı
     scripts:
       - name: "1. Bagimliliklari Kur"
         script: |
@@ -20,13 +24,12 @@ workflows:
 
       - name: "2. Profilleri Projeye Bagla"
         script: |
-          # Codemagic Panelinde ürettiğimiz sertifika ve profili otomatik olarak indirip bağlar
-          # Özel anahtar Codemagic kasasında olduğu için sıfır hata ile çalışır!
+          # Codemagic kasasından indirilen sertifika ve profilleri projeye bağlar
           xcode-project use-profiles --project ios/Runner.xcodeproj
 
       - name: "3. Final Build ve IPA Uretimi"
         script: |
-          # Artık export_options.plist dosyamız üstteki adım sayesinde başarıyla oluştu!
+          # export_options.plist dosyamız üstteki adım sayesinde başarıyla oluştu!
           flutter build ipa --release \
             --export-options-plist=/Users/builder/export_options.plist \
             --no-tree-shake-icons
