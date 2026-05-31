@@ -15,8 +15,10 @@ workflows:
 
       - name: "2. Final Build ve IPA Uretimi"
         script: |
-          # Codemagic UI otomatik kod imzalama aktif olduğu için ek opsiyonlara gerek kalmadan direkt derliyoruz
-          flutter build ipa --release --no-tree-shake-icons
+          # Codemagic UI otomatik imzalama tarafından üretilen export_options dosyasını belirtmek zorundayız!
+          flutter build ipa --release \
+            --export-options-plist=/Users/builder/export_options.plist \
+            --no-tree-shake-icons
 
       - name: "3. App Store Connect'e YUKLE (Otomatik)"
         script: |
