@@ -11,10 +11,9 @@ workflows:
       vars:
         APP_ID: "net.hepsiduzici.hepsiDuzici"
         TEAM_ID: "7RJ993N2DP"
-      certificates:
-        - "Hepsi Duzici Dist" # Codemagic panelinde ürettiğimiz sertifikanın referans adı
-      provisioning_profiles:
-        - "Hepsi Duzici App Store" # Codemagic panelinde ürettiğimiz profilin referans adı
+      ios_signing:
+        distribution_type: app_store # Apple Store dağıtımı için App Store seçildi
+        bundle_identifier: "net.hepsiduzici.hepsiDuzici" # Projenin Bundle ID'si
     scripts:
       - name: "1. Bagimliliklari Kur"
         script: |
