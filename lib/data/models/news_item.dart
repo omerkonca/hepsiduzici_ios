@@ -25,7 +25,22 @@ class NewsItem {
     
     // Basit bir kategorizasyon mantığı (Backend'den gelmiyorsa)
     String category = json['category'] as String? ?? 'Düziçi';
-    if (title.contains('Osmaniye') || source.contains('Osmaniye')) {
+    
+    final lowerTitle = title.toLowerCase();
+    final lowerSource = source.toLowerCase();
+    
+    final matchesOsmaniyeOrDistrict = 
+        lowerTitle.contains('osmaniye') || lowerSource.contains('osmaniye') ||
+        lowerTitle.contains('kadirli') || lowerSource.contains('kadirli') ||
+        lowerTitle.contains('bahçe') || lowerTitle.contains('bahce') || lowerSource.contains('bahçe') || lowerSource.contains('bahce') ||
+        lowerTitle.contains('sumbas') || lowerSource.contains('sumbas') ||
+        lowerTitle.contains('hasanbeyli') || lowerSource.contains('hasanbeyli') ||
+        lowerTitle.contains('toprakkale') || lowerSource.contains('toprakkale');
+
+    final matchesDuzici = lowerTitle.contains('düziçi') || lowerTitle.contains('düzici') || lowerTitle.contains('duzici') ||
+                         lowerSource.contains('düziçi') || lowerSource.contains('düzici') || lowerSource.contains('duzici');
+
+    if (matchesOsmaniyeOrDistrict && !matchesDuzici) {
       category = 'Osmaniye';
     }
 

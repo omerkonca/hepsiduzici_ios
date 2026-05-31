@@ -250,7 +250,7 @@ final stampedPrayerProvider = FutureProvider<Stamped<PrayerTimes>>((ref) {
 });
 
 final stampedNewsProvider = FutureProvider<Stamped<List<NewsItem>>>((ref) {
-  return ref.watch(newsServiceProvider).getStampedNews(limit: 50);
+  return ref.watch(newsServiceProvider).getStampedNews(limit: 150);
 });
 
 final stampedEventsProvider = FutureProvider<Stamped<List<EventItem>>>((ref) {
@@ -399,5 +399,5 @@ final darkThemeProvider = Provider<ThemeData>((ref) {
   return AppTheme.fromBranding(branding, Brightness.dark);
 });
 
-/// Tema modu (Aydınlık, Karanlık, Sistem).
-final themeModeProvider = StateProvider<ThemeMode>((ref) => ThemeMode.system);
+/// Tema modu (Sadece Aydınlık).
+final themeModeProvider = StateProvider<ThemeMode>((ref) => ThemeMode.light);

@@ -37,16 +37,13 @@ class HepsiDuziciApp extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final theme = ref.watch(themeProvider);
-    final darkTheme = ref.watch(darkThemeProvider);
     final branding = ref.watch(brandingProvider);
-    final themeMode = ref.watch(themeModeProvider);
     final onboardingCompleted = ref.watch(onboardingCompletedProvider);
 
     return MaterialApp(
       title: branding?.appName ?? 'Hepsi Düziçi',
       theme: theme,
-      darkTheme: darkTheme,
-      themeMode: themeMode,
+      themeMode: ThemeMode.light,
       debugShowCheckedModeBanner: false,
       home: onboardingCompleted ? const MainNav() : const OnboardingScreen(),
     );

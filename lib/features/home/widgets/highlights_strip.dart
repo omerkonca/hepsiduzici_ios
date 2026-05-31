@@ -174,7 +174,8 @@ class _HighlightsStripState extends ConsumerState<HighlightsStrip> {
   Widget _weatherCard(AsyncValue<Stamped<WeatherReport>> async, DateTime now) {
     final stamped = async.maybeWhen(data: (s) => s, orElse: () => null);
     final code = stamped?.data.current.conditionCode ?? 2;
-    final theme = weatherVisualTheme(code);
+    final isDay = stamped?.data.current.isDay ?? (DateTime.now().hour >= 6 && DateTime.now().hour < 19);
+    final theme = weatherVisualTheme(code, isDay: isDay);
     final precip = precipitationLevelTr(code);
     final value = async.when(
       data: (s) => '${s.data.current.temperature.round()}°C',
@@ -193,6 +194,7 @@ class _HighlightsStripState extends ConsumerState<HighlightsStrip> {
     );
     return _WeatherHighlightCard(
       weatherCode: code,
+      isDay: isDay,
       label: 'Hava Durumu',
       value: value,
       sub: sub,
@@ -272,6 +274,7 @@ class _HighlightsStripState extends ConsumerState<HighlightsStrip> {
 class _WeatherHighlightCard extends StatelessWidget {
   const _WeatherHighlightCard({
     required this.weatherCode,
+    required this.isDay,
     required this.label,
     required this.value,
     required this.sub,
@@ -286,6 +289,7 @@ class _WeatherHighlightCard extends StatelessWidget {
   });
 
   final int weatherCode;
+  final bool isDay;
   final String label;
   final String value;
   final String sub;
@@ -330,8 +334,9 @@ class _WeatherHighlightCard extends StatelessWidget {
                 child: Row(
                   children: [
                     _IconBadge(
-                      icon: weatherCodeIcon(weatherCode),
+                      icon: weatherCodeIcon(weatherCode, isDay: isDay),
                       weatherCode: weatherCode,
+                      isDay: isDay,
                     ),
                     const SizedBox(width: 14),
                     Expanded(
@@ -974,15 +979,16 @@ class _FinanceRow extends StatelessWidget {
 }
 
 class _IconBadge extends StatelessWidget {
-  const _IconBadge({required this.icon, this.weatherCode});
+  const _IconBadge({required this.icon, this.weatherCode, this.isDay = true});
   final IconData icon;
   final int? weatherCode;
+  final bool isDay;
 
   @override
   Widget build(BuildContext context) {
     final bg = weatherCode == null
         ? Colors.white.withValues(alpha: 0.18)
-        : weatherVisualTheme(weatherCode!).iconBackground;
+        : weatherVisualTheme(weatherCode!, isDay: isDay).iconBackground;
     return Container(
       width: 40,
       height: 40,
@@ -993,7 +999,7 @@ class _IconBadge extends StatelessWidget {
       child: Center(
         child: weatherCode == null
             ? Icon(icon, color: Colors.white, size: 22)
-            : WeatherAnimatedIcon(conditionCode: weatherCode!, size: 22),
+            : WeatherAnimatedIcon(conditionCode: weatherCode!, isDay: isDay, size: 22),
       ),
     );
   }

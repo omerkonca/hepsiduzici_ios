@@ -11,7 +11,7 @@ import '../../news/news_detail_screen.dart';
 class TopNewsCarousel extends ConsumerStatefulWidget {
   const TopNewsCarousel({
     super.key,
-    this.height = 220,
+    this.height = 240,
     this.maxItems = 5,
     this.category = 'Düziçi',
   });
@@ -55,7 +55,10 @@ class _TopNewsCarouselState extends ConsumerState<TopNewsCarousel> {
     final async = ref.watch(newsListProvider);
     return async.when(
       data: (list) {
-        final filtered = list.where((n) => n.category == widget.category).toList();
+        final filtered = list.where((n) {
+          final hasImage = n.imageUrl != null && n.imageUrl!.trim().isNotEmpty;
+          return n.category == widget.category && hasImage;
+        }).toList();
         final items = filtered.take(widget.maxItems).toList();
         
         if (items.isEmpty) return _empty(context);
@@ -204,10 +207,17 @@ class _NewsCard extends StatelessWidget {
                       Row(
                         children: [
                           Container(
-                            padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
+                            padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 5),
                             decoration: BoxDecoration(
                               color: badgeColor,
-                              borderRadius: BorderRadius.circular(8),
+                              borderRadius: BorderRadius.circular(20),
+                              boxShadow: [
+                                BoxShadow(
+                                  color: badgeColor.withValues(alpha: 0.4),
+                                  blurRadius: 8,
+                                  offset: const Offset(0, 3),
+                                ),
+                              ],
                             ),
                             child: Text(
                               badgeLabel,
@@ -249,6 +259,31 @@ class _NewsCard extends StatelessWidget {
                                   fontWeight: FontWeight.w600,
                                 ),
                               ),
+                              if (item.sourceName != null && item.sourceName!.isNotEmpty) ...[
+                                Padding(
+                                  padding: const EdgeInsets.symmetric(horizontal: 6),
+                                  child: Container(
+                                    width: 3,
+                                    height: 3,
+                                    decoration: BoxDecoration(
+                                      color: Colors.white.withValues(alpha: 0.5),
+                                      shape: BoxShape.circle,
+                                    ),
+                                  ),
+                                ),
+                                Flexible(
+                                  child: Text(
+                                    item.sourceName!,
+                                    maxLines: 1,
+                                    overflow: TextOverflow.ellipsis,
+                                    style: TextStyle(
+                                      color: AppColors.white.withValues(alpha: 0.7),
+                                      fontSize: 10,
+                                      fontWeight: FontWeight.w600,
+                                    ),
+                                  ),
+                                ),
+                              ],
                             ],
                           ),
                         ],

@@ -113,8 +113,17 @@ class WeatherVisualTheme {
   final Color iconBackground;
 }
 
-WeatherVisualTheme weatherVisualTheme(int code) {
-  switch (weatherVisualType(code)) {
+WeatherVisualTheme weatherVisualTheme(int code, {bool isDay = true}) {
+  final type = weatherVisualType(code);
+  if (!isDay && type == WeatherVisualType.sunny) {
+    return const WeatherVisualTheme(
+      gradientStart: Color(0xFF1B2A47),
+      gradientEnd: Color(0xFF0D172A),
+      accent: Color(0xFF7DD3FC),
+      iconBackground: Color(0x337DD3FC),
+    );
+  }
+  switch (type) {
     case WeatherVisualType.sunny:
       return const WeatherVisualTheme(
         gradientStart: Color(0xFFFFA726),
@@ -232,19 +241,18 @@ class _WeatherAnimatedIconState extends State<WeatherAnimatedIcon>
             children: [
               if (type == WeatherVisualType.sunny)
                 Positioned.fill(
-                  child: Opacity(
-                    opacity: 0.22 + (math.sin(tau(t)) + 1) * 0.12,
-                    child: DecoratedBox(
-                      decoration: BoxDecoration(
-                        shape: BoxShape.circle,
-                        boxShadow: [
-                          BoxShadow(
-                            color: widget.color.withValues(alpha: 0.45),
-                            blurRadius: widget.size * 0.28,
-                            spreadRadius: widget.size * 0.08,
+                  child: DecoratedBox(
+                    decoration: BoxDecoration(
+                      shape: BoxShape.circle,
+                      boxShadow: [
+                        BoxShadow(
+                          color: widget.color.withValues(
+                            alpha: (0.22 + (math.sin(tau(t)) + 1) * 0.12) * 0.45,
                           ),
-                        ],
-                      ),
+                          blurRadius: widget.size * 0.28,
+                          spreadRadius: widget.size * 0.08,
+                        ),
+                      ],
                     ),
                   ),
                 ),
@@ -308,16 +316,13 @@ class _WeatherAnimatedIconState extends State<WeatherAnimatedIcon>
                 offset: Offset(0, bob),
                 child: Icon(icon, color: iconColor, size: widget.size),
               ),
-              if (type == WeatherVisualType.stormy)
+              if (type == WeatherVisualType.stormy && stormAlpha > 0)
                 Positioned.fill(
                   child: IgnorePointer(
-                    child: Opacity(
-                      opacity: stormAlpha,
-                      child: DecoratedBox(
-                        decoration: BoxDecoration(
-                          color: Colors.white,
-                          borderRadius: BorderRadius.circular(widget.size),
-                        ),
+                    child: DecoratedBox(
+                      decoration: BoxDecoration(
+                        color: Colors.white.withValues(alpha: stormAlpha),
+                        borderRadius: BorderRadius.circular(widget.size),
                       ),
                     ),
                   ),

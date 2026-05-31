@@ -2014,24 +2014,14 @@
   "home": {
     "headerMedia": [
       {
-        "type": "video",
-        "title": "Düldül Dağı",
-        "url": "https://youtu.be/ZUKquT3ohBI"
+        "url": "assets/images/selalesi_1.jpg",
+        "type": "image",
+        "title": "Düziçi Şelalesi"
       },
       {
-        "url": "assets/images/duzici_castle_header.png",
+        "url": "assets/images/selalesi_2.jpg",
         "type": "image",
-        "title": "Harun Reşit Kalesi"
-      },
-      {
-        "url": "assets/images/duldul_mountain_header.png",
-        "type": "image",
-        "title": "Düldül Dağı"
-      },
-      {
-        "type": "image",
-        "title": "Harun Reşit Kalesi",
-        "url": "https://dynamic-media-cdn.tripadvisor.com/media/photo-o/1c/a8/15/45/harun-resit-kalesi.jpg?w=800&h=-1&s=1"
+        "title": "Düziçi Şelalesi"
       }
     ],
     "quickActions": [
