@@ -1,55 +1,62 @@
 workflows:
   ios-release:
-    name: Hepsi Düzici iOS App Store Release
+    name: Hepsi Düzici iOS Release Build
     max_build_duration: 120
     instance_type: mac_mini_m1
     environment:
-      groups:
-        - app_store_credentials # Codemagic UI üzerinde oluşturacağımız grup adıdır
-      vars:
-        BUNDLE_ID: "net.hepsiduzici.hepsiDuzici"
-        XCODE_WORKSPACE: "Runner.xcworkspace"
-        XCODE_SCHEME: "Runner"
       flutter: stable
       xcode: latest
-      cocoapods: default
-    triggering:
-      events:
-        - push
-      branch_patterns:
-        - pattern: 'main'
-          include: true
-          source: true
+      groups:
+        - app_store_credentials # Codemagic UI'da tanımladığımız çevre değişkenleri grubu
+      vars:
+        APP_ID: "net.hepsiduzici.hepsiDuzici"
+        TEAM_ID: "7RJ993N2DP" # Aynı Apple Developer hesabı olduğu için Team ID aynı kalıyor
     scripts:
-      - name: Set up keychain and automatic code signing
+      - name: "1. Sertifikalari Indir ve Kur"
         script: |
           keychain initialize
-          # Apple Developer Portal'dan sertifika ve provizyon profillerini otomatik çeker
-          app-store-connect fetch-signing-files "$BUNDLE_ID" \
+          
+          # Apple Developer Portal'dan sertifika ve provizyon profillerini çeker
+          app-store-connect fetch-signing-files "$APP_ID" \
             --issuer-id "$APP_STORE_CONNECT_ISSUER_ID" \
             --key-id "$APP_STORE_CONNECT_KEY_ID" \
             --private-key "$APP_STORE_CONNECT_PRIVATE_KEY" \
+            --type IOS_APP_STORE \
             --create
-      - name: Get Flutter packages
+            
+          # İndirilen sertifikaları anahtar zincirine (keychain) ekler (Önceki hatayı çözen kritik adım!)
+          keychain add-certificates
+
+      - name: "2. Bagimliliklari Kur"
         script: |
-          flutter packages pub get
-      - name: Install CocoaPods
-        script: |
+          flutter clean
+          flutter pub get
           find ios -name "Podfile" -execdir pod install \;
-      - name: Build iOS IPA
+
+      - name: "3. Profilleri Projeye Bagla"
         script: |
-          # Otomatik kod imzalama için export-options dosyasını belirtiyoruz
+          xcode-project use-profiles --project ios/Runner.xcodeproj
+
+      - name: "4. Final Build ve IPA Uretimi"
+        script: |
           flutter build ipa --release \
-            --export-options-plist=$HOME/export_options.plist \
-            --build-name=1.0.0 \
-            --build-number=$BUILD_NUMBER
+            --export-options-plist=/Users/builder/export_options.plist \
+            --no-tree-shake-icons
+
+      - name: "5. App Store Connect'e YUKLE (Otomatik)"
+        script: |
+          # Üretilen IPA dosyasını bul
+          IPA_PATH=$(find build/ios/ipa -name "*.ipa" | head -n 1)
+          
+          echo "Bulunan IPA: $IPA_PATH"
+          
+          # TestFlight'a yüklemeyi başlatır
+          app-store-connect publish --path "$IPA_PATH" \
+            --issuer-id "$APP_STORE_CONNECT_ISSUER_ID" \
+            --key-id "$APP_STORE_CONNECT_KEY_ID" \
+            --private-key "$APP_STORE_CONNECT_PRIVATE_KEY"
+
     artifacts:
       - build/ios/ipa/*.ipa
-    publishing:
-      app_store_connect:
-        # App Store Connect API anahtar bilgilerini kullanır
-        issuer_id: $APP_STORE_CONNECT_ISSUER_ID
-        key_id: $APP_STORE_CONNECT_KEY_ID
-        api_key: $APP_STORE_CONNECT_PRIVATE_KEY
-        submit_to_testflight: true
-        submit_to_app_store: false
+      - /tmp/xcodebuild_logs/*.log
+      - "*.dSYM.zip"
