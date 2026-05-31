@@ -1,0 +1,290 @@
+import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
+import 'package:flutter_animate/flutter_animate.dart';
+import 'package:flutter_svg/flutter_svg.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'dart:ui' as ui;
+import '../core/theme/app_colors.dart';
+import '../data/models/news_item.dart';
+import '../data/models/stamped_data.dart';
+import '../features/events/events_screen.dart';
+import '../features/explore/explore_screen.dart';
+import '../features/home/home_screen.dart';
+import '../features/more/more_screen.dart';
+import '../features/services/services_screen.dart';
+import 'news_update_banner.dart';
+import 'providers.dart';
+
+class MainNav extends ConsumerStatefulWidget {
+  const MainNav({super.key});
+
+  @override
+  ConsumerState<MainNav> createState() => _MainNavState();
+}
+
+class _MainNavState extends ConsumerState<MainNav> with WidgetsBindingObserver {
+  @override
+  void initState() {
+    super.initState();
+    WidgetsBinding.instance.addObserver(this);
+  }
+
+  @override
+  void dispose() {
+    WidgetsBinding.instance.removeObserver(this);
+    super.dispose();
+  }
+
+  @override
+  void didChangeAppLifecycleState(AppLifecycleState state) {
+    ref.read(appLifecycleStateProvider.notifier).state = state;
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+    ref.listen<AsyncValue<Stamped<List<NewsItem>>>>(
+      stampedNewsProvider,
+      (_, next) {
+        final stamped = next.asData?.value;
+        if (stamped == null) return;
+        Future.microtask(() async {
+          if (!context.mounted) return;
+          await handleStampedNewsNotification(context, ref, stamped);
+        });
+      },
+    );
+
+    final index = ref.watch(currentIndexProvider);
+    return Scaffold(
+      appBar: null,
+      body: IndexedStack(
+          index: index,
+          children: [
+            const SizedBox.expand(child: HomeScreen()),
+            const SafeArea(child: SizedBox.expand(child: ServicesScreen())),
+            const SizedBox.expand(child: ExploreScreen()),
+            const SafeArea(child: SizedBox.expand(child: EventsScreen())),
+            const SafeArea(child: SizedBox.expand(child: MoreScreen())),
+          ],
+        ),
+      bottomNavigationBar: SafeArea(
+        minimum: EdgeInsets.zero,
+        child: Padding(
+          padding: const EdgeInsets.fromLTRB(14, 0, 14, 10),
+          child: DecoratedBox(
+            decoration: BoxDecoration(
+              borderRadius: BorderRadius.circular(22),
+              boxShadow: [
+                BoxShadow(
+                  color: Colors.black.withValues(alpha: 0.12),
+                  blurRadius: 28,
+                  spreadRadius: -12,
+                  offset: const Offset(0, 12),
+                ),
+              ],
+            ),
+            child: ClipRRect(
+              borderRadius: BorderRadius.circular(22),
+              child: BackdropFilter(
+                filter: ui.ImageFilter.blur(sigmaX: 18, sigmaY: 18),
+                child: DecoratedBox(
+                  decoration: BoxDecoration(
+                    borderRadius: BorderRadius.circular(22),
+                    border: Border.all(color: isDark ? Colors.white.withValues(alpha: 0.12) : Colors.white.withValues(alpha: 0.72)),
+                    color: isDark ? const Color(0xE11A1A1A) : const Color(0xEBFFFFFF),
+                  ),
+                  child: SizedBox(
+                    height: 72,
+                    child: Padding(
+                      padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 5),
+                      child: Row(
+                        children: [
+                          Expanded(
+                            child: _NavItem(
+                              iconAsset: 'assets/icons/nav/home_outline.svg',
+                              selectedIconAsset: 'assets/icons/nav/home_filled.svg',
+                              fallbackIcon: Icons.home_outlined,
+                              selectedFallbackIcon: Icons.home_rounded,
+                              label: 'Ana Sayfa',
+                              selected: index == 0,
+                              onTap: () => _switchTab(0),
+                            ),
+                          ),
+                          Expanded(
+                            child: _NavItem(
+                              iconAsset: 'assets/icons/nav/services_outline.svg',
+                              selectedIconAsset: 'assets/icons/nav/services_filled.svg',
+                              fallbackIcon: Icons.grid_view_rounded,
+                              selectedFallbackIcon: Icons.grid_view_rounded,
+                              label: 'Hizmetler',
+                              selected: index == 1,
+                              onTap: () => _switchTab(1),
+                            ),
+                          ),
+                          Expanded(
+                            child: _NavItem(
+                              iconAsset: 'assets/icons/nav/discover_outline.svg',
+                              selectedIconAsset: 'assets/icons/nav/discover_filled.svg',
+                              fallbackIcon: Icons.explore_outlined,
+                              selectedFallbackIcon: Icons.explore_rounded,
+                              label: 'Keşfet',
+                              selected: index == 2,
+                              onTap: () => _switchTab(2),
+                            ),
+                          ),
+                          Expanded(
+                            child: _NavItem(
+                              iconAsset: 'assets/icons/nav/events_outline.svg',
+                              selectedIconAsset: 'assets/icons/nav/events_filled.svg',
+                              fallbackIcon: Icons.event_outlined,
+                              selectedFallbackIcon: Icons.event_rounded,
+                              label: 'Etkinlik',
+                              selected: index == 3,
+                              onTap: () => _switchTab(3),
+                            ),
+                          ),
+                          Expanded(
+                            child: _NavItem(
+                              iconAsset: 'assets/icons/nav/more_outline.svg',
+                              selectedIconAsset: 'assets/icons/nav/more_filled.svg',
+                              fallbackIcon: Icons.more_horiz_outlined,
+                              selectedFallbackIcon: Icons.more_horiz_rounded,
+                              label: 'Daha Fazla',
+                              selected: index == 4,
+                              onTap: () => _switchTab(4),
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                  ),
+                ),
+              ),
+            ),
+          ),
+        ),
+      ),
+    );
+  }
+
+  void _switchTab(int i) {
+    HapticFeedback.selectionClick();
+    ref.read(currentIndexProvider.notifier).state = i;
+  }
+}
+
+class _NavItem extends StatelessWidget {
+  const _NavItem({
+    required this.iconAsset,
+    required this.selectedIconAsset,
+    required this.fallbackIcon,
+    required this.selectedFallbackIcon,
+    required this.label,
+    required this.selected,
+    required this.onTap,
+  });
+
+  final String iconAsset;
+  final String selectedIconAsset;
+  final IconData fallbackIcon;
+  final IconData selectedFallbackIcon;
+  final String label;
+  final bool selected;
+  final VoidCallback onTap;
+
+  @override
+  Widget build(BuildContext context) {
+    return Material(
+      color: Colors.transparent,
+      child: InkWell(
+        onTap: onTap,
+        borderRadius: BorderRadius.circular(14),
+        splashColor: AppColors.primary.withValues(alpha: 0.16),
+        highlightColor: Colors.transparent,
+        child: AnimatedContainer(
+          duration: const Duration(milliseconds: 220),
+          curve: Curves.easeOut,
+          padding: const EdgeInsets.symmetric(horizontal: 4, vertical: 3),
+          decoration: BoxDecoration(
+            borderRadius: BorderRadius.circular(14),
+            color: selected ? AppColors.primary.withValues(alpha: 0.12) : Colors.transparent,
+            border: selected
+                ? Border.all(color: AppColors.primary.withValues(alpha: 0.22), width: 1)
+                : Border.all(color: Colors.transparent),
+          ),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              AnimatedContainer(
+                duration: const Duration(milliseconds: 220),
+                curve: Curves.easeOut,
+                padding: EdgeInsets.all(selected ? 4.5 : 0),
+                decoration: BoxDecoration(
+                  shape: BoxShape.circle,
+                  color: selected ? Colors.white.withValues(alpha: 0.9) : Colors.transparent,
+                  boxShadow: selected
+                      ? [
+                          BoxShadow(
+                            color: AppColors.primary.withValues(alpha: 0.22),
+                            blurRadius: 12,
+                            spreadRadius: -3,
+                            offset: const Offset(0, 4),
+                          ),
+                        ]
+                      : null,
+                ),
+                child: Stack(
+                  alignment: Alignment.center,
+                  children: [
+                    Icon(
+                      selected ? selectedFallbackIcon : fallbackIcon,
+                      size: selected ? 20 : 19.5,
+                      color: selected ? AppColors.primary : const Color(0xFF8A9099),
+                    ),
+                    SvgPicture.asset(
+                      selected ? selectedIconAsset : iconAsset,
+                      width: selected ? 20 : 19.5,
+                      height: selected ? 20 : 19.5,
+                      colorFilter: ColorFilter.mode(
+                        selected ? AppColors.primary : const Color(0xFF8A9099),
+                        BlendMode.srcIn,
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+              const SizedBox(height: 3),
+              Text(
+                label,
+                maxLines: 1,
+                textAlign: TextAlign.center,
+                overflow: TextOverflow.ellipsis,
+                style: TextStyle(
+                  height: 1.1,
+                  fontSize: selected ? 10.2 : 9.8,
+                  letterSpacing: -0.1,
+                  fontWeight: selected ? FontWeight.w800 : FontWeight.w600,
+                  color: selected
+                      ? AppColors.primary
+                      : const Color(0xFF7F8690),
+                ),
+              ),
+              if (selected)
+                Container(
+                  margin: const EdgeInsets.only(top: 2),
+                  width: 14,
+                  height: 2,
+                  decoration: BoxDecoration(
+                    color: AppColors.primary.withValues(alpha: 0.85),
+                    borderRadius: BorderRadius.circular(999),
+                  ),
+                ).animate().fadeIn(duration: 140.ms),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+}

@@ -1,0 +1,56 @@
+workflows:
+  ios-release:
+    name: Hepsi Düzici iOS App Store Release
+    max_build_duration: 120
+    instance_type: mac_mini_co2
+    environment:
+      groups:
+        - app_store_credentials # Codemagic UI üzerinde oluşturacağımız grup adıdır
+      vars:
+        BUNDLE_ID: "net.hepsiduzici.hepsiDuzici"
+        XCODE_WORKSPACE: "Runner.xcworkspace"
+        XCODE_SCHEME: "Runner"
+      flutter: stable
+      xcode: latest
+      cocoapods: default
+    triggering:
+      events:
+        - push
+      branch_patterns:
+        - pattern: 'main'
+          include: true
+          source: true
+    scripts:
+      - name: Set up keychain and automatic code signing
+        script: |
+          keychain initialize
+          # Apple Developer Portal'dan sertifika ve provizyon profillerini otomatik çeker
+          app-store-connect fetch-signing-files "$BUNDLE_ID" \
+            --issuer-id "$APP_STORE_CONNECT_ISSUER_ID" \
+            --key-id "$APP_STORE_CONNECT_KEY_ID" \
+            --private-key "$APP_STORE_CONNECT_PRIVATE_KEY" \
+            --install-profiles
+      - name: Get Flutter packages
+        script: |
+          flutter packages pub get
+      - name: Install CocoaPods
+        script: |
+          find ios -name "Podfile" -execdir pod install \;
+      - name: Build iOS IPA
+        script: |
+          # Otomatik kod imzalama için export-options dosyasını belirtiyoruz
+          flutter build ipa --release \
+            --export-options-plist=$HOME/export_options.plist \
+            --build-name=1.0.0 \
+            --build-number=$BUILD_NUMBER
+    artifacts:
+      - build/ios/ipa/*.ipa
+    publishing:
+      app_store_connect:
+        # App Store Connect API anahtar bilgilerini kullanır
+        issuer_id: $APP_STORE_CONNECT_ISSUER_ID
+        key_id: $APP_STORE_CONNECT_KEY_ID
+        private_key: $APP_STORE_CONNECT_PRIVATE_KEY
+        clean_command: false
+        submit_to_testflight: true
+        submit_to_app_store: false
