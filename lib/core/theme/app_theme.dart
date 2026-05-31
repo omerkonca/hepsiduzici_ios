@@ -64,7 +64,7 @@ class AppTheme {
           letterSpacing: -0.4,
         ),
       ),
-      cardTheme: CardTheme(
+      cardTheme: CardThemeData(
         color: surfaceColor,
         elevation: 0,
         shadowColor: Colors.black.withValues(alpha: isDark ? 0.2 : 0.07),
