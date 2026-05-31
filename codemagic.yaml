@@ -29,7 +29,7 @@ workflows:
             --issuer-id "$APP_STORE_CONNECT_ISSUER_ID" \
             --key-id "$APP_STORE_CONNECT_KEY_ID" \
             --private-key "$APP_STORE_CONNECT_PRIVATE_KEY" \
-            --install-profiles
+            --create
       - name: Get Flutter packages
         script: |
           flutter packages pub get
