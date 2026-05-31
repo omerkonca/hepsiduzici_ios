@@ -7,41 +7,42 @@ workflows:
       flutter: stable
       xcode: latest
       groups:
-        - app_store_credentials # API Key değişkenlerimiz için bu grubu ekli tutuyoruz
+        - codemagic # Takibattaki çevre grubu adını kullanıyoruz
       vars:
         APP_ID: "net.hepsiduzici.hepsiDuzici"
         TEAM_ID: "7RJ993N2DP"
     scripts:
-      - name: "1. Bagimliliklari Kur"
+      - name: "1. Sertifikalari Indir"
+        script: |
+          keychain initialize
+          # Global entegrasyonu kullanarak sertifika üretir/indirir (Parametresiz çalışan hali!)
+          app-store-connect fetch-signing-files "$APP_ID" --type IOS_APP_STORE --create
+          keychain add-certificates
+
+      - name: "2. Bagimliliklari Kur"
         script: |
           flutter clean
           flutter pub get
           find ios -name "Podfile" -execdir pod install \;
 
-      - name: "2. Profilleri Projeye Bagla"
+      - name: "3. Profilleri Bagla"
         script: |
-          # Codemagic UI'da aktif ettiğimiz otomatik imzalama profillerini indirir
-          # ve /Users/builder/export_options.plist dosyasını otomatik olarak oluşturur!
           xcode-project use-profiles --project ios/Runner.xcodeproj
 
-      - name: "3. Final Build ve IPA Uretimi"
+      - name: "4. Final Build ve IPA Uretimi"
         script: |
-          # Artık export_options.plist dosyamız üstteki adım sayesinde başarıyla oluştu!
           flutter build ipa --release \
             --export-options-plist=/Users/builder/export_options.plist \
             --no-tree-shake-icons
 
-      - name: "4. App Store Connect'e YUKLE (Otomatik)"
+      - name: "5. App Store Connect'e YUKLE (Otomatik)"
         script: |
           # Üretilen IPA dosyasını bul ve yükle
           IPA_PATH=$(find build/ios/ipa -name "*.ipa" | head -n 1)
           echo "Bulunan IPA: $IPA_PATH"
           
-          app-store-connect publish --path "$IPA_PATH" \
-            --issuer-id "$APP_STORE_CONNECT_ISSUER_ID" \
-            --key-id "$APP_STORE_CONNECT_KEY_ID" \
-            --private-key "$APP_STORE_CONNECT_PRIVATE_KEY"
-
+          # TestFlight'a yüklemeyi başlatır
+          app-store-connect publish --path "$IPA_PATH"
     artifacts:
       - build/ios/ipa/*.ipa
       - /tmp/xcodebuild_logs/*.log
