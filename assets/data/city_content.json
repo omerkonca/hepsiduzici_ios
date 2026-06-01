@@ -147,6 +147,190 @@
         "isEmergency": false
       }
     ],
+    "veterinarians": [
+      {
+        "id": "martoglu",
+        "name": "Martoğlu Veteriner Kliniği",
+        "type": "Klinik",
+        "phone": "0541 215 65 54",
+        "address": "Cumhuriyet Mah., Çiçek Sok. No: 8, Düziçi",
+        "neighborhood": "CUMHURİYET",
+        "lat": 37.2412,
+        "lng": 36.4478,
+        "workingHours": "Hafta içi 09:00 – 19:00, Cumartesi 09:00 – 17:00",
+        "services": ["Muayene", "Aşı", "Cerrahi", "Laboratuvar"],
+        "isEmergency": false
+      },
+      {
+        "id": "karkin",
+        "name": "Karkın Veteriner Kliniği",
+        "type": "Klinik",
+        "phone": "0541 218 94 07",
+        "address": "Aydınlar Cad. No: 48, Düziçi",
+        "neighborhood": "MERKEZ",
+        "lat": 37.2395,
+        "lng": 36.4512,
+        "workingHours": "Hafta içi 09:00 – 18:30",
+        "services": ["Muayene", "Aşı", "Kısırlaştırma"],
+        "isEmergency": false
+      },
+      {
+        "id": "nehir",
+        "name": "Nehir Veteriner Kliniği",
+        "type": "Klinik",
+        "phone": "0542 508 39 85",
+        "address": "Cumhuriyet Mah., Şehit Ahmet Metlioğlu Cad. No: 7, Düziçi",
+        "neighborhood": "CUMHURİYET",
+        "lat": 37.2405,
+        "lng": 36.4485,
+        "workingHours": "Hafta içi 09:00 – 19:00",
+        "services": ["Muayene", "Aşı", "Pet bakım"],
+        "isEmergency": false
+      },
+      {
+        "id": "ilker_coomez",
+        "name": "İlker Çömez Veteriner Muayenehanesi",
+        "type": "Muayenehane",
+        "phone": "0542 386 58 48",
+        "address": "Yeşilova Mah., Şehit Ahmet Metlioğlu Cad., Düziçi",
+        "neighborhood": "YEŞİLOVA",
+        "lat": 37.2378,
+        "lng": 36.4495,
+        "workingHours": "Randevu ile",
+        "services": ["Muayene", "Aşı"],
+        "isEmergency": false
+      },
+      {
+        "id": "oztas",
+        "name": "Öztaş Veteriner Kliniği",
+        "type": "Klinik",
+        "address": "İstiklal Mah., Düziçi merkez",
+        "neighborhood": "İSTİKLAL",
+        "lat": 37.242,
+        "lng": 36.454,
+        "workingHours": "Hafta içi 09:00 – 18:00",
+        "services": ["Muayene", "Aşı", "Cerrahi"],
+        "isEmergency": false,
+        "note": "Telefon için haritada işletmeyi arayabilirsiniz."
+      },
+      {
+        "id": "vet_af",
+        "name": "VET-AF Veteriner Kliniği",
+        "type": "Klinik",
+        "address": "Refik Cesur Bulvarı çevresi, Düziçi",
+        "neighborhood": "MERKEZ",
+        "lat": 37.2385,
+        "lng": 36.445,
+        "workingHours": "Hafta içi 09:00 – 18:00",
+        "services": ["Muayene", "Aşı"],
+        "isEmergency": false,
+        "note": "Telefon için haritada işletmeyi arayabilirsiniz."
+      },
+      {
+        "id": "duz_vet",
+        "name": "Düz-Vet Veteriner Muayenehanesi",
+        "type": "Muayenehane",
+        "address": "Düziçi merkez",
+        "neighborhood": "MERKEZ",
+        "lat": 37.241,
+        "lng": 36.4465,
+        "workingHours": "Hafta içi 09:00 – 17:30",
+        "services": ["Muayene", "Aşı"],
+        "isEmergency": false,
+        "note": "Telefon için haritada işletmeyi arayabilirsiniz."
+      },
+      {
+        "id": "yalman",
+        "name": "Yalman Veteriner Muayenehanesi",
+        "type": "Muayenehane",
+        "address": "Düziçi merkez",
+        "neighborhood": "MERKEZ",
+        "lat": 37.243,
+        "lng": 36.45,
+        "workingHours": "Randevu ile",
+        "services": ["Muayene", "Aşı"],
+        "isEmergency": false,
+        "note": "Telefon için haritada işletmeyi arayabilirsiniz."
+      },
+      {
+        "id": "doruk",
+        "name": "Doruk Veteriner Muayenehanesi",
+        "type": "Muayenehane",
+        "address": "Düziçi merkez",
+        "neighborhood": "MERKEZ",
+        "lat": 37.236,
+        "lng": 36.452,
+        "workingHours": "Hafta içi 09:00 – 17:00",
+        "services": ["Muayene"],
+        "isEmergency": false,
+        "note": "Telefon için haritada işletmeyi arayabilirsiniz."
+      },
+      {
+        "id": "mahmut_yas",
+        "name": "Mahmut Yaş Veteriner Muayenehanesi",
+        "type": "Muayenehane",
+        "address": "Kurtuluş Mah. çevresi, Düziçi",
+        "neighborhood": "KURTULUŞ",
+        "lat": 37.235,
+        "lng": 36.444,
+        "workingHours": "Randevu ile",
+        "services": ["Muayene", "Aşı"],
+        "isEmergency": false,
+        "note": "Telefon için haritada işletmeyi arayabilirsiniz."
+      },
+      {
+        "id": "seferoglu",
+        "name": "Seferoğlu Veteriner Muayenehanesi",
+        "type": "Muayenehane",
+        "address": "Hürriyet Mah. çevresi, Düziçi",
+        "neighborhood": "HÜRRİYET",
+        "lat": 37.246,
+        "lng": 36.448,
+        "workingHours": "Hafta içi 09:00 – 17:30",
+        "services": ["Muayene", "Aşı"],
+        "isEmergency": false,
+        "note": "Telefon için haritada işletmeyi arayabilirsiniz."
+      },
+      {
+        "id": "bilge",
+        "name": "Bilge Veteriner Muayenehanesi",
+        "type": "Muayenehane",
+        "address": "Düziçi merkez",
+        "neighborhood": "MERKEZ",
+        "lat": 37.232,
+        "lng": 36.446,
+        "workingHours": "Hafta içi 09:00 – 18:00",
+        "services": ["Muayene"],
+        "isEmergency": false,
+        "note": "Telefon için haritada işletmeyi arayabilirsiniz."
+      },
+      {
+        "id": "musa_taskin",
+        "name": "Musa Taşkın Veteriner Muayenehanesi",
+        "type": "Muayenehane",
+        "address": "Düziçi merkez",
+        "neighborhood": "MERKEZ",
+        "lat": 37.2445,
+        "lng": 36.4435,
+        "workingHours": "Randevu ile",
+        "services": ["Muayene", "Aşı"],
+        "isEmergency": false,
+        "note": "Telefon için haritada işletmeyi arayabilirsiniz."
+      },
+      {
+        "id": "pet_pati",
+        "name": "Pati Pet Shop",
+        "type": "Pet Shop",
+        "address": "Refik Cesur Bulvarı, Düziçi",
+        "neighborhood": "MERKEZ",
+        "lat": 37.2398,
+        "lng": 36.4472,
+        "workingHours": "Hafta içi 09:00 – 20:00",
+        "services": ["Mama", "Aksesuar", "Bakım ürünleri"],
+        "isEmergency": false,
+        "note": "Veteriner muayene hizmeti sunmayabilir; ürün ve bakım malzemeleri."
+      }
+    ],
     "emergencyContacts": [
       {
         "name": "Acil Saglik",
@@ -298,20 +482,7 @@
         "source": "Düziçi Belediyesi"
       }
     ],
-    "outages": [
-      {
-        "title": "İrfanlı Mah. Su Kesintisi",
-        "subtitle": "Ana boru arızası nedeniyle akşam 20:00'ye kadar.",
-        "type": "SU",
-        "status": "Devam Ediyor"
-      },
-      {
-        "title": "Cumhuriyet Mah. Elektrik Kesintisi",
-        "subtitle": "Şebeke yenileme çalışması (09:00 - 13:00).",
-        "type": "ELEKTRİK",
-        "status": "Tamamlandı"
-      }
-    ],
+    "outages": [],
     "transportation": {
       "taxiStands": [
         {
@@ -902,26 +1073,9 @@
         "id": "veterinary",
         "icon": "pets",
         "title": "Veteriner",
-        "subtitle": "Veteriner klinikleri ve pet shop",
+        "subtitle": "Yakınımdaki vet, tüm klinikler ve pet shop",
         "color": "#8BC34A",
-        "target": "screen:directory",
-        "directoryData": [
-          {
-            "name": "Martoğlu Veteriner Kliniği",
-            "phone": "0541 215 65 54",
-            "address": "Cumhuriyet Mah., Çiçek Sok., 8"
-          },
-          {
-            "name": "Karkın Veteriner Kliniği",
-            "phone": "0541 218 94 07",
-            "address": "Aydınlar Cad., 48"
-          },
-          {
-            "name": "İlker Çömez (Veteriner)",
-            "phone": "0542 386 58 48",
-            "address": "Yeşilova Mah., Şehit Ahmet Metlioğlu Cad."
-          }
-        ]
+        "target": "screen:veterinary"
       },
       {
         "id": "dental",
@@ -1125,7 +1279,7 @@
             "detail": "Düziçi Ulu Cami, ilçe merkezinde yer alan tarihi bir cami olup Osmanlı döneminde inşa edilmiştir. Klasik Osmanlı mimari özelliklerini taşıyan yapı, bölgenin dini ve kültürel yaşamının merkezi olma özelliğini sürdürmektedir. İç süslemeleri ve hat sanatı örnekleri görülmeye değerdir.",
             "address": "Cumhuriyet Mahallesi, Düziçi merkez",
             "tag": "CAMİ",
-            "image": "https://upload.wikimedia.org/wikipedia/commons/thumb/b/b1/Osmaniye_Market_in_2010_1919.jpg/960px-Osmaniye_Market_in_2010_1919.jpg",
+            "image": "https://upload.wikimedia.org/wikipedia/commons/thumb/9/9a/Sabanc%C4%B1_Merkez_Camii.jpg/960px-Sabanc%C4%B1_Merkez_Camii.jpg",
             "lat": 37.24,
             "lng": 36.446,
             "parking": "var",
@@ -1176,7 +1330,7 @@
             "detail": "Karasu Şelalesi, Düldül Dağı eteklerinde Sabun Çayı üzerinde yer alan doğal bir çağlayandır. Suyun yeşilimsi tonu, kıyıdaki yoğun yosun ve bitki örtüsünden kaynaklanır. Yaz aylarında serinleme ve doğa yürüyüşleri için sık tercih edilir. Kıştan bahara eriyen kar etkisiyle debi artar ve şelale çok daha görkemli bir hâl alır. Kaygan zemin ve derin göletlere karşı dikkatli olunmalıdır.",
             "address": "Sabun Çayı, Düldül Dağı etekleri, Düziçi",
             "tag": "ŞELALE",
-            "image": "https://upload.wikimedia.org/wikipedia/commons/thumb/0/00/Obruk_Waterfall_-_Obruk_%C5%9Eelalesi_01.JPG/960px-Obruk_Waterfall_-_Obruk_%C5%9Eelalesi_01.JPG",
+            "image": "assets/images/karasu_selalesi.jpg",
             "lat": 37.251,
             "lng": 36.468,
             "parking": "var",
@@ -1930,7 +2084,7 @@
             "detail": "Dağdan inerken Sabun Çayı şelalesinde serinleyin ve mola verin.",
             "address": "Sabun Çayı, Düldül etekleri",
             "tag": "3",
-            "image": "https://upload.wikimedia.org/wikipedia/commons/thumb/0/00/Obruk_Waterfall_-_Obruk_%C5%9Eelalesi_01.JPG/960px-Obruk_Waterfall_-_Obruk_%C5%9Eelalesi_01.JPG"
+            "image": "assets/images/karasu_selalesi.jpg"
           }
         ]
       },
@@ -2026,28 +2180,52 @@
     ],
     "quickActions": [
       {
-        "icon": "local_taxi",
-        "title": "Taksi Çağır",
+        "id": "taksi",
+        "icon": "local_taxi_rounded",
+        "title": "Taksi",
+        "subtitle": "Çağır & ulaş",
         "target": "screen:taxi",
-        "color": "#FBC02D"
+        "color": "#E65100"
       },
       {
-        "icon": "local_pharmacy",
-        "title": "Eczaneler",
-        "target": "screen:pharmacy",
-        "color": "#E53935"
-      },
-      {
-        "icon": "account_balance",
-        "title": "Belediye",
-        "target": "screen:municipality",
-        "color": "#1E88E5"
-      },
-      {
-        "icon": "directions_bus",
-        "title": "Dolmuslar",
+        "id": "ulasim",
+        "icon": "directions_bus_rounded",
+        "title": "Ulaşım",
+        "subtitle": "Sefer & tarife",
         "target": "screen:transport",
-        "color": "#43A047"
+        "color": "#2E7D32"
+      },
+      {
+        "id": "belediye",
+        "icon": "account_balance_rounded",
+        "title": "Belediye",
+        "subtitle": "Hizmet & iletişim",
+        "target": "screen:municipality",
+        "color": "#1565C0"
+      },
+      {
+        "id": "haber",
+        "icon": "newspaper_rounded",
+        "title": "Haberler",
+        "subtitle": "Düziçi & Osmaniye",
+        "target": "screen:news",
+        "color": "#6A1B9A"
+      },
+      {
+        "id": "gezi",
+        "icon": "explore_rounded",
+        "title": "Gezi Rehberi",
+        "subtitle": "Doğa · tarih · lezzet",
+        "target": "explore_nature",
+        "color": "#00695C"
+      },
+      {
+        "id": "namaz",
+        "icon": "mosque_rounded",
+        "title": "Namaz",
+        "subtitle": "Günlük vakitler",
+        "target": "screen:prayer",
+        "color": "#5D4037"
       }
     ]
   },
@@ -2137,7 +2315,7 @@
       {
         "name": "Hasret Gazetesi",
         "url": "https://www.hasretgazetesi.com.tr/rss",
-        "filterDuzici": true,
+        "filterDuzici": false,
         "isActive": true
       },
       {

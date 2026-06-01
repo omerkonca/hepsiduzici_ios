@@ -31,6 +31,7 @@ class NewsItem {
     
     final matchesOsmaniyeOrDistrict = 
         lowerTitle.contains('osmaniye') || lowerSource.contains('osmaniye') ||
+        lowerSource.contains('hasret') ||
         lowerTitle.contains('kadirli') || lowerSource.contains('kadirli') ||
         lowerTitle.contains('bahçe') || lowerTitle.contains('bahce') || lowerSource.contains('bahçe') || lowerSource.contains('bahce') ||
         lowerTitle.contains('sumbas') || lowerSource.contains('sumbas') ||

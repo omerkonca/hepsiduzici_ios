@@ -9,6 +9,7 @@ import '../../core/widgets/place_network_image.dart';
 import '../../data/providers/trip_planner_provider.dart';
 import 'explore_detail_screen.dart';
 import 'trip_planner_screen.dart';
+import 'widgets/trip_planner_theme.dart';
 
 class _PlannerCategory {
   final String id;
@@ -313,6 +314,7 @@ class _ExploreCategoryScreenState extends State<ExploreCategoryScreen> {
     if (widget.allCategories.isNotEmpty) {
       final list = <ExplorePlace>[];
       for (final cat in widget.allCategories) {
+        if (cat.id == 'guide') continue; // Exclude non-sightseeing city guide utility items
         list.addAll(cat.places);
       }
       // İsme göre tekilleştirme
@@ -445,16 +447,18 @@ class _ExploreCategoryScreenState extends State<ExploreCategoryScreen> {
     final refLng = _userLng ?? (isUsingMahalle ? _mahalleler[_selectedMahalle]!.lng : null);
 
     final plannerCount = _planner.count;
+    final isGeziGuide = widget.title == 'Gezi Rehberi';
 
-    return Scaffold(
-      backgroundColor: AppColors.background,
+    Widget buildScaffold(BuildContext context) {
+      return Scaffold(
+      backgroundColor: isGeziGuide ? TripPlannerTheme.bg : AppColors.background,
       appBar: AppBar(
         title: Text(
-          widget.title == 'Gezi Rehberi' ? 'Gezi Rehberi' : widget.title,
-          style: const TextStyle(fontWeight: FontWeight.w900, letterSpacing: -0.5),
+          isGeziGuide ? 'Gezi Rehberi' : widget.title,
+          style: const TextStyle(fontWeight: FontWeight.w800, letterSpacing: -0.3),
         ),
-        backgroundColor: Theme.of(context).colorScheme.surface,
-        foregroundColor: Theme.of(context).colorScheme.onSurface,
+        backgroundColor: isGeziGuide ? TripPlannerTheme.bg : Theme.of(context).colorScheme.surface,
+        foregroundColor: isGeziGuide ? TripPlannerTheme.textPrimary : Theme.of(context).colorScheme.onSurface,
         elevation: 0,
         centerTitle: true,
       ),
@@ -464,12 +468,12 @@ class _ExploreCategoryScreenState extends State<ExploreCategoryScreen> {
                 context,
                 MaterialPageRoute(builder: (_) => const TripPlannerScreen()),
               ),
-              backgroundColor: AppColors.primary,
+              backgroundColor: isGeziGuide ? TripPlannerTheme.accentBlue : AppColors.primary,
               foregroundColor: Colors.white,
-              icon: const Icon(Icons.route),
+              icon: const Icon(Icons.route_rounded),
               label: Text(
                 'Rotam ($plannerCount durak)',
-                style: const TextStyle(fontWeight: FontWeight.w700),
+                style: const TextStyle(fontWeight: FontWeight.w800),
               ),
             )
           : null,
@@ -480,14 +484,14 @@ class _ExploreCategoryScreenState extends State<ExploreCategoryScreen> {
             child: Container(
               padding: const EdgeInsets.fromLTRB(20, 16, 20, 24),
               decoration: BoxDecoration(
-                color: Theme.of(context).colorScheme.surface,
+                color: isGeziGuide ? TripPlannerTheme.surface : Theme.of(context).colorScheme.surface,
                 borderRadius: const BorderRadius.only(
                   bottomLeft: Radius.circular(30),
                   bottomRight: Radius.circular(30),
                 ),
                 boxShadow: [
                   BoxShadow(
-                    color: Colors.black.withValues(alpha: 0.03),
+                    color: Colors.black.withValues(alpha: isGeziGuide ? 0.25 : 0.03),
                     blurRadius: 10,
                     offset: const Offset(0, 8),
                   ),
@@ -501,8 +505,10 @@ class _ExploreCategoryScreenState extends State<ExploreCategoryScreen> {
                     width: double.infinity,
                     padding: const EdgeInsets.all(16),
                     decoration: BoxDecoration(
-                      gradient: const LinearGradient(
-                        colors: [Color(0xFF1A237E), Color(0xFF0D47A1)],
+                      gradient: LinearGradient(
+                        colors: isGeziGuide
+                            ? [TripPlannerTheme.surfaceElevated, TripPlannerTheme.accent.withValues(alpha: 0.45)]
+                            : const [Color(0xFF1A237E), Color(0xFF0D47A1)],
                         begin: Alignment.topLeft,
                         end: Alignment.bottomRight,
                       ),
@@ -572,7 +578,7 @@ class _ExploreCategoryScreenState extends State<ExploreCategoryScreen> {
                             child: Container(
                               padding: const EdgeInsets.symmetric(vertical: 10),
                               decoration: BoxDecoration(
-                                color: isD ? const Color(0xFF0D47A1) : Colors.transparent,
+                                color: isD ? (isGeziGuide ? TripPlannerTheme.accentBlue : const Color(0xFF0D47A1)) : Colors.transparent,
                                 borderRadius: BorderRadius.circular(12),
                               ),
                               child: Center(
@@ -581,14 +587,14 @@ class _ExploreCategoryScreenState extends State<ExploreCategoryScreen> {
                                   children: [
                                     Icon(
                                       Icons.location_on_rounded, 
-                                      color: isD ? Colors.white : const Color(0xFF0D47A1), 
+                                      color: isD ? Colors.white : (isGeziGuide ? TripPlannerTheme.accentBlue : const Color(0xFF0D47A1)), 
                                       size: 15
                                     ),
                                     const SizedBox(width: 6),
                                     Text(
                                       'Düziçi İçi',
                                       style: TextStyle(
-                                        color: isD ? Colors.white : Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.8),
+                                        color: isD ? Colors.white : (isGeziGuide ? TripPlannerTheme.textSecondary : Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.8)),
                                         fontWeight: FontWeight.w800,
                                         fontSize: 13,
                                       ),
@@ -610,7 +616,7 @@ class _ExploreCategoryScreenState extends State<ExploreCategoryScreen> {
                             child: Container(
                               padding: const EdgeInsets.symmetric(vertical: 10),
                               decoration: BoxDecoration(
-                                color: !isD ? const Color(0xFF0D47A1) : Colors.transparent,
+                                color: !isD ? (isGeziGuide ? TripPlannerTheme.accentBlue : const Color(0xFF0D47A1)) : Colors.transparent,
                                 borderRadius: BorderRadius.circular(12),
                               ),
                               child: Center(
@@ -619,14 +625,14 @@ class _ExploreCategoryScreenState extends State<ExploreCategoryScreen> {
                                   children: [
                                     Icon(
                                       Icons.public_rounded, 
-                                      color: !isD ? Colors.white : const Color(0xFF0D47A1), 
+                                      color: !isD ? Colors.white : (isGeziGuide ? TripPlannerTheme.accentBlue : const Color(0xFF0D47A1)), 
                                       size: 15
                                     ),
                                     const SizedBox(width: 6),
                                     Text(
                                       'Osmaniye Geneli',
                                       style: TextStyle(
-                                        color: !isD ? Colors.white : Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.8),
+                                        color: !isD ? Colors.white : (isGeziGuide ? TripPlannerTheme.textSecondary : Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.8)),
                                         fontWeight: FontWeight.w800,
                                         fontSize: 13,
                                       ),
@@ -646,14 +652,18 @@ class _ExploreCategoryScreenState extends State<ExploreCategoryScreen> {
                   Container(
                     padding: const EdgeInsets.all(12),
                     decoration: BoxDecoration(
-                      color: Theme.of(context).brightness == Brightness.dark
-                          ? Colors.grey.shade900.withValues(alpha: 0.5)
-                          : Colors.grey.shade100.withValues(alpha: 0.8),
+                      color: isGeziGuide
+                          ? TripPlannerTheme.surfaceElevated
+                          : (Theme.of(context).brightness == Brightness.dark
+                              ? Colors.grey.shade900.withValues(alpha: 0.5)
+                              : Colors.grey.shade100.withValues(alpha: 0.8)),
                       borderRadius: BorderRadius.circular(18),
                       border: Border.all(
-                        color: Theme.of(context).brightness == Brightness.dark
-                            ? Colors.grey.shade800
-                            : Colors.grey.shade300,
+                        color: isGeziGuide
+                            ? Colors.white.withValues(alpha: 0.08)
+                            : (Theme.of(context).brightness == Brightness.dark
+                                ? Colors.grey.shade800
+                                : Colors.grey.shade300),
                       ),
                     ),
                     child: Column(
@@ -733,14 +743,18 @@ class _ExploreCategoryScreenState extends State<ExploreCategoryScreen> {
                                     style: IconButton.styleFrom(
                                       backgroundColor: isUsingGps
                                           ? AppColors.primary
-                                          : (Theme.of(context).brightness == Brightness.dark
-                                              ? Colors.grey.shade800
-                                              : Colors.grey.shade200),
+                                          : (isGeziGuide
+                                              ? Colors.white.withValues(alpha: 0.08)
+                                              : (Theme.of(context).brightness == Brightness.dark
+                                                  ? Colors.grey.shade800
+                                                  : Colors.grey.shade200)),
                                       foregroundColor: isUsingGps
                                           ? Colors.white
-                                          : (Theme.of(context).brightness == Brightness.dark
-                                              ? Colors.white
-                                              : Colors.grey.shade800),
+                                          : (isGeziGuide
+                                              ? TripPlannerTheme.textPrimary
+                                              : (Theme.of(context).brightness == Brightness.dark
+                                                  ? Colors.white
+                                                  : Colors.grey.shade800)),
                                       shape: RoundedRectangleBorder(
                                         borderRadius: BorderRadius.circular(12),
                                       ),
@@ -777,11 +791,19 @@ class _ExploreCategoryScreenState extends State<ExploreCategoryScreen> {
                             )
                           : null,
                       filled: true,
-                      fillColor: Theme.of(context).scaffoldBackgroundColor,
+                      fillColor: isGeziGuide ? TripPlannerTheme.surfaceElevated : Theme.of(context).scaffoldBackgroundColor,
                       contentPadding: const EdgeInsets.symmetric(vertical: 14),
                       border: OutlineInputBorder(
                         borderRadius: BorderRadius.circular(16),
-                        borderSide: BorderSide.none,
+                        borderSide: isGeziGuide
+                            ? BorderSide(color: Colors.white.withValues(alpha: 0.08), width: 1)
+                            : BorderSide.none,
+                      ),
+                      enabledBorder: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(16),
+                        borderSide: isGeziGuide
+                            ? BorderSide(color: Colors.white.withValues(alpha: 0.08), width: 1)
+                            : BorderSide.none,
                       ),
                     ),
                   ),
@@ -809,10 +831,29 @@ class _ExploreCategoryScreenState extends State<ExploreCategoryScreen> {
                     return const SizedBox.shrink();
                   }
 
+                  final chipBg = isSelected
+                      ? cat.color
+                      : (isGeziGuide
+                          ? TripPlannerTheme.surfaceElevated
+                          : cat.color.withValues(alpha: 0.06));
+                  final borderCol = isSelected
+                      ? cat.color
+                      : (isGeziGuide
+                          ? Colors.white.withValues(alpha: 0.08)
+                          : cat.color.withValues(alpha: 0.2));
+                  final iconCol = isSelected
+                      ? Colors.white
+                      : cat.color;
+                  final textCol = isSelected
+                      ? Colors.white
+                      : (isGeziGuide
+                          ? TripPlannerTheme.textSecondary
+                          : Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.8));
+
                   return Container(
                     margin: const EdgeInsets.symmetric(horizontal: 6, vertical: 12),
                     child: Material(
-                      color: isSelected ? cat.color : cat.color.withValues(alpha: 0.1),
+                      color: chipBg,
                       borderRadius: BorderRadius.circular(999),
                       child: InkWell(
                         onTap: () {
@@ -826,7 +867,7 @@ class _ExploreCategoryScreenState extends State<ExploreCategoryScreen> {
                           decoration: BoxDecoration(
                             borderRadius: BorderRadius.circular(999),
                             border: Border.all(
-                              color: isSelected ? cat.color : cat.color.withValues(alpha: 0.3),
+                              color: borderCol,
                               width: 1.5,
                             ),
                           ),
@@ -836,13 +877,13 @@ class _ExploreCategoryScreenState extends State<ExploreCategoryScreen> {
                               Icon(
                                 cat.icon,
                                 size: 16,
-                                color: isSelected ? Colors.white : cat.color,
+                                color: iconCol,
                               ),
                               const SizedBox(width: 8),
                               Text(
                                 cat.name,
                                 style: TextStyle(
-                                  color: isSelected ? Colors.white : Theme.of(context).colorScheme.onSurface,
+                                  color: textCol,
                                   fontWeight: FontWeight.w800,
                                   fontSize: 12.5,
                                 ),
@@ -883,6 +924,7 @@ class _ExploreCategoryScreenState extends State<ExploreCategoryScreen> {
                   final p = filtered[index];
                   final double rating = _getRatingForPlace(p);
                   final int reviews = _getReviewCountForPlace(p);
+                  final isDark = Theme.of(context).brightness == Brightness.dark;
 
                   double? distance;
                   if (refLat != null && refLng != null) {
@@ -893,9 +935,9 @@ class _ExploreCategoryScreenState extends State<ExploreCategoryScreen> {
                   return Container(
                     margin: const EdgeInsets.only(bottom: 16),
                     child: Material(
-                      color: Theme.of(context).colorScheme.surface,
+                      color: isGeziGuide ? TripPlannerTheme.surfaceElevated : Theme.of(context).colorScheme.surface,
                       borderRadius: BorderRadius.circular(24),
-                      elevation: 2,
+                      elevation: isGeziGuide ? 0 : 2,
                       shadowColor: Colors.black.withValues(alpha: 0.04),
                       child: InkWell(
                         onTap: () => _openDetail(context, p),
@@ -905,7 +947,9 @@ class _ExploreCategoryScreenState extends State<ExploreCategoryScreen> {
                           decoration: BoxDecoration(
                             borderRadius: BorderRadius.circular(24),
                             border: Border.all(
-                              color: Theme.of(context).dividerColor.withValues(alpha: 0.05),
+                              color: isGeziGuide
+                                  ? Colors.white.withValues(alpha: 0.08)
+                                  : Theme.of(context).dividerColor.withValues(alpha: 0.05),
                               width: 1,
                             ),
                           ),
@@ -1009,14 +1053,14 @@ class _ExploreCategoryScreenState extends State<ExploreCategoryScreen> {
                                     if (distance != null) ...[
                                       Row(
                                         children: [
-                                          const Icon(Icons.directions_car_rounded, size: 11, color: Colors.blue),
+                                          Icon(Icons.directions_car_rounded, size: 11, color: isDark ? TripPlannerTheme.accentBlue : Colors.blue),
                                           const SizedBox(width: 4),
                                           Text(
                                             '📍 ${distance.toStringAsFixed(1)} km uzaklıkta',
                                             style: TextStyle(
                                               fontSize: 10,
                                               fontWeight: FontWeight.bold,
-                                              color: Colors.blue.shade700,
+                                              color: isDark ? TripPlannerTheme.accentBlue : Colors.blue.shade700,
                                             ),
                                           ),
                                         ],
@@ -1134,6 +1178,17 @@ class _ExploreCategoryScreenState extends State<ExploreCategoryScreen> {
         ],
       ),
     );
+    }
+
+    if (isGeziGuide) {
+      return Theme(
+        data: TripPlannerTheme.theme(),
+        child: Builder(
+          builder: (context) => buildScaffold(context),
+        ),
+      );
+    }
+    return buildScaffold(context);
   }
 
   void _openDetail(BuildContext context, ExplorePlace place) {

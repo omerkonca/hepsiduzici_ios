@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_animate/flutter_animate.dart';
-import 'package:flutter_svg/flutter_svg.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'dart:ui' as ui;
 import '../core/theme/app_colors.dart';
@@ -63,7 +62,7 @@ class _MainNavState extends ConsumerState<MainNav> with WidgetsBindingObserver {
           children: [
             const SizedBox.expand(child: HomeScreen()),
             const SafeArea(child: SizedBox.expand(child: ServicesScreen())),
-            const SizedBox.expand(child: ExploreScreen()),
+            const SafeArea(child: SizedBox.expand(child: ExploreScreen())),
             const SafeArea(child: SizedBox.expand(child: EventsScreen())),
             const SafeArea(child: SizedBox.expand(child: MoreScreen())),
           ],
@@ -174,6 +173,25 @@ class _MainNavState extends ConsumerState<MainNav> with WidgetsBindingObserver {
   }
 }
 
+class _NavIcon extends StatelessWidget {
+  const _NavIcon({
+    required this.selected,
+    required this.iconAsset,
+    required this.fallbackIcon,
+  });
+
+  final bool selected;
+  final String iconAsset;
+  final IconData fallbackIcon;
+
+  @override
+  Widget build(BuildContext context) {
+    final color = selected ? AppColors.primary : const Color(0xFF8A9099);
+    final size = selected ? 20.0 : 19.5;
+    return Icon(fallbackIcon, size: size, color: color);
+  }
+}
+
 class _NavItem extends StatelessWidget {
   const _NavItem({
     required this.iconAsset,
@@ -235,24 +253,10 @@ class _NavItem extends StatelessWidget {
                         ]
                       : null,
                 ),
-                child: Stack(
-                  alignment: Alignment.center,
-                  children: [
-                    Icon(
-                      selected ? selectedFallbackIcon : fallbackIcon,
-                      size: selected ? 20 : 19.5,
-                      color: selected ? AppColors.primary : const Color(0xFF8A9099),
-                    ),
-                    SvgPicture.asset(
-                      selected ? selectedIconAsset : iconAsset,
-                      width: selected ? 20 : 19.5,
-                      height: selected ? 20 : 19.5,
-                      colorFilter: ColorFilter.mode(
-                        selected ? AppColors.primary : const Color(0xFF8A9099),
-                        BlendMode.srcIn,
-                      ),
-                    ),
-                  ],
+                child: _NavIcon(
+                  selected: selected,
+                  iconAsset: selected ? selectedIconAsset : iconAsset,
+                  fallbackIcon: selected ? selectedFallbackIcon : fallbackIcon,
                 ),
               ),
               const SizedBox(height: 3),

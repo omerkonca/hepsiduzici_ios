@@ -9,6 +9,7 @@ import '../../data/models/city_content.dart';
 import 'directory_screen.dart';
 import 'explore_category_screen.dart';
 import 'auto_gallery_screen.dart';
+import '../veterinary/veterinary_screen.dart';
 import '../home/widgets/home_header.dart';
 import '../../core/widgets/favorite_button.dart';
 import '../../core/widgets/place_network_image.dart';
@@ -26,9 +27,10 @@ class ExploreScreen extends ConsumerWidget {
         final query = ref.watch(exploreSearchQueryProvider).toLowerCase();
 
         var services = content.cityServices;
-        var categories = content.exploreCategories.isNotEmpty
-            ? content.exploreCategories
-            : _defaultExploreCategories;
+        var categories = content.exploreCategories;
+        if (categories.isEmpty || categories.every((c) => c.places.isEmpty)) {
+          categories = _defaultExploreCategories;
+        }
 
         if (query.isNotEmpty) {
           services = services.where((s) => s.title.toLowerCase().contains(query)).toList();
@@ -160,12 +162,34 @@ class ExploreScreen extends ConsumerWidget {
           ),
         );
       },
-      loading: () => const Center(child: CircularProgressIndicator()),
-      error: (e, _) => Center(child: Text('Hata: $e')),
+      loading: () => const _ExploreStatusBody(
+        child: CircularProgressIndicator(),
+      ),
+      error: (e, _) => _ExploreStatusBody(
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            const Icon(Icons.cloud_off_rounded, size: 48, color: Colors.grey),
+            const SizedBox(height: 12),
+            Text('İçerik yüklenemedi: $e', textAlign: TextAlign.center),
+            const SizedBox(height: 12),
+            FilledButton(
+              onPressed: () => ref.invalidate(cityContentProvider),
+              child: const Text('Yeniden dene'),
+            ),
+          ],
+        ),
+      ),
     );
   }
 
   void _handleServiceTap(BuildContext context, CityServiceItem svc) {
+    if (svc.id == 'veterinary') {
+      Navigator.of(context).push(
+        MaterialPageRoute(builder: (_) => const VeterinaryScreen()),
+      );
+      return;
+    }
     // directory target olanlar için DirectoryScreen aç
     if (svc.target == 'screen:directory' && svc.directoryData != null) {
       if (svc.id == 'auto_gallery') {
@@ -684,6 +708,22 @@ class _SectionHeader extends StatelessWidget {
 // ║                   DEFAULT DATA                              ║
 // ╚══════════════════════════════════════════════════════════════╝
 
+class _ExploreStatusBody extends StatelessWidget {
+  const _ExploreStatusBody({required this.child});
+
+  final Widget child;
+
+  @override
+  Widget build(BuildContext context) {
+    return ColoredBox(
+      color: Theme.of(context).scaffoldBackgroundColor,
+      child: SizedBox.expand(
+        child: Center(child: child),
+      ),
+    );
+  }
+}
+
 List<ExploreCategoryItem> get _defaultExploreCategories {
   return [
     ExploreCategoryItem(
@@ -699,8 +739,7 @@ List<ExploreCategoryItem> get _defaultExploreCategories {
           detail: 'Sabun Çayı üzerinde yer alan doğal şelale.',
           address: 'Sabun Çayı, Düziçi',
           tag: 'ŞELALE',
-          imageUrl:
-              'https://upload.wikimedia.org/wikipedia/commons/thumb/9/98/Karayardanorman.JPG/960px-Karayardanorman.JPG',
+          imageUrl: 'assets/images/karasu_selalesi.jpg',
         ),
         const ExplorePlace(
           name: 'Haruniye Kaplıcaları',

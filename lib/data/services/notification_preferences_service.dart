@@ -21,7 +21,7 @@ class NotificationPreferencesService {
 
   Future<bool> getSystemTrayNewNews() async {
     final p = await SharedPreferences.getInstance();
-    return p.getBool(NotificationPreferencesKeys.systemTrayNewNews) ?? false;
+    return p.getBool(NotificationPreferencesKeys.systemTrayNewNews) ?? true;
   }
 
   Future<void> setSystemTrayNewNews(bool value) async {

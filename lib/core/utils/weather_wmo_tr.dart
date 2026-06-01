@@ -39,11 +39,11 @@ String weatherCodeLabelTr(int code) {
 }
 
 IconData weatherCodeIcon(int code, {bool isDay = true}) {
-  if (code == 0 || code == 1) {
+  if (code == 0) {
     return isDay ? Icons.wb_sunny_rounded : Icons.nightlight_round;
   }
-  if (code == 2) {
-    return isDay ? Icons.wb_cloudy_rounded : Icons.cloud_rounded; // Night partly cloudy -> just cloud or moon+cloud
+  if (code == 1 || code == 2) {
+    return isDay ? Icons.wb_cloudy_rounded : Icons.nightlight_round;
   }
   if (code == 3) return Icons.cloud_rounded; // Kapalı
   if (code == 45 || code == 48) return Icons.foggy;
@@ -236,6 +236,65 @@ class _WeatherAnimatedIconState extends State<WeatherAnimatedIcon>
             WeatherVisualType.sunny => Color.lerp(widget.color, const Color(0xFFFFB300), 0.22)!,
             _ => widget.color,
           };
+
+          // Custom Gorgeous Layered Sun-behind-cloud / Moon-behind-cloud for partly cloudy
+          if (widget.conditionCode == 1 || widget.conditionCode == 2) {
+            final sunColor = widget.isDay
+                ? Color.lerp(widget.color, const Color(0xFFFFB000), 0.88)!
+                : const Color(0xFF90CAF9);
+            final cloudColor = widget.color.withValues(alpha: 0.95);
+
+            return Stack(
+              clipBehavior: Clip.none,
+              children: [
+                // Glowing background for sun (only if day)
+                if (widget.isDay)
+                  Positioned(
+                    top: -widget.size * 0.02,
+                    right: -widget.size * 0.02,
+                    child: DecoratedBox(
+                      decoration: BoxDecoration(
+                        shape: BoxShape.circle,
+                        boxShadow: [
+                          BoxShadow(
+                            color: sunColor.withValues(alpha: 0.3),
+                            blurRadius: widget.size * 0.25,
+                            spreadRadius: widget.size * 0.05,
+                          ),
+                        ],
+                      ),
+                      child: SizedBox(width: widget.size * 0.65, height: widget.size * 0.65),
+                    ),
+                  ),
+                // Sun / Moon in the background (top-right)
+                Positioned(
+                  top: 0,
+                  right: 0,
+                  child: Transform.translate(
+                    offset: Offset(0, bob * 0.5),
+                    child: Icon(
+                      widget.isDay ? Icons.wb_sunny_rounded : Icons.nightlight_round,
+                      color: sunColor,
+                      size: widget.size * 0.68,
+                    ),
+                  ),
+                ),
+                // Cloud in the foreground (bottom-left)
+                Positioned(
+                  bottom: 0,
+                  left: 0,
+                  child: Transform.translate(
+                    offset: Offset(0, bob * 0.8),
+                    child: Icon(
+                      Icons.cloud_rounded,
+                      color: cloudColor,
+                      size: widget.size * 0.72,
+                    ),
+                  ),
+                ),
+              ],
+            );
+          }
           return Stack(
             clipBehavior: Clip.none,
             children: [

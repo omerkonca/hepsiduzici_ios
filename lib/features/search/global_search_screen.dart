@@ -121,6 +121,39 @@ class _GlobalSearchScreenState extends ConsumerState<GlobalSearchScreen> {
                     error: (_, __) => const SizedBox.shrink(),
                   ),
 
+                  // Veterinarians
+                  cityContentAsync.when(
+                    data: (content) {
+                      final filtered = content.veterinarians
+                          .where((v) =>
+                              v.name.toLowerCase().contains(_query) ||
+                              v.address.toLowerCase().contains(_query) ||
+                              v.type.toLowerCase().contains(_query))
+                          .toList();
+                      return _SearchSection(
+                        title: 'Veteriner',
+                        isEmpty: filtered.isEmpty,
+                        children: [
+                          if (filtered.isNotEmpty)
+                            _SearchResultTile(
+                              icon: Icons.pets_rounded,
+                              title: 'Tüm veteriner listesi',
+                              subtitle: '${filtered.length} eşleşme',
+                              onTap: () => TargetRouter.handle(context, 'screen:veterinary'),
+                            ),
+                          ...filtered.take(5).map((v) => _SearchResultTile(
+                                icon: Icons.medical_services_outlined,
+                                title: v.name,
+                                subtitle: v.address,
+                                onTap: () => TargetRouter.handle(context, 'screen:veterinary'),
+                              )),
+                        ],
+                      );
+                    },
+                    loading: () => const SizedBox.shrink(),
+                    error: (_, __) => const SizedBox.shrink(),
+                  ),
+
                   // Places Section (Explore)
                   cityContentAsync.when(
                     data: (content) {

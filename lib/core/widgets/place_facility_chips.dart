@@ -11,27 +11,39 @@ class PlaceFacilityChips extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final chips = <Widget>[
-      _chip(
+    final chips = <Widget>[];
+
+    if (place.parking != null && place.parking != 'bilinmiyor') {
+      chips.add(_chip(
         context,
         icon: PlaceFacilityLabels.parkingIcon(place.parking),
         label: PlaceFacilityLabels.parking(place.parking),
         positive: PlaceFacilityLabels.parkingPositive(place.parking),
-      ),
-      _chip(
+      ));
+    }
+
+    if (place.restroom != null && place.restroom != 'bilinmiyor') {
+      chips.add(_chip(
         context,
         icon: PlaceFacilityLabels.restroomIcon(place.restroom),
         label: PlaceFacilityLabels.restroom(place.restroom),
         positive: PlaceFacilityLabels.restroomPositive(place.restroom),
-      ),
-      _chip(
+      ));
+    }
+
+    if (place.entryFee != null && place.entryFee != 'bilinmiyor') {
+      chips.add(_chip(
         context,
         icon: PlaceFacilityLabels.entryFeeIcon(place.entryFee),
         label: PlaceFacilityLabels.entryFee(place.entryFee, note: place.entryFeeNote),
         positive: place.entryFee == 'ucretsiz' || place.entryFee == 'free',
-        neutral: place.entryFee == 'bilinmiyor' || place.entryFee == null,
-      ),
-    ];
+        neutral: false,
+      ));
+    }
+
+    if (chips.isEmpty) {
+      return const SizedBox.shrink();
+    }
 
     if (compact) {
       return Wrap(spacing: 6, runSpacing: 6, children: chips);
@@ -50,17 +62,22 @@ class PlaceFacilityChips extends StatelessWidget {
     bool positive = false,
     bool neutral = true,
   }) {
+    final bool isDark = Theme.of(context).brightness == Brightness.dark;
     final Color fg;
     final Color bg;
     if (positive) {
-      fg = const Color(0xFF2E7D32);
-      bg = const Color(0xFF2E7D32).withValues(alpha: 0.1);
+      fg = isDark ? const Color(0xFF81C784) : const Color(0xFF2E7D32);
+      bg = fg.withValues(alpha: 0.15);
     } else if (!neutral && label.contains('yok')) {
-      fg = const Color(0xFFC62828);
-      bg = const Color(0xFFC62828).withValues(alpha: 0.08);
+      fg = isDark ? const Color(0xFFE57373) : const Color(0xFFC62828);
+      bg = fg.withValues(alpha: 0.12);
     } else {
-      fg = Theme.of(context).colorScheme.onSurfaceVariant;
-      bg = Theme.of(context).colorScheme.surfaceContainerHigh;
+      fg = isDark 
+          ? const Color(0xFF9AA3B5) 
+          : Theme.of(context).colorScheme.onSurfaceVariant;
+      bg = isDark 
+          ? const Color(0xFF1E2638) 
+          : Theme.of(context).colorScheme.surfaceContainerHigh;
     }
 
     return Container(

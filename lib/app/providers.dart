@@ -26,10 +26,13 @@ import '../data/services/event_service.dart';
 import '../data/services/favorites_service.dart';
 import '../data/services/notification_service.dart';
 import '../data/services/notification_preferences_service.dart';
+import '../data/models/app_notification.dart';
+import '../data/services/app_notifications_builder.dart';
 import '../data/services/discover_service.dart';
 import '../data/services/outage_service.dart';
 import '../data/services/road_closure_service.dart';
 import '../data/models/road_closure.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 final dioProvider = Provider<Dio>((ref) {
   final dio = Dio(BaseOptions(connectTimeout: const Duration(seconds: 10)));
@@ -127,7 +130,7 @@ final notificationPrefsProvider = StateNotifierProvider<NotificationPrefsNotifie
 
 class NotificationPrefsNotifier extends StateNotifier<NotificationPrefsState> {
   NotificationPrefsNotifier(this._prefs, this._notifications)
-      : super(const NotificationPrefsState(inAppNewNewsBanner: true, systemTrayNewNews: false)) {
+      : super(const NotificationPrefsState(inAppNewNewsBanner: true, systemTrayNewNews: true)) {
     _load();
   }
 
@@ -159,6 +162,105 @@ class NotificationPrefsNotifier extends StateNotifier<NotificationPrefsState> {
     return true;
   }
 }
+
+class ReadNotificationsState {
+  const ReadNotificationsState({
+    this.ids = const {},
+    this.ready = false,
+  });
+
+  final Set<String> ids;
+  final bool ready;
+
+  ReadNotificationsState copyWith({Set<String>? ids, bool? ready}) {
+    return ReadNotificationsState(
+      ids: ids ?? this.ids,
+      ready: ready ?? this.ready,
+    );
+  }
+}
+
+final readNotificationsProvider =
+    StateNotifierProvider<ReadNotificationsNotifier, ReadNotificationsState>((ref) {
+  return ReadNotificationsNotifier();
+});
+
+class ReadNotificationsNotifier extends StateNotifier<ReadNotificationsState> {
+  ReadNotificationsNotifier() : super(const ReadNotificationsState()) {
+    _load();
+  }
+
+  static const _prefsKey = 'read_notification_ids_v2';
+
+  Future<void> _load() async {
+    final prefs = await SharedPreferences.getInstance();
+    final list = prefs.getStringList(_prefsKey) ??
+        prefs.getStringList('read_notification_ids') ??
+        [];
+    final migrated = <String>{};
+    for (final raw in list) {
+      migrated.add(_migrateLegacyId(raw));
+    }
+    state = ReadNotificationsState(ids: migrated, ready: true);
+    await prefs.setStringList(_prefsKey, migrated.toList());
+  }
+
+  static String _migrateLegacyId(String id) {
+    // Eski: outage_baslik_0 → outage_baslik
+    if (RegExp(r'^outage_.*_\d+$').hasMatch(id)) {
+      return id.replaceAll(RegExp(r'_\d+$'), '');
+    }
+    return id;
+  }
+
+  Future<void> _persist(Set<String> ids) async {
+    final prefs = await SharedPreferences.getInstance();
+    await prefs.setStringList(_prefsKey, ids.toList());
+  }
+
+  Future<void> markAsRead(String id) async {
+    if (!state.ready || state.ids.contains(id)) return;
+    final next = {...state.ids, id};
+    await _persist(next);
+    state = state.copyWith(ids: next);
+  }
+
+  Future<void> markAllAsRead(Iterable<String> ids) async {
+    if (!state.ready) return;
+    final next = {...state.ids, ...ids};
+    await _persist(next);
+    state = state.copyWith(ids: next);
+  }
+
+  Future<void> clearAll() async {
+    final prefs = await SharedPreferences.getInstance();
+    await prefs.remove(_prefsKey);
+    await prefs.remove('read_notification_ids');
+    state = state.copyWith(ids: {});
+  }
+}
+
+/// Tüm dinamik bildirimler — rozet ve merkez aynı listeyi kullanır.
+final appNotificationsProvider = Provider<List<AppNotification>>((ref) {
+  final favorites = ref.watch(favoritesProvider);
+  final favEventIds = favorites[FavoriteCategory.event] ?? {};
+
+  return AppNotificationsBuilder.build(
+    outages: ref.watch(stampedOutagesProvider).valueOrNull,
+    roadClosures: ref.watch(stampedRoadClosuresProvider).valueOrNull,
+    news: ref.watch(stampedNewsProvider).valueOrNull,
+    events: ref.watch(stampedEventsProvider).valueOrNull,
+    favoriteEventIds: favEventIds,
+  );
+});
+
+final unreadNotificationsCountProvider = Provider<int>((ref) {
+  final readState = ref.watch(readNotificationsProvider);
+  if (!readState.ready) return 0;
+
+  final notifications = ref.watch(appNotificationsProvider);
+  return notifications.where((n) => !readState.ids.contains(n.id)).length;
+});
 
 /// Bildirimlerin konumunu ayırt etmek için (ön plan / arka plan).
 final appLifecycleStateProvider = StateProvider<AppLifecycleState>((ref) {

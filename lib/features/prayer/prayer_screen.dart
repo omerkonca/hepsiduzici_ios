@@ -14,7 +14,9 @@ class PrayerScreen extends ConsumerWidget {
     final async = ref.watch(prayerTimesProvider);
     return async.when(
       data: (PrayerTimes p) {
-        return RefreshIndicator(
+        return Scaffold(
+          appBar: AppBar(title: const Text('Namaz Vakitleri')),
+          body: RefreshIndicator(
           onRefresh: () async => ref.invalidate(prayerTimesProvider),
           child: SingleChildScrollView(
             physics: const AlwaysScrollableScrollPhysics(),
@@ -49,10 +51,15 @@ class PrayerScreen extends ConsumerWidget {
               ],
             ),
           ),
+        ),
         );
       },
-      loading: () => const Center(child: CircularProgressIndicator()),
-      error: (e, _) => Center(
+      loading: () => const Scaffold(
+        body: Center(child: CircularProgressIndicator()),
+      ),
+      error: (e, _) => Scaffold(
+        appBar: AppBar(title: const Text('Namaz Vakitleri')),
+        body: Center(
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
@@ -64,6 +71,7 @@ class PrayerScreen extends ConsumerWidget {
             ),
           ],
         ),
+      ),
       ),
     );
   }

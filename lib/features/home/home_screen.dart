@@ -811,10 +811,52 @@ class _PremiumTopBar extends ConsumerWidget {
                   ),
 
                   // Notifications
-                  _ActionButtonDynamic(
-                    icon: Icons.notifications_none_rounded,
-                    color: gTheme.textColor,
-                    onTap: () => TargetRouter.handle(context, 'screen:notifications'),
+                  Consumer(
+                    builder: (context, ref, child) {
+                      final unreadCount = ref.watch(unreadNotificationsCountProvider);
+                      final badgeLabel =
+                          unreadCount > 99 ? '99+' : unreadCount.toString();
+                      return Stack(
+                        clipBehavior: Clip.none,
+                        children: [
+                          _ActionButtonDynamic(
+                            icon: Icons.notifications_none_rounded,
+                            color: gTheme.textColor,
+                            onTap: () async {
+                              await TargetRouter.handle(context, 'screen:notifications');
+                            },
+                          ),
+                          if (unreadCount > 0)
+                            Positioned(
+                              right: -2,
+                              top: -2,
+                              child: Container(
+                                padding: EdgeInsets.symmetric(
+                                  horizontal: unreadCount > 9 ? 4 : 5,
+                                  vertical: 3,
+                                ),
+                                decoration: const BoxDecoration(
+                                  color: Color(0xFFE53935),
+                                  shape: BoxShape.circle,
+                                ),
+                                constraints: const BoxConstraints(
+                                  minWidth: 16,
+                                  minHeight: 16,
+                                ),
+                                child: Text(
+                                  badgeLabel,
+                                  style: const TextStyle(
+                                    color: Colors.white,
+                                    fontSize: 8.5,
+                                    fontWeight: FontWeight.w900,
+                                  ),
+                                  textAlign: TextAlign.center,
+                                ),
+                              ),
+                            ),
+                        ],
+                      );
+                    },
                   ).animate().fadeIn(delay: 50.ms).scale(begin: const Offset(0.9, 0.9)),
 
                   const SizedBox(width: 8),
@@ -823,7 +865,7 @@ class _PremiumTopBar extends ConsumerWidget {
                   weatherAsync.when(
                     data: (w) {
                       return GestureDetector(
-                        onTap: () => ref.read(currentIndexProvider.notifier).state = 1,
+                        onTap: () => TargetRouter.handle(context, 'screen:weather'),
                         child: Container(
                           padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
                           decoration: BoxDecoration(

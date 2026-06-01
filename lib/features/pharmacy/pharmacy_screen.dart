@@ -176,7 +176,7 @@ class _PharmacyScreenState extends ConsumerState<PharmacyScreen> {
         }
 
         return ServicePageLayout(
-          title: 'Nöbetçi Eczaneler',
+          title: 'Nöbetçi Eczane',
           subtitle: 'Bugün Düziçi genelinde hizmet veren onaylı nöbetçi eczanelerin canlı listesi.',
           icon: 'local_pharmacy',
           color: const Color(0xFF009688),

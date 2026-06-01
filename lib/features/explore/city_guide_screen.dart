@@ -241,6 +241,10 @@ class _CityGuideBody extends StatelessWidget {
   }
 
   void _openDirectory(BuildContext context, CityServiceItem svc) {
+    if (svc.id == 'veterinary') {
+      TargetRouter.handle(context, 'screen:veterinary');
+      return;
+    }
     if (svc.directoryData == null) return;
     if (svc.id == 'auto_gallery') {
       Navigator.of(context).push(

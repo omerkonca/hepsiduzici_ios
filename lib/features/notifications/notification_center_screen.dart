@@ -4,255 +4,382 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:intl/intl.dart';
 import '../../app/providers.dart';
 import '../../core/theme/app_colors.dart';
+import '../../core/utils/target_router.dart';
+import '../../data/models/app_notification.dart';
 import '../../data/models/event_item.dart';
-import '../../data/services/favorites_service.dart';
+import '../../data/models/news_item.dart';
 import '../events/event_detail_screen.dart';
+import '../news/news_detail_screen.dart';
 
-class NotificationCenterScreen extends ConsumerWidget {
+class NotificationCenterScreen extends ConsumerStatefulWidget {
   const NotificationCenterScreen({super.key});
 
   @override
-  Widget build(BuildContext context, WidgetRef ref) {
-    final favorites = ref.watch(favoritesProvider);
-    final eventsAsync = ref.watch(eventListProvider);
-    final cityContentAsync = ref.watch(cityContentProvider);
+  ConsumerState<NotificationCenterScreen> createState() =>
+      _NotificationCenterScreenState();
+}
 
-    return Scaffold(
-      appBar: AppBar(
-        title: const Text('Bildirim Merkezi', style: TextStyle(fontWeight: FontWeight.w900)),
-        actions: [
-          IconButton(
-            icon: const Icon(Icons.settings_outlined),
-            onPressed: () => Navigator.pushNamed(context, 'screen:notification_settings'),
-          ),
-        ],
-      ),
-      body: CustomScrollView(
-        slivers: [
-          // 1. System Announcements
-          SliverToBoxAdapter(
-            child: _SectionHeader(title: 'Sistem Duyuruları'),
-          ),
-          cityContentAsync.when(
-            data: (content) {
-              // We can use news or special alerts here. For now, let's mock 2-3 important items.
-              final announcements = [
-                _Announcement(
-                  title: 'Hava Durumu Uyarısı',
-                  body: 'Bugün akşam saatlerinde şiddetli rüzgar bekleniyor. Lütfen tedbirli olun.',
-                  date: DateTime.now(),
-                  icon: Icons.wb_cloudy_rounded,
-                  color: Colors.orange,
-                ),
-                _Announcement(
-                  title: 'Planlı Su Kesintisi',
-                  body: 'Kurtbeyoğlu mahallesinde bakım çalışması nedeniyle 14:00-16:00 arası su kesintisi olacaktır.',
-                  date: DateTime.now().subtract(const Duration(hours: 3)),
-                  icon: Icons.water_drop_rounded,
-                  color: Colors.blue,
-                ),
-              ];
-              return SliverList(
-                delegate: SliverChildBuilderDelegate(
-                  (context, index) => _AnnouncementTile(announcement: announcements[index]),
-                  childCount: announcements.length,
-                ),
-              );
-            },
-            loading: () => const SliverToBoxAdapter(child: Center(child: CircularProgressIndicator())),
-            error: (e, _) => SliverToBoxAdapter(child: Text('Hata: $e')),
-          ),
+class _NotificationCenterScreenState extends ConsumerState<NotificationCenterScreen> {
+  bool _markedOnExit = false;
 
-          // 2. Active Reminders (Favorited Events)
-          SliverToBoxAdapter(
-            child: _SectionHeader(title: 'Yaklaşan Hatırlatıcılar'),
-          ),
-          eventsAsync.when(
-            data: (events) {
-              final favEventIds = favorites[FavoriteCategory.event] ?? {};
-              final myEvents = events.where((e) => favEventIds.contains(e.id)).toList();
-              
-              if (myEvents.isEmpty) {
-                return const SliverToBoxAdapter(
-                  child: _EmptyState(
-                    icon: Icons.notifications_none_rounded,
-                    message: 'Aktif bir hatırlatıcınız bulunmuyor.\nEtkinlikleri favorileyerek hatırlatıcı kurabilirsiniz.',
-                  ),
-                );
-              }
+  @override
+  void dispose() {
+    _markInboxSeen();
+    super.dispose();
+  }
 
-              return SliverList(
-                delegate: SliverChildBuilderDelegate(
-                  (context, index) {
-                    final event = myEvents[index];
-                    return _ReminderTile(
-                      event: event,
-                      onTap: () => Navigator.push(context, MaterialPageRoute(builder: (_) => EventDetailScreen(event: event))),
+  void _markInboxSeen() {
+    if (_markedOnExit) return;
+    _markedOnExit = true;
+    final notifications = ref.read(appNotificationsProvider);
+    if (notifications.isEmpty) return;
+    ref.read(readNotificationsProvider.notifier).markAllAsRead(
+          notifications.map((n) => n.id),
+        );
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final readState = ref.watch(readNotificationsProvider);
+    final readIds = readState.ids;
+    final allNotifications = ref.watch(appNotificationsProvider);
+
+    final outagesAsync = ref.watch(stampedOutagesProvider);
+    final roadClosuresAsync = ref.watch(stampedRoadClosuresProvider);
+    final newsAsync = ref.watch(stampedNewsProvider);
+    final eventsAsync = ref.watch(stampedEventsProvider);
+
+    final isLoading = !readState.ready ||
+        outagesAsync.isLoading ||
+        newsAsync.isLoading ||
+        roadClosuresAsync.isLoading ||
+        eventsAsync.isLoading;
+
+    final unreadIds = allNotifications
+        .map((n) => n.id)
+        .where((id) => !readIds.contains(id))
+        .toList();
+
+    final announcementList = allNotifications
+        .where((n) =>
+            n.type == AppNotificationType.outage ||
+            n.type == AppNotificationType.roadClosure ||
+            n.type == AppNotificationType.news)
+        .toList();
+
+    final reminderList =
+        allNotifications.where((n) => n.type == AppNotificationType.event).toList();
+
+    return PopScope(
+      onPopInvokedWithResult: (didPop, _) {
+        if (didPop) _markInboxSeen();
+      },
+      child: DefaultTabController(
+        length: 3,
+        child: Scaffold(
+          backgroundColor: Theme.of(context).brightness == Brightness.dark
+              ? const Color(0xFF121212)
+              : const Color(0xFFF8F9FA),
+          appBar: AppBar(
+            elevation: 0,
+            backgroundColor: Theme.of(context).colorScheme.surface,
+            title: const Text(
+              'Bildirimler',
+              style: TextStyle(fontWeight: FontWeight.w900, fontSize: 22, letterSpacing: -0.5),
+            ),
+            actions: [
+              if (unreadIds.isNotEmpty)
+                TextButton.icon(
+                  onPressed: () {
+                    ref.read(readNotificationsProvider.notifier).markAllAsRead(unreadIds);
+                    ScaffoldMessenger.of(context).showSnackBar(
+                      const SnackBar(content: Text('Tüm bildirimler okundu.')),
                     );
                   },
-                  childCount: myEvents.length,
+                  icon: const Icon(Icons.done_all_rounded, size: 20),
+                  label: const Text('Tümünü oku'),
+                  style: TextButton.styleFrom(
+                    foregroundColor: AppColors.primary,
+                    textStyle: const TextStyle(fontWeight: FontWeight.w800),
+                  ),
                 ),
-              );
-            },
-            loading: () => const SliverToBoxAdapter(child: SizedBox.shrink()),
-            error: (_, __) => const SliverToBoxAdapter(child: SizedBox.shrink()),
-          ),
-          
-          const SliverToBoxAdapter(child: SizedBox(height: 40)),
-        ],
-      ),
-    );
-  }
-}
-
-class _SectionHeader extends StatelessWidget {
-  const _SectionHeader({required this.title});
-  final String title;
-
-  @override
-  Widget build(BuildContext context) {
-    return Padding(
-      padding: const EdgeInsets.fromLTRB(20, 24, 20, 12),
-      child: Text(
-        title.toUpperCase(),
-        style: TextStyle(
-          fontSize: 12,
-          fontWeight: FontWeight.w900,
-          color: Colors.grey[500],
-          letterSpacing: 1.2,
-        ),
-      ),
-    );
-  }
-}
-
-class _Announcement {
-  final String title;
-  final String body;
-  final DateTime date;
-  final IconData icon;
-  final Color color;
-  _Announcement({required this.title, required this.body, required this.date, required this.icon, required this.color});
-}
-
-class _AnnouncementTile extends StatelessWidget {
-  const _AnnouncementTile({required this.announcement});
-  final _Announcement announcement;
-
-  @override
-  Widget build(BuildContext context) {
-    return Container(
-      margin: const EdgeInsets.symmetric(horizontal: 20, vertical: 6),
-      padding: const EdgeInsets.all(16),
-      decoration: BoxDecoration(
-        color: Theme.of(context).colorScheme.surface,
-        borderRadius: BorderRadius.circular(20),
-        border: Border.all(color: Theme.of(context).dividerColor.withValues(alpha: 0.1)),
-      ),
-      child: Row(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Container(
-            padding: const EdgeInsets.all(10),
-            decoration: BoxDecoration(
-              color: announcement.color.withValues(alpha: 0.1),
-              shape: BoxShape.circle,
+              IconButton(
+                icon: const Icon(Icons.settings_outlined),
+                tooltip: 'Bildirim ayarları',
+                onPressed: () =>
+                    TargetRouter.handle(context, 'screen:notification_settings'),
+              ),
+            ],
+            bottom: PreferredSize(
+              preferredSize: const Size.fromHeight(56),
+              child: Container(
+                margin: const EdgeInsets.fromLTRB(20, 0, 20, 10),
+                height: 44,
+                decoration: BoxDecoration(
+                  color: Theme.of(context).brightness == Brightness.dark
+                      ? Colors.white.withValues(alpha: 0.06)
+                      : Colors.black.withValues(alpha: 0.05),
+                  borderRadius: BorderRadius.circular(14),
+                ),
+                child: TabBar(
+                  indicatorSize: TabBarIndicatorSize.tab,
+                  dividerColor: Colors.transparent,
+                  indicator: BoxDecoration(
+                    color: AppColors.primary,
+                    borderRadius: BorderRadius.circular(12),
+                  ),
+                  labelColor: Colors.white,
+                  unselectedLabelColor: Theme.of(context).textTheme.bodySmall?.color,
+                  labelStyle: const TextStyle(fontWeight: FontWeight.w800, fontSize: 12.5),
+                  tabs: [
+                    Tab(
+                      child: Row(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          const Text('Tümü'),
+                          if (unreadIds.isNotEmpty) ...[
+                            const SizedBox(width: 6),
+                            _CountDot(count: unreadIds.length),
+                          ],
+                        ],
+                      ),
+                    ),
+                    const Tab(text: 'Duyurular'),
+                    const Tab(text: 'Hatırlatıcı'),
+                  ],
+                ),
+              ),
             ),
-            child: Icon(announcement.icon, color: announcement.color, size: 20),
           ),
-          const SizedBox(width: 16),
-          Expanded(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          body: isLoading
+              ? const Center(child: CircularProgressIndicator())
+              : TabBarView(
                   children: [
-                    Text(announcement.title, style: const TextStyle(fontWeight: FontWeight.w800, fontSize: 15)),
-                    Text(
-                      DateFormat('HH:mm').format(announcement.date),
-                      style: TextStyle(fontSize: 11, color: Colors.grey[500], fontWeight: FontWeight.w600),
+                    _NotificationList(
+                      items: allNotifications,
+                      readIds: readIds,
+                      emptyMessage: 'Henüz bildiriminiz yok.\nKesinti, yol ve haberler burada görünür.',
+                      onTap: (n) => _handleTap(context, n),
+                    ),
+                    _NotificationList(
+                      items: announcementList,
+                      readIds: readIds,
+                      emptyMessage: 'Şu an şehir duyurusu veya kesinti bildirimi yok.',
+                      onTap: (n) => _handleTap(context, n),
+                    ),
+                    _NotificationList(
+                      items: reminderList,
+                      readIds: readIds,
+                      emptyMessage:
+                          'Favori etkinlik hatırlatıcınız yok.\nTakvimden etkinlik favorileyerek ekleyebilirsiniz.',
+                      onTap: (n) => _handleTap(context, n),
                     ),
                   ],
                 ),
-                const SizedBox(height: 4),
-                Text(
-                  announcement.body,
-                  style: TextStyle(fontSize: 13, color: Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.7), height: 1.4),
-                ),
-              ],
-            ),
-          ),
-        ],
-      ),
-    ).animate().fadeIn().slideX(begin: 0.05, end: 0);
-  }
-}
-
-class _ReminderTile extends StatelessWidget {
-  const _ReminderTile({required this.event, required this.onTap});
-  final EventItem event;
-  final VoidCallback onTap;
-
-  @override
-  Widget build(BuildContext context) {
-    return Container(
-      margin: const EdgeInsets.symmetric(horizontal: 20, vertical: 6),
-      decoration: BoxDecoration(
-        color: Theme.of(context).colorScheme.surface,
-        borderRadius: BorderRadius.circular(20),
-        border: Border.all(color: AppColors.primary.withValues(alpha: 0.15)),
-      ),
-      child: ListTile(
-        contentPadding: const EdgeInsets.all(12),
-        leading: ClipRRect(
-          borderRadius: BorderRadius.circular(12),
-          child: Image.network(event.imageUrl, width: 56, height: 56, fit: BoxFit.cover),
         ),
-        title: Text(event.title, style: const TextStyle(fontWeight: FontWeight.w800, fontSize: 14), maxLines: 1, overflow: TextOverflow.ellipsis),
-        subtitle: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            const SizedBox(height: 4),
-            Row(
-              children: [
-                const Icon(Icons.calendar_today_rounded, size: 12, color: AppColors.primary),
-                const SizedBox(width: 6),
-                Text(
-                  DateFormat('d MMMM, HH:mm', 'tr_TR').format(event.date),
-                  style: const TextStyle(fontSize: 11, fontWeight: FontWeight.w600),
-                ),
-              ],
-            ),
-          ],
-        ),
-        trailing: const Icon(Icons.arrow_forward_ios_rounded, size: 14),
-        onTap: onTap,
-      ),
-    ).animate().fadeIn().slideX(begin: 0.05, end: 0);
-  }
-}
-
-class _EmptyState extends StatelessWidget {
-  const _EmptyState({required this.icon, required this.message});
-  final IconData icon;
-  final String message;
-
-  @override
-  Widget build(BuildContext context) {
-    return Padding(
-      padding: const EdgeInsets.symmetric(vertical: 40, horizontal: 40),
-      child: Column(
-        children: [
-          Icon(icon, size: 48, color: Colors.grey[300]),
-          const SizedBox(height: 16),
-          Text(
-            message,
-            textAlign: TextAlign.center,
-            style: TextStyle(color: Colors.grey[500], fontSize: 13, height: 1.5, fontWeight: FontWeight.w500),
-          ),
-        ],
       ),
     );
+  }
+
+  Future<void> _handleTap(BuildContext context, AppNotification n) async {
+    await ref.read(readNotificationsProvider.notifier).markAsRead(n.id);
+
+    if (!context.mounted) return;
+    switch (n.type) {
+      case AppNotificationType.outage:
+        await TargetRouter.handle(context, 'screen:outages');
+        break;
+      case AppNotificationType.roadClosure:
+        await TargetRouter.handle(context, 'screen:closed_roads');
+        break;
+      case AppNotificationType.news:
+        final item = n.originalData as NewsItem;
+        await Navigator.push(
+          context,
+          MaterialPageRoute(builder: (_) => NewsDetailScreen(item: item)),
+        );
+        break;
+      case AppNotificationType.event:
+        final item = n.originalData as EventItem;
+        await Navigator.push(
+          context,
+          MaterialPageRoute(builder: (_) => EventDetailScreen(event: item)),
+        );
+        break;
+    }
+  }
+}
+
+class _CountDot extends StatelessWidget {
+  const _CountDot({required this.count});
+  final int count;
+
+  @override
+  Widget build(BuildContext context) {
+    final label = count > 99 ? '99+' : '$count';
+    return Container(
+      padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
+      decoration: const BoxDecoration(color: Colors.red, shape: BoxShape.circle),
+      child: Text(
+        label,
+        style: const TextStyle(color: Colors.white, fontSize: 9, fontWeight: FontWeight.w900),
+      ),
+    );
+  }
+}
+
+class _NotificationList extends StatelessWidget {
+  const _NotificationList({
+    required this.items,
+    required this.readIds,
+    required this.emptyMessage,
+    required this.onTap,
+  });
+
+  final List<AppNotification> items;
+  final Set<String> readIds;
+  final String emptyMessage;
+  final void Function(AppNotification) onTap;
+
+  @override
+  Widget build(BuildContext context) {
+    if (items.isEmpty) {
+      return Center(
+        child: Padding(
+          padding: const EdgeInsets.all(40),
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              Icon(Icons.notifications_none_rounded,
+                  size: 56, color: Colors.grey.withValues(alpha: 0.35)),
+              const SizedBox(height: 16),
+              Text(
+                emptyMessage,
+                textAlign: TextAlign.center,
+                style: TextStyle(
+                  color: Colors.grey.shade600,
+                  fontSize: 14,
+                  fontWeight: FontWeight.w600,
+                  height: 1.5,
+                ),
+              ),
+            ],
+          ),
+        ),
+      );
+    }
+
+    return ListView.builder(
+        physics: const AlwaysScrollableScrollPhysics(),
+        padding: const EdgeInsets.symmetric(vertical: 12),
+        itemCount: items.length,
+        itemBuilder: (context, index) {
+          final item = items[index];
+          final isRead = readIds.contains(item.id);
+
+          return Material(
+            color: Colors.transparent,
+            child: InkWell(
+              onTap: () => onTap(item),
+              child: Container(
+                margin: const EdgeInsets.fromLTRB(16, 0, 16, 10),
+                padding: const EdgeInsets.all(14),
+                decoration: BoxDecoration(
+                  color: Theme.of(context).colorScheme.surface,
+                  borderRadius: BorderRadius.circular(18),
+                  border: Border.all(
+                    color: isRead
+                        ? Theme.of(context).dividerColor.withValues(alpha: 0.08)
+                        : AppColors.primary.withValues(alpha: 0.22),
+                    width: isRead ? 1 : 1.5,
+                  ),
+                ),
+                child: Row(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Container(
+                      padding: const EdgeInsets.all(10),
+                      decoration: BoxDecoration(
+                        color: item.color.withValues(alpha: 0.12),
+                        borderRadius: BorderRadius.circular(14),
+                      ),
+                      child: Icon(item.icon, color: item.color, size: 22),
+                    ),
+                    const SizedBox(width: 12),
+                    Expanded(
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Row(
+                            children: [
+                              Expanded(
+                                child: Text(
+                                  item.title,
+                                  maxLines: 2,
+                                  overflow: TextOverflow.ellipsis,
+                                  style: TextStyle(
+                                    fontWeight:
+                                        isRead ? FontWeight.w700 : FontWeight.w900,
+                                    fontSize: 14.5,
+                                    height: 1.25,
+                                  ),
+                                ),
+                              ),
+                              if (!isRead)
+                                Container(
+                                  width: 8,
+                                  height: 8,
+                                  margin: const EdgeInsets.only(left: 8),
+                                  decoration: const BoxDecoration(
+                                    color: AppColors.primary,
+                                    shape: BoxShape.circle,
+                                  ),
+                                ),
+                            ],
+                          ),
+                          const SizedBox(height: 4),
+                          Text(
+                            item.body,
+                            maxLines: 3,
+                            overflow: TextOverflow.ellipsis,
+                            style: TextStyle(
+                              fontSize: 12.5,
+                              height: 1.4,
+                              color: Theme.of(context)
+                                  .colorScheme
+                                  .onSurface
+                                  .withValues(alpha: 0.65),
+                            ),
+                          ),
+                          const SizedBox(height: 6),
+                          Text(
+                            _formatRelativeDate(item.dateTime),
+                            style: TextStyle(
+                              fontSize: 11,
+                              fontWeight: FontWeight.w600,
+                              color: Theme.of(context).textTheme.bodySmall?.color,
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            ),
+          ).animate().fadeIn(delay: (index * 35).ms).slideY(begin: 0.04, end: 0);
+        },
+    );
+  }
+
+  static String _formatRelativeDate(DateTime d) {
+    final diff = DateTime.now().difference(d);
+    if (diff.isNegative) {
+      return 'Yaklaşıyor · ${DateFormat('d MMM, HH:mm', 'tr_TR').format(d)}';
+    }
+    if (diff.inDays > 0) return diff.inDays == 1 ? 'Dün' : '${diff.inDays} gün önce';
+    if (diff.inHours > 0) return '${diff.inHours} saat önce';
+    if (diff.inMinutes > 0) return '${diff.inMinutes} dk önce';
+    return 'Az önce';
   }
 }

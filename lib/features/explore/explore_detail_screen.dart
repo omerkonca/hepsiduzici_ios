@@ -9,6 +9,7 @@ import '../../core/widgets/dynamic_place_facilities.dart';
 import '../../core/widgets/place_network_image.dart';
 import '../../data/services/place_photo_service.dart';
 import '../../data/services/favorites_service.dart';
+import '../../data/providers/trip_planner_provider.dart';
 
 class ExploreDetailScreen extends StatefulWidget {
   const ExploreDetailScreen({
@@ -17,12 +18,14 @@ class ExploreDetailScreen extends StatefulWidget {
     this.userLat,
     this.userLng,
     this.selectedMahalle,
+    this.isActiveNavigation = false,
   });
 
   final ExplorePlace place;
   final double? userLat;
   final double? userLng;
   final String? selectedMahalle;
+  final bool isActiveNavigation;
 
   @override
   State<ExploreDetailScreen> createState() => _ExploreDetailScreenState();
@@ -547,6 +550,59 @@ class _ExploreDetailScreenState extends State<ExploreDetailScreen> {
   Widget _buildActions() {
     final coords = _getCoordsForPlace(widget.place);
     final mapsUrl = PlacePhotoService.mapsUrl(widget.place);
+
+    if (widget.isActiveNavigation) {
+      return Padding(
+        padding: const EdgeInsets.fromLTRB(24, 40, 24, 0),
+        child: Column(
+          children: [
+            Row(
+              children: [
+                Expanded(
+                  child: OutlinedButton(
+                    onPressed: () => Navigator.pop(context),
+                    style: OutlinedButton.styleFrom(
+                      padding: const EdgeInsets.symmetric(vertical: 16),
+                      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(999)),
+                      side: BorderSide(color: Colors.grey.shade400),
+                      foregroundColor: Theme.of(context).colorScheme.onSurface,
+                    ),
+                    child: const Text('Geri', style: TextStyle(fontWeight: FontWeight.w800, fontSize: 15)),
+                  ),
+                ),
+                const SizedBox(width: 12),
+                Expanded(
+                  child: ElevatedButton.icon(
+                    onPressed: () {
+                      // Durağı tamamla ve bir sonraki adıma ilerle
+                      TripPlannerProvider.instance.nextStep();
+                      Navigator.pop(context);
+                      ScaffoldMessenger.of(context).showSnackBar(
+                        SnackBar(
+                          content: const Text('Harika! Bir sonraki durak aktif edildi 🏁'),
+                          behavior: SnackBarBehavior.floating,
+                          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
+                        ),
+                      );
+                    },
+                    icon: const Icon(Icons.flag_rounded, color: Colors.white),
+                    label: const Text('Rotaya Devam'),
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: const Color(0xFF4CAF50), // Green
+                      foregroundColor: Colors.white,
+                      padding: const EdgeInsets.symmetric(vertical: 16),
+                      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(999)),
+                      elevation: 2,
+                    ),
+                  ),
+                ),
+              ],
+            ),
+          ],
+        ),
+      );
+    }
+
     return Padding(
       padding: const EdgeInsets.fromLTRB(24, 40, 24, 0),
       child: Column(

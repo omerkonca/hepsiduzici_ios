@@ -10,7 +10,9 @@ class NotificationPreferencesScreen extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final prefs = ref.watch(notificationPrefsProvider);
 
-    return ListView(
+    return Scaffold(
+      appBar: AppBar(title: const Text('Bildirim tercihleri')),
+      body: ListView(
       padding: const EdgeInsets.symmetric(vertical: 16, horizontal: 20),
       children: [
         Text(
@@ -75,6 +77,7 @@ class NotificationPreferencesScreen extends ConsumerWidget {
               ),
         ),
       ],
+      ),
     );
   }
 }

@@ -5,7 +5,7 @@ import '../../app/providers.dart';
 import '../../data/models/city_content.dart';
 import '../../features/events/my_calendar_screen.dart';
 import '../../features/explore/city_guide_screen.dart';
-import '../../features/explore/explore_category_screen.dart';
+import '../../features/explore/trip_planner_screen.dart';
 import '../../features/explore/explore_screen.dart';
 import '../../features/news/news_screen.dart';
 import '../../features/favorites/favorites_screen.dart';
@@ -22,6 +22,7 @@ import '../../features/services/closed_roads_screen.dart';
 import '../../features/services/taxi_call_screen.dart';
 import '../../features/services/transportation_screen.dart';
 import '../../features/settings/notification_preferences_screen.dart';
+import '../../features/veterinary/veterinary_screen.dart';
 import '../../features/weather/weather_screen.dart';
 import 'launcher_utils.dart';
 
@@ -90,16 +91,16 @@ class TargetRouter {
         await _pushPage(context, const PharmacyScreen());
         return;
       case 'prayer':
-        await _pushSimple(context, const PrayerScreen(), 'Namaz Vakitleri');
+        await _pushPage(context, const PrayerScreen());
         return;
       case 'weather':
-        await _pushSimple(context, const WeatherScreen(), 'Hava Durumu');
+        await _pushPage(context, const WeatherScreen());
         return;
       case 'explore':
         await _pushPage(context, const ExploreScreen());
         return;
       case 'calendar':
-        await _pushSimple(context, const MyCalendarScreen(), 'Takvimim');
+        await _pushPage(context, const MyCalendarScreen());
         return;
       case 'favorites':
         await _pushPage(context, const FavoritesScreen());
@@ -111,7 +112,7 @@ class TargetRouter {
         await _pushPage(context, const GlobalSearchScreen());
         return;
       case 'notification_settings':
-        await _pushSimple(context, const NotificationPreferencesScreen(), 'Bildirim tercihleri');
+        await _pushPage(context, const NotificationPreferencesScreen());
         return;
       case 'outages':
         await _openOutages(context);
@@ -121,6 +122,9 @@ class TargetRouter {
         return;
       case 'health':
         await _pushPage(context, const HealthFacilitiesScreen());
+        return;
+      case 'veterinary':
+        await _pushPage(context, const VeterinaryScreen());
         return;
       case 'fuel':
         await _pushPage(context, const FuelPricesScreen());
@@ -183,18 +187,6 @@ class TargetRouter {
     );
   }
 
-  static Future<void> _pushSimple(BuildContext context, Widget page, String title) async {
-    if (!context.mounted) return;
-    await Navigator.of(context).push(
-      MaterialPageRoute<void>(
-        builder: (_) => Scaffold(
-          appBar: AppBar(title: Text(title)),
-          body: page,
-        ),
-      ),
-    );
-  }
-
   static Future<void> _openOutages(BuildContext context) async {
     CityContent? content;
     try {
@@ -208,7 +200,7 @@ class TargetRouter {
       _info(context, 'Kesinti bilgisi yüklenemedi.');
       return;
     }
-    await _pushPage(context, OutagesScreen(outages: content.outages));
+    await _pushPage(context, const OutagesScreen());
   }
 
   static Future<void> _openNatureGuide(BuildContext context) async {
@@ -225,23 +217,16 @@ class TargetRouter {
       return;
     }
     const ids = ['nature', 'castles', 'historical', 'hiking', 'camping', 'parks', 'highlands', 'thermal', 'places', 'heritage'];
-    final places = content.exploreCategories
+    final hasPlaces = content.exploreCategories
         .where((c) => ids.contains(c.id))
-        .expand((c) => c.places)
-        .toList();
-    if (places.isEmpty) {
+        .any((c) => c.places.isNotEmpty);
+    if (!hasPlaces) {
       _info(context, 'Gezi Rehberi için henüz içerik yok.');
       return;
     }
     await Navigator.of(context).push(
       MaterialPageRoute<void>(
-        builder: (_) => ExploreCategoryScreen(
-          title: 'Gezi Rehberi',
-          places: places,
-          allCategories: content!.exploreCategories,
-          preSelectedCategory: 'DOĞAL GÜZELLİK',
-          initialScope: 'DUZICI',
-        ),
+        builder: (_) => const TripPlannerScreen(),
       ),
     );
   }

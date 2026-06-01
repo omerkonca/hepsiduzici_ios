@@ -87,57 +87,40 @@ class ServicePageLayout extends StatelessWidget {
   }
 
   Widget _buildHeader(BuildContext context) {
+    if (subtitle.trim().isEmpty) return const SizedBox.shrink();
+
     return Padding(
-      padding: const EdgeInsets.fromLTRB(20, 16, 20, 20),
-      child: Column(
+      padding: const EdgeInsets.fromLTRB(20, 8, 20, 16),
+      child: Row(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Row(
-            children: [
-              Container(
-                padding: const EdgeInsets.all(12),
-                decoration: BoxDecoration(
-                  gradient: LinearGradient(
-                    begin: Alignment.topLeft,
-                    end: Alignment.bottomRight,
-                    colors: [
-                      color.withValues(alpha: 0.15),
-                      color.withValues(alpha: 0.05),
-                    ],
-                  ),
-                  borderRadius: BorderRadius.circular(16),
-                  border: Border.all(color: color.withValues(alpha: 0.1)),
-                ),
-                child: Icon(IconMapper.fromName(icon), color: color, size: 28),
+          Container(
+            padding: const EdgeInsets.all(10),
+            decoration: BoxDecoration(
+              gradient: LinearGradient(
+                begin: Alignment.topLeft,
+                end: Alignment.bottomRight,
+                colors: [
+                  color.withValues(alpha: 0.15),
+                  color.withValues(alpha: 0.05),
+                ],
               ),
-              const SizedBox(width: 16),
-              Expanded(
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text(
-                      title,
-                      style: Theme.of(context).textTheme.headlineSmall?.copyWith(
-                            fontWeight: FontWeight.w900,
-                            color: Theme.of(context).colorScheme.onSurface,
-                            letterSpacing: -0.5,
-                          ),
-                    ),
-                    const SizedBox(height: 2),
-                    Text(
-                      subtitle,
-                      style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                            color: Theme.of(context).textTheme.bodySmall?.color,
-                            fontWeight: FontWeight.w500,
-                          ),
-                    ),
-                  ],
-                ),
-              ),
-            ],
+              borderRadius: BorderRadius.circular(14),
+              border: Border.all(color: color.withValues(alpha: 0.1)),
+            ),
+            child: Icon(IconMapper.fromName(icon), color: color, size: 24),
           ),
-          const SizedBox(height: 12),
-          Divider(color: Theme.of(context).dividerColor.withValues(alpha: 0.1)),
+          const SizedBox(width: 12),
+          Expanded(
+            child: Text(
+              subtitle,
+              style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                    color: Theme.of(context).textTheme.bodySmall?.color,
+                    fontWeight: FontWeight.w500,
+                    height: 1.35,
+                  ),
+            ),
+          ),
         ],
       ),
     );

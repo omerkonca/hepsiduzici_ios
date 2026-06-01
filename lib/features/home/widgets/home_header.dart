@@ -578,36 +578,39 @@ class _GlassWeatherChip extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final theme = weatherVisualTheme(condition);
-    return ClipRRect(
-      borderRadius: BorderRadius.circular(24),
-      child: BackdropFilter(
-        filter: ImageFilter.blur(sigmaX: 10, sigmaY: 10),
-        child: Container(
-          padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 8),
-          decoration: BoxDecoration(
-            color: theme.gradientStart.withValues(alpha: 0.22),
-            borderRadius: BorderRadius.circular(24),
-            border: Border.all(color: theme.accent.withValues(alpha: 0.35)),
-          ),
-          child: Row(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              WeatherAnimatedIcon(
-                conditionCode: condition,
-                isDay: DateTime.now().hour > 6 && DateTime.now().hour < 19,
-                size: 20,
-                color: theme.accent,
-              ),
-              const SizedBox(width: 8),
-              Text(
-                '${temp.round()}°',
-                style: TextStyle(
+    return GestureDetector(
+      onTap: () => TargetRouter.handle(context, 'screen:weather'),
+      child: ClipRRect(
+        borderRadius: BorderRadius.circular(24),
+        child: BackdropFilter(
+          filter: ImageFilter.blur(sigmaX: 10, sigmaY: 10),
+          child: Container(
+            padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 8),
+            decoration: BoxDecoration(
+              color: theme.gradientStart.withValues(alpha: 0.22),
+              borderRadius: BorderRadius.circular(24),
+              border: Border.all(color: theme.accent.withValues(alpha: 0.35)),
+            ),
+            child: Row(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                WeatherAnimatedIcon(
+                  conditionCode: condition,
+                  isDay: DateTime.now().hour > 6 && DateTime.now().hour < 19,
+                  size: 20,
                   color: theme.accent,
-                  fontSize: 16,
-                  fontWeight: FontWeight.w900,
                 ),
-              ),
-            ],
+                const SizedBox(width: 8),
+                Text(
+                  '${temp.round()}°',
+                  style: TextStyle(
+                    color: theme.accent,
+                    fontSize: 16,
+                    fontWeight: FontWeight.w900,
+                  ),
+                ),
+              ],
+            ),
           ),
         ),
       ),

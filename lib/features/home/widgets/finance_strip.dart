@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../../app/providers.dart';
 import '../../../core/theme/app_colors.dart';
+import '../../../core/utils/finance_format.dart';
 import '../../../data/models/finance_quote.dart';
 
 class FinanceStrip extends ConsumerWidget {
@@ -100,7 +101,7 @@ class _FinanceCard extends StatelessWidget {
             ],
           ),
           Text(
-            _formatValue(quote.value),
+            '${FinanceFormat.formatValue(quote)}${FinanceFormat.unitSuffix(quote)}',
             style: const TextStyle(
               fontSize: 18,
               fontWeight: FontWeight.w800,
@@ -124,24 +125,11 @@ class _FinanceCard extends StatelessWidget {
                 ),
               ),
               const Spacer(),
-              Text(
-                quote.unit,
-                style: const TextStyle(
-                  color: AppColors.textMuted,
-                  fontWeight: FontWeight.w600,
-                  fontSize: 11,
-                ),
-              ),
             ],
           ),
         ],
       ),
     );
-  }
-
-  static String _formatValue(double v) {
-    if (v >= 100) return v.toStringAsFixed(0).replaceAllMapped(RegExp(r'(\d)(?=(\d{3})+$)'), (m) => '${m[1]}.');
-    return v.toStringAsFixed(2);
   }
 
   static IconData _iconFor(String code) {

@@ -9,14 +9,17 @@ class WeatherScreen extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    return RefreshIndicator(
-      onRefresh: () async => ref.invalidate(stampedWeatherProvider),
-      child: const SingleChildScrollView(
-        physics: AlwaysScrollableScrollPhysics(),
-        padding: EdgeInsets.symmetric(vertical: 16),
-        child: Padding(
-          padding: EdgeInsets.symmetric(horizontal: 16),
-          child: WeatherCard(),
+    return Scaffold(
+      appBar: AppBar(title: const Text('Hava Durumu')),
+      body: RefreshIndicator(
+        onRefresh: () async => ref.invalidate(stampedWeatherProvider),
+        child: const SingleChildScrollView(
+          physics: AlwaysScrollableScrollPhysics(),
+          padding: EdgeInsets.symmetric(vertical: 16),
+          child: Padding(
+            padding: EdgeInsets.symmetric(horizontal: 16),
+            child: WeatherCard(),
+          ),
         ),
       ),
     );

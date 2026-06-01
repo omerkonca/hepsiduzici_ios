@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../../app/providers.dart';
 import '../../../core/theme/app_colors.dart';
+import '../../../core/utils/finance_format.dart';
 import '../../../core/utils/relative_time.dart';
 import '../../../data/models/finance_quote.dart';
 import '../../../core/utils/target_router.dart';
@@ -70,24 +71,14 @@ class _HighlightsStripState extends ConsumerState<HighlightsStrip> {
   void _openWeather() {
     if (!mounted) return;
     Navigator.of(context).push(
-      MaterialPageRoute(
-        builder: (_) => Scaffold(
-          appBar: AppBar(title: const Text('Hava Durumu')),
-          body: const WeatherScreen(),
-        ),
-      ),
+      MaterialPageRoute(builder: (_) => const WeatherScreen()),
     );
   }
 
   void _openPrayer() {
     if (!mounted) return;
     Navigator.of(context).push(
-      MaterialPageRoute(
-        builder: (_) => Scaffold(
-          appBar: AppBar(title: const Text('Namaz Vakitleri')),
-          body: const PrayerScreen(),
-        ),
-      ),
+      MaterialPageRoute(builder: (_) => const PrayerScreen()),
     );
   }
 
@@ -439,14 +430,6 @@ class _WeatherHighlightCard extends StatelessWidget {
                       ),
                     ),
                   ),
-              ] else if (loading) ...[
-                const SizedBox(height: 8),
-                LinearProgressIndicator(
-                  minHeight: 2,
-                  backgroundColor: Colors.white.withValues(alpha: 0.15),
-                  color: Colors.white.withValues(alpha: 0.7),
-                  borderRadius: BorderRadius.circular(2),
-                ),
               ],
             ],
           ),
@@ -908,7 +891,7 @@ class _FinanceRow extends StatelessWidget {
             ),
           ),
           Text(
-            _formatValue(quote.value),
+            '${FinanceFormat.formatValue(quote)}${FinanceFormat.unitSuffix(quote)}',
             style: const TextStyle(
               color: Colors.white,
               fontWeight: FontWeight.w700,
@@ -967,15 +950,6 @@ class _FinanceRow extends StatelessWidget {
     }
   }
 
-  static String _formatValue(double v) {
-    if (v >= 100) {
-      return v.toStringAsFixed(0).replaceAllMapped(
-            RegExp(r'(\d)(?=(\d{3})+$)'),
-            (m) => '${m[1]}.',
-          );
-    }
-    return v.toStringAsFixed(2);
-  }
 }
 
 class _IconBadge extends StatelessWidget {

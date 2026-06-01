@@ -10,6 +10,7 @@ import 'health_facilities_screen.dart';
 import 'municipality_units_screen.dart';
 import '../news/news_screen.dart';
 import '../pharmacy/pharmacy_screen.dart';
+import '../veterinary/veterinary_screen.dart';
 import '../prayer/prayer_screen.dart';
 import '../weather/weather_screen.dart';
 import '../../data/models/city_content.dart';
@@ -188,48 +189,46 @@ class _ServicesScreenState extends ConsumerState<ServicesScreen> {
     );
   }
 
-  void _push(BuildContext context, Widget page, String title) {
+  void _push(BuildContext context, Widget page) {
     Navigator.of(context).push(
-      MaterialPageRoute(
-        builder: (_) => Scaffold(
-          appBar: AppBar(title: Text(title)),
-          body: page,
-        ),
-      ),
+      MaterialPageRoute(builder: (_) => page),
     );
   }
 
   void _openServiceTarget(BuildContext context, String target, CityContent content) {
     switch (target) {
       case 'pharmacy':
-        _push(context, const PharmacyScreen(), 'Nöbetçi Eczane');
+        _push(context, const PharmacyScreen());
         break;
       case 'prayer':
-        _push(context, const PrayerScreen(), 'Namaz Vakitleri');
+        _push(context, const PrayerScreen());
         break;
       case 'weather':
-        _push(context, const WeatherScreen(), 'Hava Durumu');
+        _push(context, const WeatherScreen());
         break;
       case 'news':
-        _push(context, const NewsScreen(), 'Haber Merkezi');
+        _push(context, const NewsScreen());
         break;
       case 'health':
-        _push(context, const HealthFacilitiesScreen(), 'Sağlık Kurumları');
+        _push(context, const HealthFacilitiesScreen());
+        break;
+      case 'veterinary':
+        _push(context, const VeterinaryScreen());
         break;
       case 'emergency':
-        _push(context, const EmergencyNumbersScreen(), 'Acil Numaralar');
+        _push(context, const EmergencyNumbersScreen());
         break;
       case 'municipality':
-        _push(context, const MunicipalityUnitsScreen(), 'Belediye Birimleri');
+        _push(context, const MunicipalityUnitsScreen());
         break;
       case 'outages':
-        _push(context, OutagesScreen(outages: content.outages), 'Planlı Kesintiler');
+        _push(context, const OutagesScreen());
         break;
       case 'closed_roads':
-        _push(context, const ClosedRoadsScreen(), 'Kapalı Yollar');
+        _push(context, const ClosedRoadsScreen());
         break;
       case 'transport':
-        _push(context, TransportationScreen(data: content.transportation), 'Ulaşım Rehberi');
+        _push(context, TransportationScreen(data: content.transportation));
         break;
       default:
         break;

@@ -1,9 +1,12 @@
+import '../json_parse_utils.dart';
 import 'fuel_price.dart';
+import 'veterinarian.dart';
 
 class CityContent {
   const CityContent({
     required this.serviceTiles,
     required this.healthFacilities,
+    required this.veterinarians,
     required this.emergencyContacts,
     required this.municipalityUnits,
     required this.exploreCategories,
@@ -26,6 +29,7 @@ class CityContent {
 
   final List<ServiceTileItem> serviceTiles;
   final List<HealthFacilityItem> healthFacilities;
+  final List<VeterinarianItem> veterinarians;
   final List<EmergencyContactItem> emergencyContacts;
   final List<MunicipalityUnitItem> municipalityUnits;
   final List<ExploreCategoryItem> exploreCategories;
@@ -66,6 +70,10 @@ class CityContent {
       healthFacilities: (services['healthFacilities'] as List<dynamic>? ?? [])
           .map((e) => HealthFacilityItem.fromJson(Map<String, dynamic>.from(e as Map)))
           .toList(),
+      veterinarians: (services['veterinarians'] as List<dynamic>? ?? [])
+          .whereType<Map>()
+          .map((e) => VeterinarianItem.fromJson(Map<String, dynamic>.from(e)))
+          .toList(),
       emergencyContacts: (services['emergencyContacts'] as List<dynamic>? ?? [])
           .whereType<Map>()
           .map((e) => EmergencyContactItem.fromJson(Map<String, dynamic>.from(e)))
@@ -73,12 +81,14 @@ class CityContent {
       municipalityUnits: (services['municipalityUnits'] as List<dynamic>? ?? [])
           .map((e) => MunicipalityUnitItem.fromJson(Map<String, dynamic>.from(e as Map)))
           .toList(),
-      exploreCategories: (explore['categories'] as List<dynamic>? ?? [])
-          .map((e) => ExploreCategoryItem.fromJson(Map<String, dynamic>.from(e as Map)))
-          .toList(),
-      exploreSuggestions: (explore['suggestions'] as List<dynamic>? ?? [])
-          .map((e) => ExploreSuggestionItem.fromJson(Map<String, dynamic>.from(e as Map)))
-          .toList(),
+      exploreCategories: JsonParseUtils.mapList(
+        explore['categories'],
+        (e) => ExploreCategoryItem.fromJson(e),
+      ),
+      exploreSuggestions: JsonParseUtils.mapList(
+        explore['suggestions'],
+        (e) => ExploreSuggestionItem.fromJson(e),
+      ),
       mediaSponsors: (media['sponsors'] as List<dynamic>? ?? [])
           .map((e) => MediaSponsorItem.fromJson(Map<String, dynamic>.from(e as Map)))
           .toList(),
@@ -158,6 +168,7 @@ class QuickActionItem {
     required this.label,
     required this.color,
     required this.target,
+    this.subtitle,
     this.isActive = true,
   });
 
@@ -166,17 +177,27 @@ class QuickActionItem {
   final String label;
   final String color;
   final String target;
+  final String? subtitle;
   final bool isActive;
 
   factory QuickActionItem.fromJson(Map<String, dynamic> json) {
+    final target = (json['target'] as String?) ?? '';
+    final id = (json['id'] as String?)?.trim();
     return QuickActionItem(
-      id: (json['id'] as String?) ?? '',
+      id: (id != null && id.isNotEmpty) ? id : _quickActionIdFromTarget(target),
       icon: (json['icon'] as String?) ?? '',
-      label: (json['label'] as String?) ?? '',
+      label: ((json['label'] as String?) ?? (json['title'] as String?))?.trim() ?? '',
       color: (json['color'] as String?) ?? '',
-      target: (json['target'] as String?) ?? '',
+      target: target,
+      subtitle: (json['subtitle'] as String?)?.trim(),
       isActive: json['isActive'] as bool? ?? true,
     );
+  }
+
+  static String _quickActionIdFromTarget(String target) {
+    if (target.isEmpty) return '';
+    final key = target.contains(':') ? target.split(':').last : target;
+    return key.replaceAll('_', '-');
   }
 }
 
@@ -402,9 +423,10 @@ class ExploreCategoryItem {
       title: json['title'] as String? ?? '',
       subtitle: json['subtitle'] as String? ?? '',
       badge: json['badge'] as String? ?? '',
-      places: (json['places'] as List<dynamic>? ?? [])
-          .map((e) => ExplorePlace.fromJson(Map<String, dynamic>.from(e as Map)))
-          .toList(),
+      places: JsonParseUtils.mapList(
+        json['places'],
+        (e) => ExplorePlace.fromJson(e),
+      ),
     );
   }
 }
@@ -427,9 +449,10 @@ class ExploreSuggestionItem {
       title: json['title'] as String? ?? '',
       subtitle: json['subtitle'] as String? ?? '',
       icon: json['icon'] as String? ?? '',
-      places: (json['places'] as List<dynamic>? ?? [])
-          .map((e) => ExplorePlace.fromJson(Map<String, dynamic>.from(e as Map)))
-          .toList(),
+      places: JsonParseUtils.mapList(
+        json['places'],
+        (e) => ExplorePlace.fromJson(e),
+      ),
     );
   }
 }
@@ -502,19 +525,29 @@ class OutageItem {
     required this.subtitle,
     required this.type,
     required this.status,
+    this.source,
+    this.url,
+    this.date,
   });
 
   final String title;
   final String subtitle;
   final String type;
   final String status;
+  final String? source;
+  final String? url;
+  final DateTime? date;
 
   factory OutageItem.fromJson(Map<String, dynamic> json) {
+    final rawDate = json['date'] as String?;
     return OutageItem(
       title: json['title'] as String? ?? '',
       subtitle: json['subtitle'] as String? ?? '',
       type: json['type'] as String? ?? '',
       status: json['status'] as String? ?? '',
+      source: json['source'] as String?,
+      url: json['url'] as String?,
+      date: rawDate != null && rawDate.isNotEmpty ? DateTime.tryParse(rawDate) : null,
     );
   }
 }
@@ -704,11 +737,16 @@ class CityServiceItem {
       subtitle: json['subtitle'] as String? ?? '',
       color: json['color'] as String? ?? '',
       target: json['target'] as String? ?? '',
-      directoryData: (json['directoryData'] as List<dynamic>?)
-          ?.whereType<Map>()
-          .map((e) => DirectoryEntry.fromJson(Map<String, dynamic>.from(e)))
-          .toList(),
+      directoryData: _parseDirectoryData(json['directoryData']),
     );
+  }
+
+  static List<DirectoryEntry>? _parseDirectoryData(Object? raw) {
+    final list = JsonParseUtils.mapList(
+      raw,
+      (e) => DirectoryEntry.fromJson(e),
+    );
+    return list.isEmpty ? null : list;
   }
 }
 

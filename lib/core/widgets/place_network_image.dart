@@ -27,17 +27,24 @@ class PlaceNetworkImage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final primary = PlacePhotoService.heroUrl(place, maxHeight: maxHeight);
-    final fallback = PlacePhotoService.fallbackImage(place);
-    final hasFallback = fallback != primary;
+    final local = place.imageUrl?.trim();
+    final isBundledAsset = local != null && local.startsWith('assets/');
 
-    Widget image = _NetworkImageWithFallback(
-      primaryUrl: primary,
-      fallbackUrl: hasFallback ? fallback : null,
-      width: width,
-      height: height,
-      fit: fit,
-    );
+    Widget image = isBundledAsset
+        ? Image.asset(
+            local,
+            width: width,
+            height: height,
+            fit: fit,
+            errorBuilder: (_, __, ___) => _placeholder(context),
+          )
+        : _NetworkImageWithFallback(
+            primaryUrl: PlacePhotoService.heroUrl(place, maxHeight: maxHeight),
+            fallbackUrl: _networkFallbackUrl(place),
+            width: width,
+            height: height,
+            fit: fit,
+          );
 
     if (borderRadius != null) {
       image = ClipRRect(borderRadius: borderRadius!, child: image);
@@ -46,6 +53,22 @@ class PlaceNetworkImage extends StatelessWidget {
       image = Hero(tag: heroTag!, child: image);
     }
     return image;
+  }
+
+  static String? _networkFallbackUrl(ExplorePlace place) {
+    final local = place.imageUrl?.trim();
+    if (local == null || local.isEmpty || local.startsWith('assets/')) return null;
+    final api = PlacePhotoService.heroUrl(place);
+    return local != api ? local : null;
+  }
+
+  static Widget _placeholder(BuildContext context) {
+    return ColoredBox(
+      color: Theme.of(context).colorScheme.surfaceContainerHighest,
+      child: Center(
+        child: Icon(Icons.landscape_rounded, color: Theme.of(context).colorScheme.outline),
+      ),
+    );
   }
 }
 

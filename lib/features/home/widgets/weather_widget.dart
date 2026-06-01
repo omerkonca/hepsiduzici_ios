@@ -157,24 +157,26 @@ class _ForecastItem extends StatelessWidget {
         Text(
           _dayName(daily.date),
           style: const TextStyle(
-            color: Colors.white70,
-            fontSize: 11,
-            fontWeight: FontWeight.w700,
+            color: Colors.white,
+            fontSize: 13.5,
+            fontWeight: FontWeight.w800,
+            letterSpacing: -0.3,
           ),
         ),
-        const SizedBox(height: 4),
+        const SizedBox(height: 8),
         WeatherAnimatedIcon(
           conditionCode: daily.conditionCode,
-          size: 20,
+          size: 28,
           color: Colors.white,
         ),
-        const SizedBox(height: 4),
+        const SizedBox(height: 8),
         Text(
           '${daily.maxTemp.round()}° / ${daily.minTemp.round()}°',
           style: const TextStyle(
             color: Colors.white,
-            fontSize: 11,
-            fontWeight: FontWeight.w800,
+            fontSize: 13,
+            fontWeight: FontWeight.w900,
+            letterSpacing: -0.2,
           ),
         ),
       ],
@@ -184,8 +186,16 @@ class _ForecastItem extends StatelessWidget {
   String _dayName(DateTime date) {
     final now = DateTime.now();
     if (date.day == now.day) return 'Bugün';
-    if (date.day == now.add(const Duration(days: 1)).day) return 'Yarın';
-    const days = ['Pzt', 'Sal', 'Çar', 'Per', 'Cum', 'Cmt', 'Paz'];
+    // Gün isimlerini tam yazarak okunabilirliği artırıyoruz (Örn: Salı, Çarşamba)
+    const days = [
+      'Pazartesi',
+      'Salı',
+      'Çarşamba',
+      'Perşembe',
+      'Cuma',
+      'Cumartesi',
+      'Pazar'
+    ];
     return days[date.weekday - 1];
   }
 }
