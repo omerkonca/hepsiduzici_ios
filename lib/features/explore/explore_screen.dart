@@ -568,22 +568,31 @@ class _PremiumExploreCard extends StatelessWidget {
           child: Stack(
             children: [
               Positioned.fill(
-                child: Image.network(
-                  imageUrl,
-                  fit: BoxFit.cover,
-                  loadingBuilder: (context, child, loadingProgress) {
-                    if (loadingProgress == null) return child;
-                    return Container(
-                      color: Theme.of(context).disabledColor.withValues(alpha: 0.05),
-                      child: const Center(
-                          child: CircularProgressIndicator(strokeWidth: 2)),
-                    );
-                  },
-                  errorBuilder: (_, __, ___) => Container(
-                    color: Theme.of(context).disabledColor.withValues(alpha: 0.1),
-                    child: const Icon(Icons.image_not_supported, size: 40),
-                  ),
-                ),
+                child: imageUrl.startsWith('assets/')
+                    ? Image.asset(
+                        imageUrl,
+                        fit: BoxFit.cover,
+                        errorBuilder: (_, __, ___) => Container(
+                          color: Theme.of(context).disabledColor.withValues(alpha: 0.1),
+                          child: const Icon(Icons.image_not_supported, size: 40),
+                        ),
+                      )
+                    : Image.network(
+                        imageUrl,
+                        fit: BoxFit.cover,
+                        loadingBuilder: (context, child, loadingProgress) {
+                          if (loadingProgress == null) return child;
+                          return Container(
+                            color: Theme.of(context).disabledColor.withValues(alpha: 0.05),
+                            child: const Center(
+                                child: CircularProgressIndicator(strokeWidth: 2)),
+                          );
+                        },
+                        errorBuilder: (_, __, ___) => Container(
+                          color: Theme.of(context).disabledColor.withValues(alpha: 0.1),
+                          child: const Icon(Icons.image_not_supported, size: 40),
+                        ),
+                      ),
               ),
               Container(
                 padding: const EdgeInsets.all(16),
