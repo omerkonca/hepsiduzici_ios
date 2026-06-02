@@ -207,70 +207,31 @@ class _TripPlannerScreenState extends ConsumerState<TripPlannerScreen> {
 
   // === A. SEGMENT SELECTOR ===
   Widget _buildSegmentControl(bool isDark) {
+    final savedCount = _planner.count;
+    final editorCount = TripPlannerProvider.editorRoutes.length;
     return Container(
       margin: const EdgeInsets.symmetric(horizontal: 20, vertical: 14),
       padding: const EdgeInsets.all(4),
       decoration: BoxDecoration(
         color: TripPlannerTheme.surface,
-        borderRadius: BorderRadius.circular(16),
+        borderRadius: BorderRadius.circular(18),
+        border: Border.all(color: Colors.white.withValues(alpha: 0.06)),
       ),
       child: Row(
         children: [
-          Expanded(
-            child: GestureDetector(
-              onTap: () => setState(() => _selectedTabIndex = 0),
-              child: Container(
-                padding: const EdgeInsets.symmetric(vertical: 10),
-                decoration: BoxDecoration(
-                  gradient: _selectedTabIndex == 0 ? TripPlannerTheme.goldGradient : null,
-                  color: _selectedTabIndex == 0 ? null : Colors.transparent,
-                  borderRadius: BorderRadius.circular(12),
-                  border: _selectedTabIndex == 0
-                      ? Border.all(color: TripPlannerTheme.gold.withValues(alpha: 0.5))
-                      : null,
-                ),
-                child: Center(
-                  child: Text(
-                    'Kayıtlı Rotalarım',
-                    style: TextStyle(
-                      fontWeight: FontWeight.w800,
-                      fontSize: 13,
-                      color: _selectedTabIndex == 0
-                          ? const Color(0xFF1A1508)
-                          : TripPlannerTheme.textSecondary,
-                    ),
-                  ),
-                ),
-              ),
-            ),
+          _SegmentTab(
+            label: 'Rotalarım',
+            icon: Icons.bookmark_rounded,
+            count: savedCount > 0 ? savedCount : null,
+            isSelected: _selectedTabIndex == 0,
+            onTap: () => setState(() => _selectedTabIndex = 0),
           ),
-          Expanded(
-            child: GestureDetector(
-              onTap: () => setState(() => _selectedTabIndex = 1),
-              child: Container(
-                padding: const EdgeInsets.symmetric(vertical: 10),
-                decoration: BoxDecoration(
-                  gradient: _selectedTabIndex == 1 ? TripPlannerTheme.goldGradient : null,
-                  color: _selectedTabIndex == 1 ? null : Colors.transparent,
-                  borderRadius: BorderRadius.circular(12),
-                  border: _selectedTabIndex == 1
-                      ? Border.all(color: TripPlannerTheme.gold.withValues(alpha: 0.5))
-                      : null,
-                ),
-                child: Center(
-                  child: Text(
-                    'Editörün Rotaları',
-                    style: TextStyle(
-                      fontWeight: FontWeight.w800,
-                      fontSize: 13,
-                      color: _selectedTabIndex == 1
-                          ? const Color(0xFF1A1508)
-                          : TripPlannerTheme.textSecondary,
-                    ),
-                  ),
-                ),
-              ),
-            ),
+          _SegmentTab(
+            label: 'Editör',
+            icon: Icons.auto_awesome_rounded,
+            count: editorCount,
+            isSelected: _selectedTabIndex == 1,
+            onTap: () => setState(() => _selectedTabIndex = 1),
           ),
         ],
       ),
@@ -287,34 +248,88 @@ class _TripPlannerScreenState extends ConsumerState<TripPlannerScreen> {
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
-              Icon(
-                Icons.map_outlined,
-                size: 80,
-                color: isDark ? Colors.white10 : Colors.black.withValues(alpha: 0.08),
-              ).animate(delay: 200.ms).scale(begin: const Offset(0.8, 0.8)),
-              const SizedBox(height: 20),
-              const Text(
-                'Rotanız şu an boş',
-                style: TextStyle(fontSize: 18, fontWeight: FontWeight.w900, color: TripPlannerTheme.textPrimary),
-              ),
-              const SizedBox(height: 10),
-              Text(
-                'Gezi Rehberi\'ndeki harika yerleri yanındaki + butonuna dokunarak kendi rotanıza ekleyin.',
-                textAlign: TextAlign.center,
-                style: const TextStyle(
-                  color: TripPlannerTheme.textSecondary,
-                  height: 1.5,
-                  fontSize: 13,
+              // Animated empty map illustration
+              Container(
+                width: 120,
+                height: 120,
+                decoration: BoxDecoration(
+                  shape: BoxShape.circle,
+                  color: Colors.white.withValues(alpha: 0.05),
+                  border: Border.all(color: Colors.white.withValues(alpha: 0.1), width: 1.5),
                 ),
-              ),
+                child: Stack(
+                  alignment: Alignment.center,
+                  children: [
+                    Icon(
+                      Icons.map_outlined,
+                      size: 52,
+                      color: Colors.white.withValues(alpha: 0.15),
+                    ),
+                    Positioned(
+                      top: 24,
+                      right: 24,
+                      child: Icon(
+                        Icons.add_location_alt_rounded,
+                        size: 28,
+                        color: TripPlannerTheme.gold.withValues(alpha: 0.85),
+                      ),
+                    ),
+                  ],
+                ),
+              ).animate(delay: 100.ms)
+                  .scale(begin: const Offset(0.7, 0.7), curve: Curves.elasticOut, duration: 800.ms)
+                  .fadeIn(duration: 400.ms),
               const SizedBox(height: 24),
-              TripPlannerTheme.primaryCta(
-                label: 'Mekânları Keşfet',
-                icon: Icons.explore_rounded,
-                onPressed: () {
-                  setState(() => _showCategoryHub = true);
-                },
-              ),
+              const Text(
+                'Rotanız henüz boş',
+                style: TextStyle(
+                  fontSize: 20,
+                  fontWeight: FontWeight.w900,
+                  color: TripPlannerTheme.textPrimary,
+                  letterSpacing: -0.3,
+                ),
+              ).animate(delay: 200.ms).fadeIn().slideY(begin: 0.1, end: 0),
+              const SizedBox(height: 10),
+              const Text(
+                'Gezi Rehberi\'nden beğendiğiniz yerleri\nrotanıza ekleyerek başlayın.',
+                textAlign: TextAlign.center,
+                style: TextStyle(
+                  color: TripPlannerTheme.textSecondary,
+                  height: 1.55,
+                  fontSize: 13.5,
+                ),
+              ).animate(delay: 300.ms).fadeIn(),
+              const SizedBox(height: 32),
+              // Two action buttons
+              Row(
+                children: [
+                  Expanded(
+                    child: OutlinedButton.icon(
+                      onPressed: () => setState(() {
+                        _showCategoryHub = false;
+                        _selectedTabIndex = 1;
+                      }),
+                      icon: const Icon(Icons.auto_awesome_rounded, size: 16, color: TripPlannerTheme.gold),
+                      label: const Text('Editör\nRotaları', textAlign: TextAlign.center),
+                      style: OutlinedButton.styleFrom(
+                        foregroundColor: TripPlannerTheme.textPrimary,
+                        backgroundColor: TripPlannerTheme.surface,
+                        side: BorderSide(color: Colors.white.withValues(alpha: 0.08)),
+                        padding: const EdgeInsets.symmetric(vertical: 14),
+                        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+                      ),
+                    ),
+                  ),
+                  const SizedBox(width: 12),
+                  Expanded(
+                    child: TripPlannerTheme.primaryCta(
+                      label: 'Rehberi Aç',
+                      icon: Icons.explore_rounded,
+                      onPressed: () => setState(() => _showCategoryHub = true),
+                    ),
+                  ),
+                ],
+              ).animate(delay: 400.ms).fadeIn().slideY(begin: 0.15, end: 0),
             ],
           ),
         ),
@@ -483,58 +498,75 @@ class _TripPlannerScreenState extends ConsumerState<TripPlannerScreen> {
           onPressed: () => setState(() => _showIntro = false),
         ),
       ),
-      body: Center(
-        child: SingleChildScrollView(
-          padding: const EdgeInsets.all(24),
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              // Premium Pure-Flutter Camper Van Vector Illustration
-              const _CamperVanIllustration(),
-              const SizedBox(height: 40),
-              const Text(
-                'ROTA ÖZETİ',
-                style: TextStyle(
-                  fontSize: 12,
-                  fontWeight: FontWeight.w800,
-                  color: TripPlannerTheme.ctaBlue,
-                  letterSpacing: 1.8,
-                ),
-              ).animate().fadeIn(duration: 400.ms),
-              const SizedBox(height: 8),
-              const Text(
-                'Hazırsanız Başlayalım!',
-                style: TextStyle(
-                  fontSize: 26,
-                  fontWeight: FontWeight.w900,
-                  color: Colors.white,
-                  letterSpacing: -0.5,
-                ),
-              ).animate().fadeIn(delay: 150.ms).slideY(begin: 0.1, end: 0),
-              const SizedBox(height: 16),
-              Text(
-                '${places.length} durak · $totalDuration · $totalDistance',
-                textAlign: TextAlign.center,
-                style: const TextStyle(
-                  color: TripPlannerTheme.textSecondary,
-                  fontSize: 14,
-                  fontWeight: FontWeight.w600,
-                ),
-              ).animate().fadeIn(delay: 300.ms),
-              const SizedBox(height: 36),
-              TripPlannerTheme.primaryCta(
-                label: 'Rotayı İncele',
-                icon: Icons.map_rounded,
-                onPressed: () {
-                  setState(() {
-                    _showIntro = false;
-                    _showTimeline = true;
-                  });
-                },
+      body: SingleChildScrollView(
+        padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 16),
+        child: Column(
+          children: [
+            // Camper Van Illustration
+            const _CamperVanIllustration(),
+            const SizedBox(height: 32),
+
+            // Title
+            const Text(
+              'Rotanız Hazır!',
+              style: TextStyle(
+                fontSize: 28,
+                fontWeight: FontWeight.w900,
+                color: Colors.white,
+                letterSpacing: -0.6,
               ),
-              const SizedBox(height: 40),
-            ],
-          ),
+            ).animate().fadeIn(delay: 150.ms).slideY(begin: 0.1, end: 0),
+            const SizedBox(height: 6),
+            const Text(
+              'ROTA ÖZETİ',
+              style: TextStyle(
+                fontSize: 11,
+                fontWeight: FontWeight.w800,
+                color: TripPlannerTheme.ctaBlue,
+                letterSpacing: 2.0,
+              ),
+            ).animate().fadeIn(duration: 400.ms),
+            const SizedBox(height: 28),
+
+            // Stat cards grid
+            Row(
+              children: [
+                _IntroStatCard(
+                  icon: Icons.place_rounded,
+                  label: 'Durak',
+                  value: '${places.length}',
+                  color: TripPlannerTheme.gold,
+                ),
+                const SizedBox(width: 12),
+                _IntroStatCard(
+                  icon: Icons.schedule_rounded,
+                  label: 'Süre',
+                  value: totalDuration,
+                  color: TripPlannerTheme.ctaBlue,
+                ),
+                const SizedBox(width: 12),
+                _IntroStatCard(
+                  icon: Icons.route_rounded,
+                  label: 'Mesafe',
+                  value: totalDistance,
+                  color: const Color(0xFF4CAF50),
+                ),
+              ],
+            ).animate(delay: 300.ms).fadeIn().slideY(begin: 0.12, end: 0),
+
+            const SizedBox(height: 32),
+            TripPlannerTheme.primaryCta(
+              label: 'Rotayı İncele →',
+              icon: Icons.map_rounded,
+              onPressed: () {
+                setState(() {
+                  _showIntro = false;
+                  _showTimeline = true;
+                });
+              },
+            ).animate(delay: 450.ms).fadeIn().slideY(begin: 0.1, end: 0),
+            const SizedBox(height: 20),
+          ],
         ),
       ),
     ),
@@ -571,32 +603,68 @@ class _TripPlannerScreenState extends ConsumerState<TripPlannerScreen> {
         body: Column(
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
-            Padding(
-              padding: const EdgeInsets.fromLTRB(20, 4, 20, 0),
+            // Timeline header
+            Container(
+              padding: const EdgeInsets.fromLTRB(20, 12, 20, 0),
               child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  const Text(
-                    'Maceranız Başlıyor!',
-                    textAlign: TextAlign.center,
-                    style: TextStyle(
-                      color: TripPlannerTheme.textPrimary,
-                      fontSize: 20,
-                      fontWeight: FontWeight.w900,
-                      letterSpacing: -0.4,
-                    ),
-                  ),
-                  if (regionHint != null && regionHint.isNotEmpty) ...[
-                    const SizedBox(height: 6),
-                    Text(
-                      regionHint,
-                      textAlign: TextAlign.center,
-                      style: const TextStyle(
-                        color: TripPlannerTheme.gold,
-                        fontSize: 12.5,
-                        fontWeight: FontWeight.w700,
+                  Row(
+                    children: [
+                      Expanded(
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Text(
+                              title,
+                              style: const TextStyle(
+                                color: TripPlannerTheme.textPrimary,
+                                fontSize: 19,
+                                fontWeight: FontWeight.w900,
+                                letterSpacing: -0.4,
+                              ),
+                              maxLines: 1,
+                              overflow: TextOverflow.ellipsis,
+                            ),
+                            if (regionHint != null && regionHint.isNotEmpty)
+                              Text(
+                                regionHint,
+                                style: const TextStyle(
+                                  color: TripPlannerTheme.gold,
+                                  fontSize: 12,
+                                  fontWeight: FontWeight.w700,
+                                ),
+                              ),
+                          ],
+                        ),
                       ),
-                    ),
-                  ],
+                      // Stop count badge
+                      Container(
+                        padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+                        decoration: BoxDecoration(
+                          color: TripPlannerTheme.gold.withValues(alpha: 0.12),
+                          borderRadius: BorderRadius.circular(20),
+                          border: Border.all(color: TripPlannerTheme.gold.withValues(alpha: 0.3)),
+                        ),
+                        child: Row(
+                          mainAxisSize: MainAxisSize.min,
+                          children: [
+                            const Icon(Icons.place_rounded, size: 13, color: TripPlannerTheme.gold),
+                            const SizedBox(width: 4),
+                            Text(
+                              '${places.length} durak',
+                              style: const TextStyle(
+                                color: TripPlannerTheme.gold,
+                                fontSize: 12,
+                                fontWeight: FontWeight.w800,
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+                    ],
+                  ),
+                  const SizedBox(height: 4),
                 ],
               ),
             ),
@@ -1296,3 +1364,168 @@ class _BeamClipper extends CustomClipper<Path> {
   @override
   bool shouldReclip(CustomClipper<Path> oldClipper) => false;
 }
+
+// =====================================================================
+// SEGMENT TAB — animated icon + label + optional count badge
+// =====================================================================
+
+class _SegmentTab extends StatelessWidget {
+  const _SegmentTab({
+    required this.label,
+    required this.icon,
+    required this.isSelected,
+    required this.onTap,
+    this.count,
+  });
+
+  final String label;
+  final IconData icon;
+  final bool isSelected;
+  final VoidCallback onTap;
+  final int? count;
+
+  @override
+  Widget build(BuildContext context) {
+    return Expanded(
+      child: GestureDetector(
+        onTap: onTap,
+        child: AnimatedContainer(
+          duration: const Duration(milliseconds: 230),
+          curve: Curves.easeOut,
+          padding: const EdgeInsets.symmetric(vertical: 11, horizontal: 8),
+          decoration: BoxDecoration(
+            gradient: isSelected ? TripPlannerTheme.goldGradient : null,
+            color: isSelected ? null : Colors.transparent,
+            borderRadius: BorderRadius.circular(14),
+            border: isSelected
+                ? Border.all(color: TripPlannerTheme.gold.withValues(alpha: 0.55))
+                : null,
+            boxShadow: isSelected
+                ? [
+                    BoxShadow(
+                      color: TripPlannerTheme.gold.withValues(alpha: 0.25),
+                      blurRadius: 8,
+                      offset: const Offset(0, 3),
+                    ),
+                  ]
+                : null,
+          ),
+          child: Row(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              Icon(
+                icon,
+                size: 14,
+                color: isSelected ? const Color(0xFF1A1508) : TripPlannerTheme.textSecondary,
+              ),
+              const SizedBox(width: 6),
+              Text(
+                label,
+                style: TextStyle(
+                  fontWeight: FontWeight.w800,
+                  fontSize: 13,
+                  color: isSelected ? const Color(0xFF1A1508) : TripPlannerTheme.textSecondary,
+                ),
+              ),
+              if (count != null) ...[
+                const SizedBox(width: 6),
+                AnimatedContainer(
+                  duration: const Duration(milliseconds: 230),
+                  padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
+                  decoration: BoxDecoration(
+                    color: isSelected
+                        ? const Color(0xFF1A1508).withValues(alpha: 0.2)
+                        : TripPlannerTheme.gold.withValues(alpha: 0.15),
+                    borderRadius: BorderRadius.circular(20),
+                  ),
+                  child: Text(
+                    '$count',
+                    style: TextStyle(
+                      fontSize: 10,
+                      fontWeight: FontWeight.w900,
+                      color: isSelected ? const Color(0xFF1A1508) : TripPlannerTheme.gold,
+                    ),
+                  ),
+                ),
+              ],
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+}
+
+// =====================================================================
+// INTRO STAT CARD — colored icon + value card for route summary
+// =====================================================================
+
+class _IntroStatCard extends StatelessWidget {
+  const _IntroStatCard({
+    required this.icon,
+    required this.label,
+    required this.value,
+    required this.color,
+  });
+
+  final IconData icon;
+  final String label;
+  final String value;
+  final Color color;
+
+  @override
+  Widget build(BuildContext context) {
+    return Expanded(
+      child: Container(
+        padding: const EdgeInsets.symmetric(vertical: 16, horizontal: 12),
+        decoration: BoxDecoration(
+          color: TripPlannerTheme.surface,
+          borderRadius: BorderRadius.circular(18),
+          border: Border.all(color: color.withValues(alpha: 0.2)),
+          boxShadow: [
+            BoxShadow(
+              color: color.withValues(alpha: 0.08),
+              blurRadius: 12,
+              offset: const Offset(0, 4),
+            ),
+          ],
+        ),
+        child: Column(
+          children: [
+            Container(
+              width: 36,
+              height: 36,
+              decoration: BoxDecoration(
+                color: color.withValues(alpha: 0.15),
+                shape: BoxShape.circle,
+              ),
+              child: Icon(icon, size: 18, color: color),
+            ),
+            const SizedBox(height: 8),
+            Text(
+              value,
+              textAlign: TextAlign.center,
+              maxLines: 1,
+              overflow: TextOverflow.ellipsis,
+              style: const TextStyle(
+                fontSize: 13,
+                fontWeight: FontWeight.w900,
+                color: TripPlannerTheme.textPrimary,
+              ),
+            ),
+            const SizedBox(height: 2),
+            Text(
+              label,
+              style: const TextStyle(
+                fontSize: 10,
+                fontWeight: FontWeight.w700,
+                color: TripPlannerTheme.textSecondary,
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+}
+

@@ -544,8 +544,8 @@ class _ExploreCategoryScreenState extends State<ExploreCategoryScreen> {
                         SizedBox(height: 6),
                         Text(
                           widget.title == 'Gezi Rehberi'
-                              ? 'Fotoğraf ve tesis bilgileri canlı: Wikipedia + OpenStreetMap (API anahtarı gerekmez).'
-                              : 'Aşağıdaki sekmelerden seyahat alanınızı seçin, ilçemizin ve çevre ilçelerimizin güzelliklerini ilgi alanınıza göre anında planlayın.',
+                              ? 'Harita verileri OpenStreetMap kaynağından alınmaktadır.'
+                              : 'İlçemizin ve çevre ilçelerin güzelliklerini ilgi alanınıza göre planlayın.',
                           style: TextStyle(
                             color: Colors.white70,
                             fontSize: 11.5,
@@ -815,7 +815,7 @@ class _ExploreCategoryScreenState extends State<ExploreCategoryScreen> {
           // === GEZİ SEKMELERİ / KATEGORİ KAYDIRICISI ===
           SliverToBoxAdapter(
             child: Container(
-              height: 72,
+              height: 86,
               margin: const EdgeInsets.only(top: 16),
               child: ListView.builder(
                 scrollDirection: Axis.horizontal,
@@ -963,8 +963,8 @@ class _ExploreCategoryScreenState extends State<ExploreCategoryScreen> {
                                     borderRadius: BorderRadius.circular(20),
                                     child: PlaceNetworkImage(
                                       place: p,
-                                      width: 105,
-                                      height: 105,
+                                      width: 110,
+                                      height: 116,
                                       heroTag: 'place_image_${p.name}',
                                       maxHeight: 400,
                                     ),
@@ -1157,20 +1157,45 @@ class _ExploreCategoryScreenState extends State<ExploreCategoryScreen> {
                 child: Column(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
-                    Icon(
-                      Icons.search_off_rounded,
-                      size: 64,
-                      color: Theme.of(context).disabledColor.withValues(alpha: 0.25),
-                    ),
-                    const SizedBox(height: 16),
-                    Text(
-                      'Bu kategoride aramaya uygun mekan bulunamadı.',
-                      style: TextStyle(
-                        color: Theme.of(context).textTheme.bodySmall?.color,
-                        fontWeight: FontWeight.w700,
-                        fontSize: 15,
+                    Container(
+                      width: 80,
+                      height: 80,
+                      decoration: BoxDecoration(
+                        color: isGeziGuide
+                            ? Colors.white.withValues(alpha: 0.06)
+                            : Theme.of(context).disabledColor.withValues(alpha: 0.06),
+                        shape: BoxShape.circle,
                       ),
-                    ),
+                      child: Icon(
+                        Icons.search_off_rounded,
+                        size: 40,
+                        color: isGeziGuide
+                            ? Colors.white.withValues(alpha: 0.3)
+                            : Theme.of(context).disabledColor.withValues(alpha: 0.3),
+                      ),
+                    ).animate().scale(begin: const Offset(0.7, 0.7), curve: Curves.elasticOut),
+                    const SizedBox(height: 20),
+                    Text(
+                      'Bu kategoride mekan bulunamadı',
+                      style: TextStyle(
+                        color: isGeziGuide
+                            ? TripPlannerTheme.textSecondary
+                            : Theme.of(context).textTheme.bodySmall?.color,
+                        fontWeight: FontWeight.w800,
+                        fontSize: 16,
+                      ),
+                    ).animate().fadeIn(delay: 200.ms),
+                    const SizedBox(height: 8),
+                    Text(
+                      'Farklı bir kategori veya bölge deneyin',
+                      style: TextStyle(
+                        color: isGeziGuide
+                            ? TripPlannerTheme.textSecondary
+                            : Theme.of(context).textTheme.bodySmall?.color?.withValues(alpha: 0.6),
+                        fontSize: 13,
+                        fontWeight: FontWeight.w500,
+                      ),
+                    ).animate().fadeIn(delay: 300.ms),
                   ],
                 ),
               ),

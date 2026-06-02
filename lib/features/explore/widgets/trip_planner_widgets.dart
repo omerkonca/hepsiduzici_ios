@@ -99,8 +99,26 @@ class _StatCell extends StatelessWidget {
   }
 }
 
-/// Editör rotası kapak kartı
-class TripEditorRouteCard extends StatelessWidget {
+// Gradient palettes for editor route cards (no unreliable external images)
+const _kRouteGradients = [
+  [Color(0xFF1A1A2E), Color(0xFF16213E), Color(0xFF0F3460)],  // Deep navy – tarihi
+  [Color(0xFF0D2137), Color(0xFF1B4332), Color(0xFF40916C)],  // Forest green – doğa
+  [Color(0xFF2D1B33), Color(0xFF4A2040), Color(0xFF8B3A8B)],  // Royal purple – kale
+  [Color(0xFF1A0A00), Color(0xFF5D2E0C), Color(0xFFD4AF37)],  // Amber gold – yayla
+  [Color(0xFF0C1B33), Color(0xFF1A3A5C), Color(0xFF1E6FA6)],  // Ocean blue – arkeoloji
+];
+
+// Category icons for editor routes
+const _kRouteIcons = [
+  Icons.account_balance_rounded,   // tarihi
+  Icons.water_rounded,             // doğa/nehir
+  Icons.fort_rounded,              // kale
+  Icons.landscape_rounded,         // yayla
+  Icons.museum_rounded,            // müze/arkeoloji
+];
+
+/// Editör rotası kapak kartı — gradient + ikon (güvenilmez fotoğraf yok)
+class TripEditorRouteCard extends StatefulWidget {
   const TripEditorRouteCard({
     super.key,
     required this.route,
@@ -113,104 +131,167 @@ class TripEditorRouteCard extends StatelessWidget {
   final int index;
 
   @override
+  State<TripEditorRouteCard> createState() => _TripEditorRouteCardState();
+}
+
+class _TripEditorRouteCardState extends State<TripEditorRouteCard> {
+  bool _pressed = false;
+
+  @override
   Widget build(BuildContext context) {
+    final i = widget.index % _kRouteGradients.length;
+    final gradColors = _kRouteGradients[i];
+    final routeIcon = _kRouteIcons[i];
+    final stopCount = widget.route.placeNames.length;
+
     return GestureDetector(
-      onTap: onTap,
-      child: Container(
-        height: 200,
-        margin: const EdgeInsets.only(bottom: 18),
-        decoration: BoxDecoration(
-          borderRadius: BorderRadius.circular(22),
-          boxShadow: [
-            BoxShadow(
-              color: Colors.black.withValues(alpha: 0.4),
-              blurRadius: 18,
-              offset: const Offset(0, 8),
+      onTapDown: (_) => setState(() => _pressed = true),
+      onTapUp: (_) { setState(() => _pressed = false); widget.onTap(); },
+      onTapCancel: () => setState(() => _pressed = false),
+      child: AnimatedScale(
+        scale: _pressed ? 0.97 : 1.0,
+        duration: const Duration(milliseconds: 130),
+        child: Container(
+          height: 220,
+          margin: const EdgeInsets.only(bottom: 20),
+          decoration: BoxDecoration(
+            borderRadius: BorderRadius.circular(24),
+            gradient: LinearGradient(
+              begin: Alignment.topLeft,
+              end: Alignment.bottomRight,
+              colors: gradColors,
             ),
-          ],
-        ),
-        child: ClipRRect(
-          borderRadius: BorderRadius.circular(22),
-          child: Stack(
-            fit: StackFit.expand,
-            children: [
-              Image(
-                image: route.imageUrl.startsWith('assets/')
-                    ? AssetImage(route.imageUrl)
-                    : NetworkImage(route.imageUrl) as ImageProvider,
-                fit: BoxFit.cover,
-              ),
-              Container(
-                decoration: BoxDecoration(
-                  gradient: LinearGradient(
-                    begin: Alignment.topCenter,
-                    end: Alignment.bottomCenter,
-                    colors: [
-                      Colors.black.withValues(alpha: 0.15),
-                      Colors.black.withValues(alpha: 0.88),
-                    ],
-                    stops: const [0.35, 1.0],
-                  ),
-                ),
-              ),
-              Positioned(
-                top: 14,
-                left: 14,
-                child: Container(
-                  padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
-                  decoration: BoxDecoration(
-                    color: TripPlannerTheme.gold.withValues(alpha: 0.92),
-                    borderRadius: BorderRadius.circular(8),
-                  ),
-                  child: Text(
-                    'Editör Rotası ${index + 1}',
-                    style: const TextStyle(
-                      fontSize: 10,
-                      fontWeight: FontWeight.w900,
-                      color: Color(0xFF1A1508),
-                    ),
-                  ),
-                ),
-              ),
-              Padding(
-                padding: const EdgeInsets.all(18),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  mainAxisAlignment: MainAxisAlignment.end,
-                  children: [
-                    Text(
-                      route.name,
-                      style: const TextStyle(
-                        color: Colors.white,
-                        fontSize: 19,
-                        fontWeight: FontWeight.w900,
-                        letterSpacing: -0.4,
-                        height: 1.15,
-                      ),
-                    ),
-                    const SizedBox(height: 6),
-                    Text(
-                      route.description,
-                      maxLines: 2,
-                      overflow: TextOverflow.ellipsis,
-                      style: TextStyle(
-                        color: Colors.white.withValues(alpha: 0.75),
-                        fontSize: 12,
-                        height: 1.35,
-                      ),
-                    ),
-                    const SizedBox(height: 12),
-                    Row(
-                      children: [
-                        _meta(Icons.place_rounded, route.regionLabel),
-                        const SizedBox(width: 12),
-                        _meta(Icons.schedule_rounded, route.durationHint),
-                      ],
-                    ),
-                  ],
-                ),
+            boxShadow: [
+              BoxShadow(
+                color: gradColors.last.withValues(alpha: 0.35),
+                blurRadius: 20,
+                offset: const Offset(0, 8),
               ),
             ],
+          ),
+          child: ClipRRect(
+            borderRadius: BorderRadius.circular(24),
+            child: Stack(
+              children: [
+                // Background decorative icon
+                Positioned(
+                  right: -20,
+                  top: -20,
+                  child: Icon(
+                    routeIcon,
+                    size: 160,
+                    color: Colors.white.withValues(alpha: 0.06),
+                  ),
+                ),
+                // Subtle grid pattern
+                Positioned.fill(
+                  child: CustomPaint(painter: _DotGridPainter()),
+                ),
+                // Gold badge top-left
+                Positioned(
+                  top: 14,
+                  left: 14,
+                  child: Container(
+                    padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
+                    decoration: BoxDecoration(
+                      color: TripPlannerTheme.gold.withValues(alpha: 0.9),
+                      borderRadius: BorderRadius.circular(8),
+                    ),
+                    child: Text(
+                      'Editör Rotası ${widget.index + 1}',
+                      style: const TextStyle(
+                        fontSize: 10,
+                        fontWeight: FontWeight.w900,
+                        color: Color(0xFF1A1508),
+                      ),
+                    ),
+                  ),
+                ),
+                // Stop count badge top-right
+                Positioned(
+                  top: 14,
+                  right: 14,
+                  child: Container(
+                    padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
+                    decoration: BoxDecoration(
+                      color: Colors.white.withValues(alpha: 0.12),
+                      borderRadius: BorderRadius.circular(8),
+                      border: Border.all(color: Colors.white.withValues(alpha: 0.15)),
+                    ),
+                    child: Row(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        const Icon(Icons.place_rounded, size: 11, color: Colors.white70),
+                        const SizedBox(width: 4),
+                        Text(
+                          '$stopCount durak',
+                          style: const TextStyle(
+                            fontSize: 10,
+                            fontWeight: FontWeight.w800,
+                            color: Colors.white,
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                ),
+                // Main content at bottom
+                Padding(
+                  padding: const EdgeInsets.all(18),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    mainAxisAlignment: MainAxisAlignment.end,
+                    children: [
+                      // Route icon row
+                      Row(
+                        children: [
+                          Container(
+                            width: 40,
+                            height: 40,
+                            decoration: BoxDecoration(
+                              color: Colors.white.withValues(alpha: 0.12),
+                              shape: BoxShape.circle,
+                              border: Border.all(color: Colors.white.withValues(alpha: 0.2)),
+                            ),
+                            child: Icon(routeIcon, size: 20, color: Colors.white),
+                          ),
+                        ],
+                      ),
+                      const SizedBox(height: 10),
+                      Text(
+                        widget.route.name,
+                        style: const TextStyle(
+                          color: Colors.white,
+                          fontSize: 19,
+                          fontWeight: FontWeight.w900,
+                          letterSpacing: -0.4,
+                          height: 1.15,
+                        ),
+                      ),
+                      const SizedBox(height: 6),
+                      Text(
+                        widget.route.description,
+                        maxLines: 2,
+                        overflow: TextOverflow.ellipsis,
+                        style: TextStyle(
+                          color: Colors.white.withValues(alpha: 0.72),
+                          fontSize: 12,
+                          height: 1.35,
+                        ),
+                      ),
+                      const SizedBox(height: 12),
+                      Row(
+                        children: [
+                          _meta(Icons.place_rounded, widget.route.regionLabel),
+                          const SizedBox(width: 14),
+                          _meta(Icons.schedule_rounded, widget.route.durationHint),
+                        ],
+                      ),
+                    ],
+                  ),
+                ),
+              ],
+            ),
           ),
         ),
       ),
@@ -234,6 +315,23 @@ class TripEditorRouteCard extends StatelessWidget {
       ],
     );
   }
+}
+
+class _DotGridPainter extends CustomPainter {
+  @override
+  void paint(Canvas canvas, Size size) {
+    final paint = Paint()
+      ..color = Colors.white.withValues(alpha: 0.04)
+      ..strokeWidth = 1;
+    for (double x = 20; x < size.width; x += 30) {
+      for (double y = 20; y < size.height; y += 30) {
+        canvas.drawCircle(Offset(x, y), 1.5, paint);
+      }
+    }
+  }
+
+  @override
+  bool shouldRepaint(_DotGridPainter _) => false;
 }
 
 /// Zaman tüneli durağı — beyaz kart + altın çizgi

@@ -2,6 +2,7 @@ import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 
 import '../../data/models/city_content.dart';
+import '../../data/services/place_image_policy.dart';
 import '../../data/services/place_photo_service.dart';
 
 /// Önce backend (Wikipedia/OSM), hata olursa JSON veya Unsplash.
@@ -27,24 +28,38 @@ class PlaceNetworkImage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final local = place.imageUrl?.trim();
+    final local = PlaceImagePolicy.safeContentImage(place);
     final isBundledAsset = local != null && local.startsWith('assets/');
+    final isTrustedRemote = local != null && !isBundledAsset;
 
-    Widget image = isBundledAsset
-        ? Image.asset(
-            local,
-            width: width,
-            height: height,
-            fit: fit,
-            errorBuilder: (_, __, ___) => _placeholder(context),
-          )
-        : _NetworkImageWithFallback(
-            primaryUrl: PlacePhotoService.heroUrl(place, maxHeight: maxHeight),
-            fallbackUrl: _networkFallbackUrl(place),
-            width: width,
-            height: height,
-            fit: fit,
-          );
+    Widget image;
+    if (isBundledAsset) {
+      image = Image.asset(
+        local,
+        width: width,
+        height: height,
+        fit: fit,
+        errorBuilder: (_, __, ___) => _placeholder(context),
+      );
+    } else if (isTrustedRemote) {
+      // Onaylı/güvenilir görsel varsa doğrudan onu göster.
+      image = _NetworkImageWithFallback(
+        primaryUrl: local,
+        fallbackUrl: PlacePhotoService.heroUrl(place, maxHeight: maxHeight),
+        width: width,
+        height: height,
+        fit: fit,
+      );
+    } else {
+      // Güvenilir içerik görseli yoksa dinamik servise düş.
+      image = _NetworkImageWithFallback(
+        primaryUrl: PlacePhotoService.heroUrl(place, maxHeight: maxHeight),
+        fallbackUrl: _networkFallbackUrl(place),
+        width: width,
+        height: height,
+        fit: fit,
+      );
+    }
 
     if (borderRadius != null) {
       image = ClipRRect(borderRadius: borderRadius!, child: image);
@@ -56,7 +71,7 @@ class PlaceNetworkImage extends StatelessWidget {
   }
 
   static String? _networkFallbackUrl(ExplorePlace place) {
-    final local = place.imageUrl?.trim();
+    final local = PlaceImagePolicy.safeContentImage(place);
     if (local == null || local.isEmpty || local.startsWith('assets/')) return null;
     final api = PlacePhotoService.heroUrl(place);
     return local != api ? local : null;

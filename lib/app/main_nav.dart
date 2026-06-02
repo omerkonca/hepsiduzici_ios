@@ -6,10 +6,12 @@ import 'dart:ui' as ui;
 import '../core/theme/app_colors.dart';
 import '../data/models/news_item.dart';
 import '../data/models/stamped_data.dart';
+import '../data/services/news_notification_utils.dart';
 import '../features/events/events_screen.dart';
 import '../features/explore/explore_screen.dart';
 import '../features/home/home_screen.dart';
 import '../features/more/more_screen.dart';
+import '../features/news/news_detail_screen.dart';
 import '../features/services/services_screen.dart';
 import 'news_update_banner.dart';
 import 'providers.dart';
@@ -22,10 +24,14 @@ class MainNav extends ConsumerStatefulWidget {
 }
 
 class _MainNavState extends ConsumerState<MainNav> with WidgetsBindingObserver {
+  String? _pendingNewsTapKey;
+  bool _openingFromNotification = false;
+
   @override
   void initState() {
     super.initState();
     WidgetsBinding.instance.addObserver(this);
+    Future.microtask(_loadPendingNewsTap);
   }
 
   @override
@@ -50,6 +56,7 @@ class _MainNavState extends ConsumerState<MainNav> with WidgetsBindingObserver {
         Future.microtask(() async {
           if (!context.mounted) return;
           await handleStampedNewsNotification(context, ref, stamped);
+          _tryOpenPendingNews(stamped.data);
         });
       },
     );
@@ -170,6 +177,43 @@ class _MainNavState extends ConsumerState<MainNav> with WidgetsBindingObserver {
   void _switchTab(int i) {
     HapticFeedback.selectionClick();
     ref.read(currentIndexProvider.notifier).state = i;
+  }
+
+  Future<void> _loadPendingNewsTap() async {
+    final payload = await ref.read(notificationServiceProvider).consumePendingNewsTap();
+    if (!mounted || payload == null || payload.trim().isEmpty) return;
+    _pendingNewsTapKey = payload.trim();
+    final stamped = ref.read(stampedNewsProvider).valueOrNull;
+    if (stamped != null) {
+      _tryOpenPendingNews(stamped.data);
+    } else {
+      ref.invalidate(stampedNewsProvider);
+    }
+  }
+
+  void _tryOpenPendingNews(List<NewsItem> items) {
+    if (!mounted || _openingFromNotification || _pendingNewsTapKey == null) return;
+    final key = _pendingNewsTapKey!.trim();
+    NewsItem? target;
+    for (final item in items) {
+      final trackingKey = NewsNotificationUtils.headlineTrackingKey(item);
+      if (trackingKey == key || item.id.trim() == key || item.title.trim() == key) {
+        target = item;
+        break;
+      }
+    }
+    if (target == null) return;
+
+    _openingFromNotification = true;
+    _pendingNewsTapKey = null;
+    ref.read(currentIndexProvider.notifier).state = 0;
+    WidgetsBinding.instance.addPostFrameCallback((_) async {
+      if (!mounted) return;
+      await Navigator.of(context).push(
+        MaterialPageRoute(builder: (_) => NewsDetailScreen(item: target!)),
+      );
+      _openingFromNotification = false;
+    });
   }
 }
 

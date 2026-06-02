@@ -3,14 +3,9 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../data/models/news_item.dart';
 import '../data/models/stamped_data.dart';
+import '../data/services/news_notification_utils.dart';
 import '../features/news/news_screen.dart';
 import 'providers.dart';
-
-String _headlineTrackingKey(NewsItem n) {
-  final id = n.id.trim();
-  if (id.isNotEmpty) return id;
-  return '${n.title}|${n.createdAt.toIso8601String()}';
-}
 
 /// Haber listesi yenilendiğinde tercihlere göre üst şerit veya sistem bildirimi gösterir.
 Future<void> handleStampedNewsNotification(
@@ -22,7 +17,7 @@ Future<void> handleStampedNewsNotification(
   if (list.isEmpty) return;
 
   final head = list.first;
-  final key = _headlineTrackingKey(head);
+  final key = NewsNotificationUtils.headlineTrackingKey(head);
   final prefsSvc = ref.read(notificationPreferencesServiceProvider);
   final notifySvc = ref.read(notificationServiceProvider);
 
@@ -45,117 +40,96 @@ Future<void> handleStampedNewsNotification(
   if (foreground && inApp) {
     final messenger = ScaffoldMessenger.maybeOf(context);
     if (messenger == null) return;
-    
-    messenger.clearSnackBars();
-    messenger.showSnackBar(
-      SnackBar(
-        behavior: SnackBarBehavior.floating,
-        backgroundColor: Colors.transparent,
-        elevation: 0,
-        margin: const EdgeInsets.fromLTRB(16, 0, 16, 16), // Bottom margin if bottom, but let's try top-ish feel
-        content: Container(
-          padding: const EdgeInsets.all(16),
-          decoration: BoxDecoration(
-            color: Theme.of(context).colorScheme.surface.withValues(alpha: 0.95),
-            borderRadius: BorderRadius.circular(24),
-            border: Border.all(color: Theme.of(context).colorScheme.primary.withValues(alpha: 0.2)),
-            boxShadow: [
-              BoxShadow(
-                color: Colors.black.withValues(alpha: 0.1),
-                blurRadius: 20,
-                offset: const Offset(0, 10),
+
+    messenger.clearMaterialBanners();
+    messenger.showMaterialBanner(
+      MaterialBanner(
+        backgroundColor: Theme.of(context).colorScheme.surface.withValues(alpha: 0.98),
+        elevation: 1,
+        dividerColor: Colors.transparent,
+        forceActionsBelow: false,
+        content: Row(
+          children: [
+            Container(
+              padding: const EdgeInsets.all(8),
+              decoration: BoxDecoration(
+                color: Theme.of(context).colorScheme.primary.withValues(alpha: 0.12),
+                shape: BoxShape.circle,
               ),
-            ],
-          ),
-          child: Column(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              Row(
+              child: Icon(
+                Icons.notifications_active_rounded,
+                color: Theme.of(context).colorScheme.primary,
+                size: 18,
+              ),
+            ),
+            const SizedBox(width: 10),
+            Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                mainAxisSize: MainAxisSize.min,
                 children: [
-                  Container(
-                    padding: const EdgeInsets.all(10),
-                    decoration: BoxDecoration(
-                      color: Theme.of(context).colorScheme.primary.withValues(alpha: 0.1),
-                      shape: BoxShape.circle,
-                    ),
-                    child: Icon(
-                      Icons.notifications_active_rounded,
-                      color: Theme.of(context).colorScheme.primary,
-                      size: 20,
-                    ),
+                  Text(
+                    'Yeni Haber',
+                    style: Theme.of(context).textTheme.labelSmall?.copyWith(
+                          color: Theme.of(context).colorScheme.primary,
+                          fontWeight: FontWeight.w900,
+                          letterSpacing: 0.8,
+                        ),
                   ),
-                  const SizedBox(width: 12),
-                  Expanded(
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Text(
-                          'Yeni İçerik Yayında',
-                          style: Theme.of(context).textTheme.labelSmall?.copyWith(
-                                color: Theme.of(context).colorScheme.primary,
-                                fontWeight: FontWeight.w900,
-                                letterSpacing: 1.0,
-                              ),
+                  const SizedBox(height: 2),
+                  Text(
+                    head.title,
+                    maxLines: 2,
+                    overflow: TextOverflow.ellipsis,
+                    style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                          fontWeight: FontWeight.w700,
+                          height: 1.2,
                         ),
-                        const SizedBox(height: 2),
-                        Text(
-                          head.title,
-                          maxLines: 2,
-                          overflow: TextOverflow.ellipsis,
-                          style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                                fontWeight: FontWeight.w700,
-                                height: 1.2,
-                              ),
-                        ),
-                      ],
-                    ),
                   ),
                 ],
               ),
-              const SizedBox(height: 16),
-              Row(
-                mainAxisAlignment: MainAxisAlignment.end,
-                children: [
-                  TextButton(
-                    onPressed: () => messenger.hideCurrentSnackBar(),
-                    child: Text(
-                      'Kapat',
-                      style: TextStyle(color: Theme.of(context).colorScheme.outline),
-                    ),
-                  ),
-                  const SizedBox(width: 8),
-                  FilledButton(
-                    onPressed: () {
-                      messenger.hideCurrentSnackBar();
-                      ref.read(currentIndexProvider.notifier).state = 0;
-                      Navigator.of(context).push(
-                        MaterialPageRoute<void>(
-                          builder: (_) => Scaffold(
-                            appBar: AppBar(title: const Text('Haberler')),
-                            body: const NewsScreen(),
-                          ),
-                        ),
-                      );
-                    },
-                    style: FilledButton.styleFrom(
-                      padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 0),
-                      minimumSize: const Size(0, 36),
-                      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
-                    ),
-                    child: const Text('Haberler', style: TextStyle(fontWeight: FontWeight.w800)),
-                  ),
-                ],
-              ),
-            ],
-          ),
+            ),
+          ],
         ),
-        duration: const Duration(seconds: 8),
+        actions: [
+          TextButton(
+            onPressed: () => messenger.hideCurrentMaterialBanner(),
+            child: const Text('Kapat'),
+          ),
+          FilledButton(
+            onPressed: () {
+              messenger.hideCurrentMaterialBanner();
+              ref.read(currentIndexProvider.notifier).state = 0;
+              Navigator.of(context).push(
+                MaterialPageRoute<void>(
+                  builder: (_) => Scaffold(
+                    appBar: AppBar(title: const Text('Haberler')),
+                    body: const NewsScreen(),
+                  ),
+                ),
+              );
+            },
+            style: FilledButton.styleFrom(
+              minimumSize: const Size(0, 36),
+              padding: const EdgeInsets.symmetric(horizontal: 14),
+            ),
+            child: const Text('Haberler'),
+          ),
+        ],
       ),
     );
+    Future<void>.delayed(const Duration(seconds: 8), () {
+      if (!context.mounted) return;
+      messenger.hideCurrentMaterialBanner();
+    });
     return;
   }
 
   if (systemTray && (!foreground || !inApp)) {
-    await notifySvc.showNewsHeadlineUpdate(title: head.title);
+    final trackingKey = head.id.trim().isNotEmpty ? head.id.trim() : head.title.trim();
+    await notifySvc.showNewsHeadlineUpdate(
+      title: head.title,
+      trackingKey: trackingKey,
+    );
   }
 }

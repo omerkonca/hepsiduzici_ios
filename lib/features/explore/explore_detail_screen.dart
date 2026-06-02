@@ -1,5 +1,6 @@
 import 'dart:math' as math;
 import 'package:flutter/material.dart';
+import 'package:share_plus/share_plus.dart';
 import 'package:youtube_player_flutter/youtube_player_flutter.dart';
 import '../../data/models/city_content.dart';
 import '../../core/theme/app_colors.dart';
@@ -254,9 +255,7 @@ class _ExploreDetailScreenState extends State<ExploreDetailScreen> {
         ),
         IconButton(
           icon: const Icon(Icons.share_rounded),
-          onPressed: () {
-            // Share logic
-          },
+          onPressed: _sharePlace,
         ),
       ],
     );
@@ -341,6 +340,19 @@ class _ExploreDetailScreenState extends State<ExploreDetailScreen> {
     );
   }
 
+  void _sharePlace() {
+    final coords = _getCoordsForPlace(widget.place);
+    final mapsLink = coords != null
+        ? 'https://maps.google.com/?q=${coords.lat},${coords.lng}'
+        : 'https://maps.google.com/?q=${Uri.encodeComponent(widget.place.address)}';
+    final text = '🗺️ ${widget.place.name}\n'
+        '📍 ${widget.place.address}\n\n'
+        '${widget.place.shortDescription}\n\n'
+        '$mapsLink\n\n'
+        'Hepsi Düziçi uygulamasından paylaşıldı.';
+    SharePlus.instance.share(ShareParams(text: text, subject: widget.place.name));
+  }
+
   Widget _buildVisitorInfo() {
     return Padding(
       padding: const EdgeInsets.fromLTRB(24, 20, 24, 0),
@@ -350,7 +362,7 @@ class _ExploreDetailScreenState extends State<ExploreDetailScreen> {
           const _SectionTitle(title: 'Ziyaret Bilgileri'),
           const SizedBox(height: 4),
           Text(
-            'Otopark, WC ve giriş ücreti OpenStreetMap’ten canlı çekilir; mekânda teyit edin.',
+            'Otopark, WC ve giriş ücreti OpenStreetMap\'ten canlı çekilir; mekânda teyit edin.',
             style: TextStyle(
               fontSize: 11.5,
               color: Theme.of(context).textTheme.bodySmall?.color,

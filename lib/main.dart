@@ -20,7 +20,10 @@ void main() async {
   );
   
   final container = ProviderContainer();
-  await container.read(notificationServiceProvider).init();
+  final notificationService = container.read(notificationServiceProvider);
+  await notificationService.init();
+  // Android 13+ için görev çubuğu bildirim iznini ilk açılışta iste.
+  await notificationService.ensureAndroidNotificationPermission();
 
   // Arka plan haber kontrol servisini başlat ve kaydet
   try {

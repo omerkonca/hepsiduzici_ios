@@ -2,6 +2,7 @@ import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 
 import '../../../data/models/city_content.dart';
+import '../../../data/services/place_image_policy.dart';
 import 'trip_planner_theme.dart';
 
 /// Planlayıcıda yalnızca içerikteki görsel kullanılır (Wikipedia API devre dışı).
@@ -21,7 +22,7 @@ class TripPlaceImage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final url = place.imageUrl?.trim();
+    final url = PlaceImagePolicy.safeContentImage(place);
     Widget child;
     if (url != null && url.isNotEmpty) {
       child = url.startsWith('assets/')

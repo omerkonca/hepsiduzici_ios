@@ -1,14 +1,72 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import '../../app/providers.dart';
 import '../../core/theme/app_colors.dart';
+import '../../data/services/background_fetch_service.dart';
 
-class NotificationPreferencesScreen extends ConsumerWidget {
+class NotificationPreferencesScreen extends ConsumerStatefulWidget {
   const NotificationPreferencesScreen({super.key});
 
   @override
-  Widget build(BuildContext context, WidgetRef ref) {
+  ConsumerState<NotificationPreferencesScreen> createState() =>
+      _NotificationPreferencesScreenState();
+}
+
+class _NotificationPreferencesScreenState
+    extends ConsumerState<NotificationPreferencesScreen> {
+  late Future<_NotificationDiag> _diagFuture;
+
+  @override
+  void initState() {
+    super.initState();
+    _diagFuture = _loadDiag();
+  }
+
+  Future<_NotificationDiag> _loadDiag() async {
+    final p = await SharedPreferences.getInstance();
+    return _NotificationDiag(
+      lastRunAtIso: p.getString(BackgroundFetchService.lastRunAtKey),
+      lastStatus: p.getString(BackgroundFetchService.lastStatusKey),
+      lastError: p.getString(BackgroundFetchService.lastErrorKey),
+    );
+  }
+
+  void _refreshDiag() {
+    setState(() {
+      _diagFuture = _loadDiag();
+    });
+  }
+
+  String _formatStatus(String? status) {
+    switch (status) {
+      case 'running':
+        return 'Arka plan görevi şu an çalışıyor';
+      case 'initialized':
+        return 'İlk kurulum yapıldı (henüz bildirim gönderilmedi)';
+      case 'no_change':
+        return 'Yeni haber bulunmadı';
+      case 'notified':
+        return 'Yeni haber bulundu, sistem bildirimi gönderildi';
+      case 'skipped_disabled':
+        return 'Atlandı: sistem bildirimi ayarı kapalı';
+      case 'skipped_bad_response':
+        return 'Atlandı: sunucu yanıtı geçersiz';
+      case 'skipped_bad_payload':
+        return 'Atlandı: veri formatı geçersiz';
+      case 'skipped_empty':
+        return 'Atlandı: haber listesi boş';
+      case 'error':
+        return 'Hata oluştu';
+      default:
+        return 'Henüz arka plan çalışması kaydı yok';
+    }
+  }
+
+  @override
+  Widget build(BuildContext context) {
     final prefs = ref.watch(notificationPrefsProvider);
+    final notificationService = ref.read(notificationServiceProvider);
 
     return Scaffold(
       appBar: AppBar(title: const Text('Bildirim tercihleri')),
@@ -69,6 +127,155 @@ class NotificationPreferencesScreen extends ConsumerWidget {
           ),
         ),
         const SizedBox(height: 16),
+        FutureBuilder<bool>(
+          future: notificationService.areSystemNotificationsEnabled(),
+          builder: (context, snapshot) {
+            final enabled = snapshot.data ?? false;
+            final loading = snapshot.connectionState == ConnectionState.waiting;
+            return Card(
+              elevation: 0,
+              color: AppColors.surface,
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(16),
+                side: BorderSide(color: AppColors.softGrey.withValues(alpha: 0.5)),
+              ),
+              child: Padding(
+                padding: const EdgeInsets.all(14),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      'Bildirim durumu',
+                      style: Theme.of(context).textTheme.titleSmall?.copyWith(
+                            fontWeight: FontWeight.w800,
+                          ),
+                    ),
+                    const SizedBox(height: 8),
+                    Row(
+                      children: [
+                        Icon(
+                          loading
+                              ? Icons.hourglass_top_rounded
+                              : (enabled ? Icons.check_circle_rounded : Icons.error_rounded),
+                          size: 18,
+                          color: loading
+                              ? AppColors.textMuted
+                              : (enabled ? Colors.green.shade600 : Colors.red.shade600),
+                        ),
+                        const SizedBox(width: 8),
+                        Expanded(
+                          child: Text(
+                            loading
+                                ? 'Sistem bildirim izni kontrol ediliyor...'
+                                : (enabled
+                                    ? 'Sistem izni açık. Uygulama kapalıyken de bildirim gelebilir.'
+                                    : 'Sistem bildirimi kapalı. Cihaz ayarlarından izin verin.'),
+                            style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                                  color: AppColors.textMuted,
+                                  height: 1.3,
+                                ),
+                          ),
+                        ),
+                      ],
+                    ),
+                    const SizedBox(height: 12),
+                    FilledButton.icon(
+                      onPressed: () async {
+                        await notificationService.showTestNotification();
+                        if (!context.mounted) return;
+                        ScaffoldMessenger.of(context).showSnackBar(
+                          const SnackBar(content: Text('Test bildirimi gönderildi.')),
+                        );
+                      },
+                      icon: const Icon(Icons.notifications_active_rounded, size: 18),
+                      label: const Text('Test bildirimi gönder'),
+                    ),
+                  ],
+                ),
+              ),
+            );
+          },
+        ),
+        const SizedBox(height: 16),
+        FutureBuilder<_NotificationDiag>(
+          future: _diagFuture,
+          builder: (context, snapshot) {
+            final diag = snapshot.data;
+            final statusText = _formatStatus(diag?.lastStatus);
+            return Card(
+              elevation: 0,
+              color: AppColors.surface,
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(16),
+                side: BorderSide(color: AppColors.softGrey.withValues(alpha: 0.5)),
+              ),
+              child: Padding(
+                padding: const EdgeInsets.all(14),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Row(
+                      children: [
+                        Expanded(
+                          child: Text(
+                            'Arka plan tanı',
+                            style: Theme.of(context).textTheme.titleSmall?.copyWith(
+                                  fontWeight: FontWeight.w800,
+                                ),
+                          ),
+                        ),
+                        TextButton.icon(
+                          onPressed: _refreshDiag,
+                          icon: const Icon(Icons.refresh_rounded, size: 16),
+                          label: const Text('Yenile'),
+                        ),
+                      ],
+                    ),
+                    const SizedBox(height: 6),
+                    Text(
+                      statusText,
+                      style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                            color: AppColors.textMuted,
+                            height: 1.3,
+                          ),
+                    ),
+                    if (diag?.lastRunAtIso != null) ...[
+                      const SizedBox(height: 8),
+                      Text(
+                        'Son çalışma: ${diag!.lastRunAtIso}',
+                        style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                              color: AppColors.textMuted,
+                              height: 1.3,
+                            ),
+                      ),
+                    ],
+                    if (diag?.lastError != null && diag!.lastError!.isNotEmpty) ...[
+                      const SizedBox(height: 8),
+                      Text(
+                        'Son hata: ${diag.lastError}',
+                        maxLines: 2,
+                        overflow: TextOverflow.ellipsis,
+                        style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                              color: Colors.red.shade700,
+                              height: 1.3,
+                            ),
+                      ),
+                    ],
+                    const SizedBox(height: 10),
+                    Text(
+                      'Not: Android batarya optimizasyonu açıksa görev gecikebilir.',
+                      style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                            color: AppColors.textMuted.withValues(alpha: 0.9),
+                            fontSize: 11.5,
+                          ),
+                    ),
+                  ],
+                ),
+              ),
+            );
+          },
+        ),
+        const SizedBox(height: 16),
         Text(
           'Etkinlik hatırlatıcıları için izinleri açık tuttuğundan emin ol; ek ayar takvim ekranındaki kayıtta kullanılıyor.',
           style: Theme.of(context).textTheme.bodySmall?.copyWith(
@@ -80,4 +287,16 @@ class NotificationPreferencesScreen extends ConsumerWidget {
       ),
     );
   }
+}
+
+class _NotificationDiag {
+  const _NotificationDiag({
+    this.lastRunAtIso,
+    this.lastStatus,
+    this.lastError,
+  });
+
+  final String? lastRunAtIso;
+  final String? lastStatus;
+  final String? lastError;
 }
