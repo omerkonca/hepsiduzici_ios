@@ -158,7 +158,12 @@
         "lat": 37.2412,
         "lng": 36.4478,
         "workingHours": "Hafta içi 09:00 – 19:00, Cumartesi 09:00 – 17:00",
-        "services": ["Muayene", "Aşı", "Cerrahi", "Laboratuvar"],
+        "services": [
+          "Muayene",
+          "Aşı",
+          "Cerrahi",
+          "Laboratuvar"
+        ],
         "isEmergency": false
       },
       {
@@ -171,7 +176,11 @@
         "lat": 37.2395,
         "lng": 36.4512,
         "workingHours": "Hafta içi 09:00 – 18:30",
-        "services": ["Muayene", "Aşı", "Kısırlaştırma"],
+        "services": [
+          "Muayene",
+          "Aşı",
+          "Kısırlaştırma"
+        ],
         "isEmergency": false
       },
       {
@@ -184,7 +193,11 @@
         "lat": 37.2405,
         "lng": 36.4485,
         "workingHours": "Hafta içi 09:00 – 19:00",
-        "services": ["Muayene", "Aşı", "Pet bakım"],
+        "services": [
+          "Muayene",
+          "Aşı",
+          "Pet bakım"
+        ],
         "isEmergency": false
       },
       {
@@ -197,7 +210,10 @@
         "lat": 37.2378,
         "lng": 36.4495,
         "workingHours": "Randevu ile",
-        "services": ["Muayene", "Aşı"],
+        "services": [
+          "Muayene",
+          "Aşı"
+        ],
         "isEmergency": false
       },
       {
@@ -209,7 +225,11 @@
         "lat": 37.242,
         "lng": 36.454,
         "workingHours": "Hafta içi 09:00 – 18:00",
-        "services": ["Muayene", "Aşı", "Cerrahi"],
+        "services": [
+          "Muayene",
+          "Aşı",
+          "Cerrahi"
+        ],
         "isEmergency": false,
         "note": "Telefon için haritada işletmeyi arayabilirsiniz."
       },
@@ -222,7 +242,10 @@
         "lat": 37.2385,
         "lng": 36.445,
         "workingHours": "Hafta içi 09:00 – 18:00",
-        "services": ["Muayene", "Aşı"],
+        "services": [
+          "Muayene",
+          "Aşı"
+        ],
         "isEmergency": false,
         "note": "Telefon için haritada işletmeyi arayabilirsiniz."
       },
@@ -235,7 +258,10 @@
         "lat": 37.241,
         "lng": 36.4465,
         "workingHours": "Hafta içi 09:00 – 17:30",
-        "services": ["Muayene", "Aşı"],
+        "services": [
+          "Muayene",
+          "Aşı"
+        ],
         "isEmergency": false,
         "note": "Telefon için haritada işletmeyi arayabilirsiniz."
       },
@@ -248,7 +274,10 @@
         "lat": 37.243,
         "lng": 36.45,
         "workingHours": "Randevu ile",
-        "services": ["Muayene", "Aşı"],
+        "services": [
+          "Muayene",
+          "Aşı"
+        ],
         "isEmergency": false,
         "note": "Telefon için haritada işletmeyi arayabilirsiniz."
       },
@@ -261,7 +290,9 @@
         "lat": 37.236,
         "lng": 36.452,
         "workingHours": "Hafta içi 09:00 – 17:00",
-        "services": ["Muayene"],
+        "services": [
+          "Muayene"
+        ],
         "isEmergency": false,
         "note": "Telefon için haritada işletmeyi arayabilirsiniz."
       },
@@ -274,7 +305,10 @@
         "lat": 37.235,
         "lng": 36.444,
         "workingHours": "Randevu ile",
-        "services": ["Muayene", "Aşı"],
+        "services": [
+          "Muayene",
+          "Aşı"
+        ],
         "isEmergency": false,
         "note": "Telefon için haritada işletmeyi arayabilirsiniz."
       },
@@ -287,7 +321,10 @@
         "lat": 37.246,
         "lng": 36.448,
         "workingHours": "Hafta içi 09:00 – 17:30",
-        "services": ["Muayene", "Aşı"],
+        "services": [
+          "Muayene",
+          "Aşı"
+        ],
         "isEmergency": false,
         "note": "Telefon için haritada işletmeyi arayabilirsiniz."
       },
@@ -300,7 +337,9 @@
         "lat": 37.232,
         "lng": 36.446,
         "workingHours": "Hafta içi 09:00 – 18:00",
-        "services": ["Muayene"],
+        "services": [
+          "Muayene"
+        ],
         "isEmergency": false,
         "note": "Telefon için haritada işletmeyi arayabilirsiniz."
       },
@@ -313,7 +352,10 @@
         "lat": 37.2445,
         "lng": 36.4435,
         "workingHours": "Randevu ile",
-        "services": ["Muayene", "Aşı"],
+        "services": [
+          "Muayene",
+          "Aşı"
+        ],
         "isEmergency": false,
         "note": "Telefon için haritada işletmeyi arayabilirsiniz."
       },
@@ -326,7 +368,11 @@
         "lat": 37.2398,
         "lng": 36.4472,
         "workingHours": "Hafta içi 09:00 – 20:00",
-        "services": ["Mama", "Aksesuar", "Bakım ürünleri"],
+        "services": [
+          "Mama",
+          "Aksesuar",
+          "Bakım ürünleri"
+        ],
         "isEmergency": false,
         "note": "Veteriner muayene hizmeti sunmayabilir; ürün ve bakım malzemeleri."
       }
@@ -1200,59 +1246,6 @@
         ]
       },
       {
-        "id": "castles",
-        "icon": "castle",
-        "title": "Kaleler",
-        "subtitle": "Düziçi'nin tarihi savunma yapıları ve kale kalıntıları",
-        "badge": "Kale",
-        "places": [
-          {
-            "name": "Harun Reşit Kalesi",
-            "shortDescription": "799 yılında Abbasi Halifesi döneminde inşa edilen uç kale.",
-            "detail": "Harun Reşit Kalesi, Düziçi ilçe merkezinin yaklaşık 3 km kuzeydoğusunda Kurtbeyoğlu Mahallesi civarında, doğal kayalık üzerine kurulu bir kale kalıntısıdır. 799 yılında Abbasi Halifesi Harun Reşit döneminde Faraç Bey tarafından bölgedeki önemli ticaret yollarını korumak amacıyla yaptırılmıştır. Askeri açıdan büyük önem taşıyan kale; sırasıyla Bizanslılar, Selçuklular, Memlüklular ve Osmanlıların eline geçmiştir. Doğal kayalıklar üzerine inşa edilmiş olup restorasyon çalışmalarıyla turizme kazandırılmıştır. İlçenin en önemli tarihî simgesidir.",
-            "address": "Kurtbeyoğlu Mahallesi, Düziçi (3 km kuzeydoğu)",
-            "tag": "KALE",
-            "image": "https://upload.wikimedia.org/wikipedia/commons/thumb/f/fc/Hemite_Kalesi_-_Amouda_Castle_03.jpg/960px-Hemite_Kalesi_-_Amouda_Castle_03.jpg",
-            "videoUrl": "https://www.youtube.com/watch?v=J8fF0M5N1eA",
-            "lat": 37.258,
-            "lng": 36.48,
-            "parking": "sinirli",
-            "restroom": "var",
-            "entryFee": "ucretsiz",
-            "entryFeeNote": "Kale ziyareti ücretsiz; kafe ayrı.",
-            "osmUrl": "https://www.openstreetmap.org/#map=17/37.258/36.48"
-          },
-          {
-            "name": "Saman Kalesi",
-            "shortDescription": "Düziçi kırsalında bulunan ortaçağ savunma kalıntısı.",
-            "detail": "Saman Kalesi, Düziçi ilçe sınırları içinde kırsal alanda yer alan bir savunma yapısı kalıntısıdır. Selçuklu ve Osmanlı dönemlerinde stratejik önem taşıyan kale, bölgedeki diğer kalelerle birlikte savunma ağının bir parçası olmuştur. Günümüzde harabe hâlinde olup doğa yürüyüşü ile birleştirilerek ziyaret edilebilir. Erişim kırsal yollarladır, araç tipi ve hava koşullarını göz önünde bulundurun.",
-            "address": "Düziçi kırsalı, ilçe kuzeyi",
-            "tag": "KALE",
-            "image": "https://upload.wikimedia.org/wikipedia/commons/thumb/4/4b/Bah%C3%A7e%2C_Osmaniye_Bah%C3%A7e_kalesi.jpg/960px-Bah%C3%A7e%2C_Osmaniye_Bah%C3%A7e_kalesi.jpg",
-            "lat": 37.263,
-            "lng": 36.443,
-            "parking": "sinirli",
-            "restroom": "yok",
-            "entryFee": "ucretsiz",
-            "osmUrl": "https://www.openstreetmap.org/#map=17/37.263/36.443"
-          },
-          {
-            "name": "Kurtlar Kalesi",
-            "shortDescription": "Dağ yamaçlarında konumlanan savunma ve gözetleme yapısı.",
-            "detail": "Kurtlar Kalesi, Düziçi'nin dağlık bölgesinde yer alan bir kale kalıntısıdır. Stratejik konumu sayesinde çevredeki vadileri ve geçitleri kontrol altında tutmak amacıyla inşa edilmiştir. Kalıntılar günümüzde büyük ölçüde yıkık olsa da surlar ve burç temelleri hâlâ görülebilir. Ziyaret için trekking ayakkabısı ve su taşımak tavsiye edilir.",
-            "address": "Düziçi kırsalı, Amanos Dağları yamaçları (kuzey güzergâhı)",
-            "tag": "KALE",
-            "image": "https://upload.wikimedia.org/wikipedia/commons/thumb/a/a5/D%C3%BCld%C3%BCl_Da%C4%9F%C4%B1_-_Mount_D%C3%BCld%C3%BCl_05.JPG/960px-D%C3%BCld%C3%BCl_Da%C4%9F%C4%B1_-_Mount_D%C3%BCld%C3%BCl_05.JPG",
-            "lat": 37.272,
-            "lng": 36.522,
-            "parking": "yok",
-            "restroom": "yok",
-            "entryFee": "ucretsiz",
-            "osmUrl": "https://www.openstreetmap.org/#map=17/37.272/36.522"
-          }
-        ]
-      },
-      {
         "id": "historical",
         "icon": "account_balance",
         "title": "Tarihi Yerler",
@@ -1260,60 +1253,73 @@
         "badge": "Tarih",
         "places": [
           {
-            "name": "Taş Köprü (Fettahoğluları)",
-            "shortDescription": "Osmanlı döneminde Mehmet Bey tarafından yaptırılan tarihi köprü.",
-            "detail": "Taş Köprü, Düziçi çevresinde Fettahoğluları ailesinden Mehmet Bey'e atfedilen, taş işçiliği ile inşa edilmiş tarihi bir köprüdür. Akarsu geçişlerinde ticaret ve ulaşım hattının önemli parçası olmuştur. Osmanlı dönemine ait taş işçiliği ve mimari detaylar günümüzde hâlâ görülebilir. Köprü üzerinde yaya geçişinde dikkatli olunmalıdır.",
-            "address": "Düziçi ilçe sınırları, akarsu geçidi",
-            "tag": "KÖPRÜ",
-            "image": "https://upload.wikimedia.org/wikipedia/commons/thumb/c/c2/Stone_Bridge_%28Adana%29.jpg/960px-Stone_Bridge_%28Adana%29.jpg",
-            "lat": 37.245,
-            "lng": 36.46,
+            "name": "Harun Reşit Kalesi",
+            "shortDescription": "Düziçi'nin sembolü olan ve adını Abbasi Halifesi Harun Reşit'ten alan görkemli tarihi yapı.",
+            "detail": "Düziçi'nin sembolü olan ve adını Abbasi Halifesi Harun Reşit'ten alan görkemli bir tarihi yapıdır. Geçmişte bölge için çok önemli bir stratejik savunma noktası olmuştur. 24 saat ziyarete açık olan bu kaleye çıktığınızda tüm Düziçi Ovası'nı ayaklarınızın altında hissedersiniz. Özellikle gün batımında manzara izlemek ve harika fotoğraflar çekmek isteyenlerin mutlaka uğraması gereken, ilçemizin en büyük tarihi mirasıdır.",
+            "address": "Kurtbeyoğlu Köyü, 80600 Düziçi/Osmaniye",
+            "tag": "KALE",
+            "image": "assets/images/harun_resit.jpg",
+            "gallery": [
+              "assets/images/harun_resit.jpg"
+            ],
+            "videoUrl": "assets/videos/harun_resit_video.mp4",
+            "lat": 37.258,
+            "lng": 36.48,
             "parking": "sinirli",
-            "restroom": "yok",
+            "restroom": "sinirli",
             "entryFee": "ucretsiz",
-            "osmUrl": "https://www.openstreetmap.org/#map=17/37.245/36.46"
+            "entryFeeNote": "Kalenin giriş noktasına kadar araçla çıkılıp, yol kenarındaki uygun düzlüklere park edilebiliyor. Kale içinde doğrudan tesis yok.",
+            "osmUrl": "https://www.openstreetmap.org/#map=17/37.258/36.48"
           },
           {
-            "name": "Düziçi Ulu Cami",
-            "shortDescription": "İlçe merkezinin en eski ve büyük ibadethanesi.",
-            "detail": "Düziçi Ulu Cami, ilçe merkezinde yer alan tarihi bir cami olup Osmanlı döneminde inşa edilmiştir. Klasik Osmanlı mimari özelliklerini taşıyan yapı, bölgenin dini ve kültürel yaşamının merkezi olma özelliğini sürdürmektedir. İç süslemeleri ve hat sanatı örnekleri görülmeye değerdir.",
-            "address": "Cumhuriyet Mahallesi, Düziçi merkez",
-            "tag": "CAMİ",
-            "image": "https://upload.wikimedia.org/wikipedia/commons/thumb/9/9a/Sabanc%C4%B1_Merkez_Camii.jpg/960px-Sabanc%C4%B1_Merkez_Camii.jpg",
-            "lat": 37.24,
-            "lng": 36.446,
+            "name": "Karatepe-Aslantaş Açık Hava Müzesi ve Milli Parkı",
+            "shortDescription": "Hititler döneminden kalma, Aslantaş Baraj Gölü kıyısında dünyaca ünlü açık hava müzesi.",
+            "detail": "Hititler döneminden kalma, ormanın kalbinde ve Aslantaş Baraj Gölü'nün hemen kıyısında yer alan dünyaca ünlü bir açık hava müzesidir. Hem baraj manzarası eşliğinde doğa yürüyüşü yapabileceğiniz hem de aslanlı sfenksleri inceleyebileceğiniz muazzam bir komplekstir.",
+            "address": "Kızyusuflu Köyü, Kadirli / Osmaniye",
+            "tag": "MÜZE",
+            "image": "assets/images/karatepe.jpg",
+            "gallery": [
+              "assets/images/karatepe.jpg"
+            ],
+            "videoUrl": "assets/videos/karatepe_video.mp4",
+            "lat": 37.294,
+            "lng": 36.257,
             "parking": "var",
             "restroom": "var",
-            "entryFee": "ucretsiz",
-            "osmUrl": "https://www.openstreetmap.org/#map=17/37.24/36.446"
+            "entryFee": "ucretli",
+            "entryFeeNote": "Müzekart geçerlidir."
           },
           {
-            "name": "Yarbaşı Tren İstasyonu",
-            "shortDescription": "Adana-Halep demiryolu hattının tarihi istasyonu.",
-            "detail": "Yarbaşı Tren İstasyonu, Osmanlı döneminde inşa edilen Adana-Halep demiryolu hattı üzerinde yer alan tarihi bir istasyondur. Düziçi ilçe merkezine 6 km mesafededir. Demiryolu mimarisi ve tarihi atmosferi ile dikkat çeker. Günümüzde TCDD tarafından hâlâ kullanılmaktadır.",
-            "address": "Yarbaşı Beldesi, Düziçi",
-            "tag": "TARİH",
-            "image": "https://upload.wikimedia.org/wikipedia/commons/thumb/6/61/Kahramanmara%C5%9F_Airport_%28New_Terminal%29.jpg/960px-Kahramanmara%C5%9F_Airport_%28New_Terminal%29.jpg",
-            "lat": 37.199,
-            "lng": 36.43,
+            "name": "Kastabala (Hierapolis) Antik Kenti",
+            "shortDescription": "Çukurova'nın Efes'i olarak bilinen muhteşem antik kent.",
+            "detail": "Çukurova'nın Efes'i olarak bilinir. Sütunlu caddesi, antik tiyatrosu, hamamları ve tepedeki kalesiyle sizi Roma dönemine götüren muhteşem bir antik kenttir. Karatepe güzergahı üzerinde mutlaka durulması gereken bir duraktır.",
+            "address": "Kesmeburun Köyü, Cevdetiye-Karatepe Yolu, Osmaniye",
+            "tag": "ANTİK KENT",
+            "image": "assets/images/kastabala.jpg",
+            "gallery": [
+              "assets/images/kastabala.jpg"
+            ],
+            "lat": 37.177,
+            "lng": 36.185,
             "parking": "var",
             "restroom": "var",
-            "entryFee": "ucretsiz",
-            "osmUrl": "https://www.openstreetmap.org/#map=17/37.199/36.43"
+            "entryFee": "ucretsiz"
           },
           {
-            "name": "Düziçi Çarşı ve Hamamları",
-            "shortDescription": "Tarihi çarşı dokusu ve eski Osmanlı hamamı kalıntıları.",
-            "detail": "Düziçi'nin eski çarşı bölgesi, Osmanlı döneminden kalma esnaf geleneğini yansıtan tarihi bir ticaret alanıdır. Çarşıda geleneksel bakırcılar, attarlar ve yöresel ürün satıcıları bulunur. Civarındaki eski hamam kalıntıları da bölgenin kültürel mirasının parçasıdır.",
-            "address": "Düziçi merkez, İstiklal ve Cumhuriyet Mahalleleri",
-            "tag": "ÇARŞI",
-            "image": "https://upload.wikimedia.org/wikipedia/commons/thumb/b/b1/Osmaniye_Market_in_2010_1919.jpg/960px-Osmaniye_Market_in_2010_1919.jpg",
-            "lat": 37.234,
-            "lng": 36.442,
-            "parking": "sinirli",
-            "restroom": "var",
-            "entryFee": "ucretsiz",
-            "osmUrl": "https://www.openstreetmap.org/#map=17/37.234/36.442"
+            "name": "Toprakkale Kalesi",
+            "shortDescription": "Siyah volkanik kayalar üzerine inşa edilmiş tarihi otoyol kalesi.",
+            "detail": "Osmaniye-Adana otoyolu üzerinde tüm heybetiyle yükselen, siyah volkanik kayalar üzerine inşa edilmiş tarihi bir kaledir. İlk çağlardan Osmanlı dönemine kadar kullanılmıştır.",
+            "address": "Toprakkale İlçesi, Osmaniye",
+            "tag": "KALE",
+            "image": "assets/images/toprakkale.jpg",
+            "gallery": [
+              "assets/images/toprakkale.jpg"
+            ],
+            "lat": 37.065,
+            "lng": 36.143,
+            "parking": "var",
+            "restroom": "sinirli",
+            "entryFee": "ucretsiz"
           }
         ]
       },
@@ -1326,88 +1332,99 @@
         "places": [
           {
             "name": "Karasu Şelalesi",
-            "shortDescription": "Sabun Çayı üzerinde yeşilimsi suyu ile ünlü doğal şelale.",
-            "detail": "Karasu Şelalesi, Düldül Dağı eteklerinde Sabun Çayı üzerinde yer alan doğal bir çağlayandır. Suyun yeşilimsi tonu, kıyıdaki yoğun yosun ve bitki örtüsünden kaynaklanır. Yaz aylarında serinleme ve doğa yürüyüşleri için sık tercih edilir. Kıştan bahara eriyen kar etkisiyle debi artar ve şelale çok daha görkemli bir hâl alır. Kaygan zemin ve derin göletlere karşı dikkatli olunmalıdır.",
-            "address": "Sabun Çayı, Düldül Dağı etekleri, Düziçi",
+            "shortDescription": "Asırlık çınar ve çam ağaçları arasından süzülen buz gibi suyuyla doğal bir klima.",
+            "detail": "Asırlık çınar ve çam ağaçlarının arasından süzülen buz gibi suyuyla, yazın en sıcak günlerinde bile doğal bir klima etkisi yaratan harika bir doğa alanıdır. Şelaleye ulaşmak için Sabun Çayı Mesire Alanı'na aracınızı park edip, suyun sesi eşliğinde kısa ve keyifli bir doğa yürüyüşü yapmanız gerekir. Etrafı sarp kayalıklarla ve yoğun yeşillikle çevrili olduğu için doğa fotoğrafçılığı yapmak isteyenler için efsanevi kareler sunar. Kamp sandalyenizi atıp saatlerce kafa dinleyebileceğiniz, kalabalıktan bir tık daha izole bir huzur noktasıdır.",
+            "address": "Sabun Çayı Mesire Alanı bitişiği (Gökçayır Köyü Mevkii), 80600 Düziçi",
             "tag": "ŞELALE",
             "image": "assets/images/karasu_selalesi.jpg",
+            "gallery": [
+              "assets/images/karasu_selalesi.jpg",
+              "assets/images/karasu_2.jpg",
+              "assets/images/karasu_3.jpg"
+            ],
+            "videoUrl": "assets/videos/karasu_video.mp4",
             "lat": 37.251,
             "lng": 36.468,
             "parking": "var",
-            "restroom": "yok",
+            "restroom": "var",
             "entryFee": "ucretsiz",
-            "entryFeeNote": "Doğa alanı; sezon dışı erişim zor olabilir.",
-            "osmUrl": "https://www.openstreetmap.org/#map=17/37.251/36.468"
+            "entryFeeNote": "Mesire alanına araçla giriş ve otopark kullanımı ücretlidir. Şelaleye yürüyüş ve alanda vakit geçirmek ücretsizdir."
           },
           {
-            "name": "Sabun Çayı Vadisi",
-            "shortDescription": "Düldül Dağı'ndan doğan Sabun Çayı'nın geçtiği yeşil vadi.",
-            "detail": "Sabun Çayı, Düldül Dağı'nın eteklerinden doğarak Düziçi Ovası'na doğru akan önemli bir akarsudur. Vadi boyunca zengin bitki örtüsü, doğal havuzlar ve küçük çağlayanlar yer alır. Yürüyüş parkurları ve piknik alanları ile doğa tutkunları için ideal bir güzergâhtır. Vadide kuş gözlemciliği de yapılabilir.",
-            "address": "Sabun Çayı vadisi, Düziçi",
-            "tag": "VADİ",
-            "image": "https://upload.wikimedia.org/wikipedia/commons/thumb/d/d5/D%C3%BCld%C3%BCl_Da%C4%9F%C4%B1_-_Mount_D%C3%BCld%C3%BCl_02.JPG/960px-D%C3%BCld%C3%BCl_Da%C4%9F%C4%B1_-_Mount_D%C3%BCld%C3%BCl_02.JPG",
-            "lat": 37.255,
-            "lng": 36.465,
+            "name": "Yeşil Şelalesi",
+            "shortDescription": "Amanos Dağları'nın saklı kalmış zümrüt yeşili renkli masalsı şelalesi.",
+            "detail": "Adını, etrafını saran yoğun bitki örtüsünün suya yansıttığı zümrüt yeşili renkten alan bu şelale, Amanos Dağları'nın saklı kalmış eşsiz rotalarından biridir. Suyun döküldüğü noktada yosun tutmuş devasa kayalar ve sarmaşıklar, mekana adeta bir masal diyarı havası katar. Çukurova sıcağından kaçmak isteyen doğa tutkunları için oksijen deposudur. Herhangi bir işletme veya altyapı bulunmadığı için doğanın en saf, en el değmemiş halini deneyimleme fırsatı sunar.",
+            "address": "Çerçioğlu Köyü Merkez, 80600 Düziçi",
+            "tag": "ŞELALE",
+            "image": "assets/images/yesil_selalesi.jpg",
+            "gallery": [
+              "assets/images/yesil_selalesi.jpg",
+              "assets/images/yesil_2.jpg",
+              "assets/images/yesil_3.jpg"
+            ],
+            "videoUrl": "https://www.youtube.com/watch?v=ornek_youtube_linki",
+            "lat": 37.322,
+            "lng": 36.292,
             "parking": "sinirli",
             "restroom": "yok",
-            "entryFee": "ucretsiz",
-            "osmUrl": "https://www.openstreetmap.org/#map=17/37.255/36.465"
-          },
-          {
-            "name": "Berke Barajı Göl Manzarası",
-            "shortDescription": "Ceyhan Nehri üzerinde Türkiye'nin en yüksek barajlarından biri.",
-            "detail": "Berke Barajı, Ceyhan Nehri üzerinde Düziçi sınırlarında yer alan büyük bir baraj ve hidroelektrik santralidir. Türkiye'nin sayılı yüksek barajlarından biri olup göl ve kıyı hatları doğa fotoğrafçılığı için son derece çekicidir. Özellikle gün batımı saatlerinde muhteşem manzaralar sunar. Baraj güvenlik kurallarına uyulmalıdır.",
-            "address": "Ceyhan Nehri, Düziçi ilçe sınırı",
-            "tag": "BARAJ",
-            "image": "https://upload.wikimedia.org/wikipedia/commons/thumb/f/f3/Berke_Baraj%C4%B1_-_Berke_Dam_01.JPG/960px-Berke_Baraj%C4%B1_-_Berke_Dam_01.JPG",
-            "lat": 37.2215,
-            "lng": 36.471,
-            "parking": "var",
-            "restroom": "yok",
-            "entryFee": "ucretsiz",
-            "osmUrl": "https://www.openstreetmap.org/#map=17/37.2215/36.471"
-          },
-          {
-            "name": "Ceyhan Nehri Kıyıları",
-            "shortDescription": "Düziçi'nin batı sınırını çizen tarihi nehir.",
-            "detail": "Ceyhan Nehri, Düziçi'nin kuzey ve batı sınırlarını çizen Türkiye'nin önemli nehirlerinden biridir. Nehir kıyıları balık tutma, piknik ve doğa gözlemi için ideal alanlardır. Antik çağlardan beri yerleşim ve ulaşım hattı olarak kullanılan nehir, bölgenin ekolojik zenginliğinin de kaynağıdır.",
-            "address": "Ceyhan Nehri kıyısı, Düziçi batı sınırı",
-            "tag": "NEHİR",
-            "image": "https://upload.wikimedia.org/wikipedia/commons/thumb/f/f3/Berke_Baraj%C4%B1_-_Berke_Dam_01.JPG/960px-Berke_Baraj%C4%B1_-_Berke_Dam_01.JPG",
-            "lat": 37.22,
-            "lng": 36.47,
-            "parking": "sinirli",
-            "restroom": "yok",
-            "entryFee": "ucretsiz",
-            "osmUrl": "https://www.openstreetmap.org/#map=17/37.22/36.47"
+            "entryFee": "ucretsiz"
           },
           {
             "name": "Kocakesme Şelalesi",
-            "shortDescription": "Yeşildere Vadisi içinde keşfedilmeyi bekleyen saklı cennet.",
-            "detail": "Kocakesme Şelalesi, Berke Barajı civarındaki Yeşildere Vadisi üzerinde, Derebaşı Çayı boyunca yer alır. Vadide onlarca küçük şelale ve doğal havuzlar bulunur; parkur yüzerek de geçilebilir. Ulaşım zorlu patikalarla sağlanır, arazi ayakkabısı şarttır. Doğa sporları kulüplerince düzenli olarak ziyaret edilir.",
-            "address": "Yeşildere Vadisi, Berke Barajı civarı, Düziçi",
+            "shortDescription": "Suyun ikiye böldüğü devasa kaya blokları ve serinletici doğal havuzlar.",
+            "detail": "Adını, suyuyla ortadan ikiye kestiği devasa kaya bloklarından aldığı düşünülen Kocakesme, heybetli görünümüyle dikkat çeker. Suyun düştüğü yerde oluşan doğal havuzlar, yaz aylarında serinlemek isteyen maceraperest gençler ve doğa yürüyüşçüleri tarafından sıkça ziyaret edilir. Etrafı sarp kayalıklarla çevrili olduğu için yankı yapan su sesi, ziyaretçileri dış dünyadan tamamen soyutlar.",
+            "address": "Yeşildere (Nasıflı Mevkii), 46000 Düziçi",
             "tag": "ŞELALE",
+            "image": "assets/images/kocakesme_selalesi.jpg",
             "lat": 37.228,
             "lng": 36.463,
             "parking": "sinirli",
             "restroom": "yok",
-            "entryFee": "ucretsiz",
-            "entryFeeNote": "Doğal alan; patika yürüyüşü gerektirir.",
-            "osmUrl": "https://www.openstreetmap.org/#map=17/37.228/36.463"
+            "entryFee": "ucretsiz"
           },
           {
-            "name": "Deve Mağarası Kanyonu",
-            "shortDescription": "210 metre uzun, 50-100 metre derin dar kanyon ve mağaralar.",
-            "detail": "Deve Mağarası Kanyonu, Düldül Dağı'nın Zindoğan Vadisi'nin batı yamacında kireçtaşı formasyonları arasında gelişmiştir. 210 m uzunluğa, 1-3 m genişliğe ve 50-100 m derinliğe ulaşan kanyonun içindeki dar tüneller ve seslerin yankılanması unutulmaz bir deneyim sunar. Giriş kısmında mağaralar da bulunur. Macera ve keşif tutkunları için Düziçi'nin en heyecanlı doğa noktasıdır.",
-            "address": "Zindoğan Vadisi, Düldül Dağı güneydoğu, Düziçi",
+            "name": "Deve Mağarası, Deve Kanyonu ve Adem'in Şelalesi (Kısık Kanyonu Rotası)",
+            "shortDescription": "Deve Mağarası, kanyon manzaraları ve Adem'in Şelalesi ile macera dolu bir trekking rotası.",
+            "detail": "Yeşilyurt Köyü'nden başlayan bu efsanevi doğa rotası; Deve Mağarası, Deve Kanyonu ve Adem'in Şelalesi'ni içine alan tam bir macera parkurudur. Doğanın rüzgar ve suyla milyonlarca yılda işlediği, çökmüş bir deveyi andıran Deve Mağarası (kaya tüneli) ile başlayan yolculuk, Kısık Kanyonu'nun heybetli manzaraları eşliğinde devam eder ve buz gibi suyuyla Adem'in Şelalesi'nde son bulur. Taşlık ve yer yer sulu bir güzergah olduğu için altı kaymayan yürüyüş ayakkabılarıyla gidilmesi ve yanınıza su alınması şiddetle tavsiye edilir. Tesisleşmenin olmadığı, tamamen el değmemiş, doğa sporları ve trekking tutkunları için benzersiz bir rotadır.",
+            "address": "Yeşilyurt Köyü (Kısık Kanyonu Mevkii), 80740 Düziçi",
             "tag": "KANYON",
+            "image": "assets/images/deve_magarasi.jpg",
             "lat": 37.302,
             "lng": 36.515,
+            "parking": "sinirli",
+            "restroom": "yok",
+            "entryFee": "ucretsiz",
+            "gallery": [
+              "assets/images/deve_magarasi.jpg",
+              "assets/images/deve_kanyonu.jpg",
+              "assets/images/ademin_selalesi.jpg"
+            ]
+          },
+          {
+            "name": "Delioğlan Şelalesi",
+            "shortDescription": "Amanos Dağları'nda karların erimesiyle coşkun akan bakir şelale.",
+            "detail": "Akçakoyunlu Köyü sınırları içerisinde Hamus Çayı (deresi) üzerinde yer alan ve isminin hakkını vererek, özellikle ilkbahar aylarında karların erimesiyle adeta \"deli\" gibi coşkun ve gürül gürül akan bir şelaledir. Ulaşımı oldukça meşakkatli ve zorlu bir arazi yapısına sahip olduğu için bugüne kadar insan elinden ve kirliliğinden tamamen uzak kalmayı başarmıştır. Şelalenin çevresi sık ormanlık alanla kaplıdır. Kondisyonu yüksek doğa sporcularının tercih ettiği vahşi ve heyecan verici bir doğa harikasıdır.",
+            "address": "Akçakoyunlu Köyü, 80600 Düziçi",
+            "tag": "ŞELALE",
+            "image": "assets/images/delioglan_selalesi.jpg",
             "parking": "yok",
             "restroom": "yok",
             "entryFee": "ucretsiz",
-            "entryFeeNote": "Rehbersiz girişe dikkat; kireçtaşı kaygan olabilir.",
-            "osmUrl": "https://www.openstreetmap.org/#map=17/37.302/36.515"
+            "lat": 37.1867,
+            "lng": 36.4256
+          },
+          {
+            "name": "Uyuz Pınarı",
+            "shortDescription": "Çatak Köyü'nde cilt rahatsızlıklarına iyi geldiğine inanılan şifalı su kaynağı.",
+            "detail": "Yıllardır yöre halkı arasında bir şifa kaynağı olarak efsaneleşmiş doğal bir su kaynağıdır. İçeriğindeki minerallerin özellikle kaşıntı, egzama ve halk arasında \"uyuz\" olarak bilinen çeşitli cilt rahatsızlıklarına iyi geldiğine inanılır. Tamamen Çatak köyünün doğal dokusu içinde, ağaçların gölgesinde sessiz sedasız kaynayan bu pınar, ticari bir alan değildir. Şifalı olduğuna inanılan suyu denemek ve köyün tertemiz havasını solumak isteyenlerin rotasıdır.",
+            "address": "Çatak Köyü, Düziçi",
+            "tag": "PINAR",
+            "image": "assets/images/uyuz_pinari.jpg",
+            "lat": 37.297,
+            "lng": 36.504,
+            "parking": "sinirli",
+            "restroom": "yok",
+            "entryFee": "ucretsiz"
           }
         ]
       },
@@ -1805,7 +1822,10 @@
             "detail": "Toprakkale (eski adı Til Hamdun) Kalesi, Osmaniye'nin Toprakkale ilçesinde yer alan tarihi bir kaledir. Haçlı Seferleri döneminde büyük stratejik öneme sahip olan kale, Çukurova'dan Suriye'ye uzanan ticaret yollarını kontrol etmiştir. Ermeni Kilikya Krallığı döneminde yeniden inşa edilmiştir. Kaleden çevredeki ovaya ve İskenderun Körfezi'ne doğru geniş manzara görülür.",
             "address": "Toprakkale ilçesi, Osmaniye",
             "tag": "KALE",
-            "image": "https://upload.wikimedia.org/wikipedia/commons/thumb/f/fc/Hemite_Kalesi_-_Amouda_Castle_03.jpg/960px-Hemite_Kalesi_-_Amouda_Castle_03.jpg",
+            "image": "assets/images/toprakkale.jpg",
+            "gallery": [
+              "assets/images/toprakkale.jpg"
+            ],
             "parking": "bilinmiyor",
             "restroom": "bilinmiyor",
             "entryFee": "bilinmiyor",

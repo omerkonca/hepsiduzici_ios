@@ -35,10 +35,16 @@ class PlaceImagePolicy {
 
   /// İçerikte gelen görseli sadece güvenilir host ise kabul eder.
   static String? safeContentImage(ExplorePlace place) {
+    final raw = place.imageUrl?.trim();
+
+    // Web Admin Panelinden yüklenen resimler (Cloudinary veya Yerel Upload) her zaman önceliklidir.
+    if (raw != null && raw.isNotEmpty && (raw.contains('cloudinary.com') || raw.contains('/uploads/') || raw.contains(':5050'))) {
+      return raw;
+    }
+
     final approved = approvedImageFor(place);
     if (approved != null) return approved;
 
-    final raw = place.imageUrl?.trim();
     if (raw == null || raw.isEmpty) return null;
     if (raw.startsWith('assets/')) return raw;
     return isTrustedNetworkUrl(raw) ? raw : null;

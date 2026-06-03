@@ -1,3 +1,6 @@
+import 'dart:io' show Platform;
+
+import 'package:flutter/foundation.dart' show kIsWeb;
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_animate/flutter_animate.dart';
@@ -43,6 +46,26 @@ class _MainNavState extends ConsumerState<MainNav> with WidgetsBindingObserver {
   @override
   void didChangeAppLifecycleState(AppLifecycleState state) {
     ref.read(appLifecycleStateProvider.notifier).state = state;
+    if (state == AppLifecycleState.resumed) {
+      _checkNewsOnResume();
+    }
+  }
+
+  /// iOS arka plan görevleri güvenilir değil; uygulama açılınca haber kontrolü.
+  Future<void> _checkNewsOnResume() async {
+    if (kIsWeb) return;
+    final isIos = !kIsWeb && Platform.isIOS;
+    if (!isIos) return;
+
+    final prefs = ref.read(notificationPreferencesServiceProvider);
+    final enabled = await prefs.getSystemTrayNewNews();
+    if (!enabled) return;
+
+    final notify = ref.read(notificationServiceProvider);
+    final granted = await notify.areSystemNotificationsEnabled();
+    if (!granted) return;
+
+    await notify.checkAndNotifyNewHeadline();
   }
 
   @override

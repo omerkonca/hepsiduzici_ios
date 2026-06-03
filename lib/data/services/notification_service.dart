@@ -4,6 +4,8 @@ import 'package:shared_preferences/shared_preferences.dart';
 import 'package:timezone/timezone.dart' as tz;
 import 'package:timezone/data/latest.dart' as tz_data;
 
+import 'news_background_checker.dart';
+
 @pragma('vm:entry-point')
 void notificationTapBackground(NotificationResponse response) {
   NotificationService.persistPendingNewsTap(response.payload);
@@ -12,13 +14,18 @@ void notificationTapBackground(NotificationResponse response) {
 class NotificationService {
   final FlutterLocalNotificationsPlugin _notifications = FlutterLocalNotificationsPlugin();
 
-  static const int _newsUpdateNotificationId = 91001;
+  static const int newsNotificationId = 91001;
+  static const int _newsUpdateNotificationId = newsNotificationId;
   static const String _pendingNewsTapKey = 'notif_pending_news_tap_key';
 
   Future<void> init() async {
     tz_data.initializeTimeZones();
     const AndroidInitializationSettings android = AndroidInitializationSettings('@mipmap/ic_launcher');
-    const DarwinInitializationSettings ios = DarwinInitializationSettings();
+    const DarwinInitializationSettings ios = DarwinInitializationSettings(
+      requestAlertPermission: true,
+      requestBadgePermission: true,
+      requestSoundPermission: true,
+    );
     const InitializationSettings settings = InitializationSettings(android: android, iOS: ios);
     await _notifications.initialize(
       settings,
@@ -68,21 +75,45 @@ class NotificationService {
     await _notifications.cancel(id);
   }
 
-  /// Android 13+ için isteğe bağlı izin; diğer platformlarda true döner.
-  Future<bool> ensureAndroidNotificationPermission() async {
-    if (defaultTargetPlatform != TargetPlatform.android) return true;
-    final android = _notifications.resolvePlatformSpecificImplementation<AndroidFlutterLocalNotificationsPlugin>();
-    final granted = await android?.requestNotificationsPermission();
-    return granted ?? true;
+  /// Android 13+ ve iOS bildirim izinlerini ister.
+  Future<bool> ensureNotificationPermissions() async {
+    if (defaultTargetPlatform == TargetPlatform.android) {
+      final android = _notifications
+          .resolvePlatformSpecificImplementation<AndroidFlutterLocalNotificationsPlugin>();
+      final granted = await android?.requestNotificationsPermission();
+      return granted ?? true;
+    }
+    if (defaultTargetPlatform == TargetPlatform.iOS) {
+      final ios = _notifications
+          .resolvePlatformSpecificImplementation<IOSFlutterLocalNotificationsPlugin>();
+      final granted = await ios?.requestPermissions(
+        alert: true,
+        badge: true,
+        sound: true,
+      );
+      return granted ?? false;
+    }
+    return true;
   }
+
+  /// Geriye dönük uyumluluk.
+  Future<bool> ensureAndroidNotificationPermission() => ensureNotificationPermissions();
 
   /// Sistem genelinde uygulama bildirimlerinin açık olup olmadığını döner.
   Future<bool> areSystemNotificationsEnabled() async {
-    if (defaultTargetPlatform != TargetPlatform.android) return true;
-    final android =
-        _notifications.resolvePlatformSpecificImplementation<AndroidFlutterLocalNotificationsPlugin>();
-    final enabled = await android?.areNotificationsEnabled();
-    return enabled ?? true;
+    if (defaultTargetPlatform == TargetPlatform.android) {
+      final android = _notifications
+          .resolvePlatformSpecificImplementation<AndroidFlutterLocalNotificationsPlugin>();
+      final enabled = await android?.areNotificationsEnabled();
+      return enabled ?? true;
+    }
+    if (defaultTargetPlatform == TargetPlatform.iOS) {
+      final ios = _notifications
+          .resolvePlatformSpecificImplementation<IOSFlutterLocalNotificationsPlugin>();
+      final settings = await ios?.checkPermissions();
+      return settings?.isEnabled ?? false;
+    }
+    return true;
   }
 
   Future<void> showNewsHeadlineUpdate({
@@ -104,7 +135,12 @@ class NotificationService {
           importance: Importance.high,
           priority: Priority.high,
         ),
-        iOS: DarwinNotificationDetails(presentAlert: true, presentSound: false),
+        iOS: DarwinNotificationDetails(
+          presentAlert: true,
+          presentBadge: true,
+          presentSound: true,
+          interruptionLevel: InterruptionLevel.timeSensitive,
+        ),
       ),
       payload: payload,
     );
@@ -136,6 +172,11 @@ class NotificationService {
     if (payload == null || payload.trim().isEmpty) return;
     final prefs = await SharedPreferences.getInstance();
     await prefs.setString(_pendingNewsTapKey, payload.trim());
+  }
+
+  /// Arka plan / iOS ön plan: yeni haber varsa sistem bildirimi göster.
+  Future<bool> checkAndNotifyNewHeadline() {
+    return NewsBackgroundChecker.run(notifications: _notifications);
   }
 
   Future<String?> consumePendingNewsTap() async {

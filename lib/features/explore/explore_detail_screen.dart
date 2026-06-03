@@ -2,6 +2,7 @@ import 'dart:math' as math;
 import 'package:flutter/material.dart';
 import 'package:share_plus/share_plus.dart';
 import 'package:youtube_player_flutter/youtube_player_flutter.dart';
+import 'package:video_player/video_player.dart';
 import '../../data/models/city_content.dart';
 import '../../core/theme/app_colors.dart';
 import '../../core/utils/launcher_utils.dart';
@@ -11,6 +12,7 @@ import '../../core/widgets/place_network_image.dart';
 import '../../data/services/place_photo_service.dart';
 import '../../data/services/favorites_service.dart';
 import '../../data/providers/trip_planner_provider.dart';
+import 'widgets/explore_list_theme.dart';
 
 class ExploreDetailScreen extends StatefulWidget {
   const ExploreDetailScreen({
@@ -34,6 +36,9 @@ class ExploreDetailScreen extends StatefulWidget {
 
 class _ExploreDetailScreenState extends State<ExploreDetailScreen> {
   YoutubePlayerController? _youtubeController;
+  VideoPlayerController? _videoPlayerController;
+  bool _isVideoPlayerInitialized = false;
+  int _currentGalleryIndex = 0;
 
   // Koordinat Bilgileri Eşleştirmesi
   static const Map<String, _PlaceCoords> _placeCoordinates = {
@@ -102,21 +107,35 @@ class _ExploreDetailScreenState extends State<ExploreDetailScreen> {
   @override
   void initState() {
     super.initState();
-    if (widget.place.videoUrl != null && widget.place.videoUrl!.contains('youtube.com')) {
-      final videoId = YoutubePlayer.convertUrlToId(widget.place.videoUrl!);
-      if (videoId != null) {
-        _youtubeController = YoutubePlayerController(
-          initialVideoId: videoId,
-          flags: const YoutubePlayerFlags(
-            autoPlay: false,
-            mute: false,
-            disableDragSeek: false,
-            loop: false,
-            isLive: false,
-            forceHD: false,
-            enableCaption: true,
-          ),
-        );
+    final videoUrl = widget.place.videoUrl;
+    if (videoUrl != null && videoUrl.isNotEmpty) {
+      final isYoutube = videoUrl.contains('youtube.com') || videoUrl.contains('youtu.be');
+      if (isYoutube) {
+        final videoId = YoutubePlayer.convertUrlToId(videoUrl);
+        if (videoId != null) {
+          _youtubeController = YoutubePlayerController(
+            initialVideoId: videoId,
+            flags: const YoutubePlayerFlags(
+              autoPlay: false,
+              mute: false,
+              disableDragSeek: false,
+              loop: false,
+              isLive: false,
+              forceHD: false,
+              enableCaption: true,
+            ),
+          );
+        }
+      } else {
+        _videoPlayerController = VideoPlayerController.networkUrl(
+          Uri.parse(videoUrl),
+        )..initialize().then((_) {
+            if (mounted) {
+              setState(() {
+                _isVideoPlayerInitialized = true;
+              });
+            }
+          });
       }
     }
   }
@@ -124,6 +143,7 @@ class _ExploreDetailScreenState extends State<ExploreDetailScreen> {
   @override
   void dispose() {
     _youtubeController?.dispose();
+    _videoPlayerController?.dispose();
     super.dispose();
   }
 
@@ -178,16 +198,16 @@ class _ExploreDetailScreenState extends State<ExploreDetailScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Theme.of(context).scaffoldBackgroundColor,
+      backgroundColor: ExploreListTheme.background,
       body: CustomScrollView(
         slivers: [
           _buildAppBar(),
           SliverToBoxAdapter(
             child: Container(
               transform: Matrix4.translationValues(0, -30, 0),
-              decoration: BoxDecoration(
-                color: Theme.of(context).colorScheme.surface,
-                borderRadius: const BorderRadius.only(
+              decoration: const BoxDecoration(
+                color: ExploreListTheme.surface,
+                borderRadius: BorderRadius.only(
                   topLeft: Radius.circular(32),
                   topRight: Radius.circular(32),
                 ),
@@ -198,7 +218,7 @@ class _ExploreDetailScreenState extends State<ExploreDetailScreen> {
                   _buildHeaderInfo(),
                   _buildVisitorInfo(),
                   _buildDistanceCard(),
-                  if (widget.place.videoUrl != null && _youtubeController != null)
+                  if (widget.place.videoUrl != null && widget.place.videoUrl!.isNotEmpty)
                     _buildVideoPlayer(),
                   _buildDescription(),
                   if (widget.place.gallery != null && widget.place.gallery!.isNotEmpty)
@@ -215,20 +235,41 @@ class _ExploreDetailScreenState extends State<ExploreDetailScreen> {
   }
 
   Widget _buildAppBar() {
+    final hasGallery = widget.place.gallery != null && widget.place.gallery!.isNotEmpty;
+
     return SliverAppBar(
       expandedHeight: 300,
       pinned: true,
-      backgroundColor: const Color(0xFF172033),
+      backgroundColor: AppColors.primaryDark,
       flexibleSpace: FlexibleSpaceBar(
         background: Stack(
           fit: StackFit.expand,
           children: [
-            PlaceNetworkImage(
-              place: widget.place,
-              fit: BoxFit.cover,
-              heroTag: 'place_image_${widget.place.name}',
-              maxHeight: 1200,
-            ),
+            if (hasGallery)
+              PageView.builder(
+                itemCount: widget.place.gallery!.length,
+                onPageChanged: (index) {
+                  setState(() {
+                    _currentGalleryIndex = index;
+                  });
+                },
+                itemBuilder: (context, index) {
+                  final imgPath = widget.place.gallery![index];
+                  return Hero(
+                    tag: index == 0 ? 'place_image_${widget.place.name}' : 'place_image_${widget.place.name}_$index',
+                    child: imgPath.startsWith('assets/')
+                        ? Image.asset(imgPath, fit: BoxFit.cover)
+                        : Image.network(imgPath, fit: BoxFit.cover),
+                  );
+                },
+              )
+            else
+              PlaceNetworkImage(
+                place: widget.place,
+                fit: BoxFit.cover,
+                heroTag: 'place_image_${widget.place.name}',
+                maxHeight: 1200,
+              ),
             DecoratedBox(
               decoration: BoxDecoration(
                 gradient: LinearGradient(
@@ -242,6 +283,29 @@ class _ExploreDetailScreenState extends State<ExploreDetailScreen> {
                 ),
               ),
             ),
+            if (hasGallery && widget.place.gallery!.length > 1)
+              Positioned(
+                bottom: 45,
+                left: 0,
+                right: 0,
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: List.generate(
+                    widget.place.gallery!.length,
+                    (index) => Container(
+                      margin: const EdgeInsets.symmetric(horizontal: 4),
+                      width: 8,
+                      height: 8,
+                      decoration: BoxDecoration(
+                        shape: BoxShape.circle,
+                        color: _currentGalleryIndex == index
+                            ? Colors.white
+                            : Colors.white.withValues(alpha: 0.4),
+                      ),
+                    ),
+                  ),
+                ),
+              ),
           ],
         ),
       ),
@@ -291,17 +355,21 @@ class _ExploreDetailScreenState extends State<ExploreDetailScreen> {
               ),
               Row(
                 children: [
-                  const Icon(Icons.star_rounded, color: Colors.amber, size: 18),
+                  const Icon(Icons.star_rounded, color: AppColors.primary, size: 18),
                   const SizedBox(width: 4),
                   Text(
                     rating.toStringAsFixed(1),
-                    style: const TextStyle(fontWeight: FontWeight.w800, fontSize: 14),
+                    style: const TextStyle(
+                      fontWeight: FontWeight.w800,
+                      fontSize: 14,
+                      color: ExploreListTheme.textPrimary,
+                    ),
                   ),
                   const SizedBox(width: 4),
                   Text(
                     '($reviews Yorum)',
-                    style: TextStyle(
-                      color: Theme.of(context).textTheme.bodySmall?.color?.withValues(alpha: 0.6),
+                    style: const TextStyle(
+                      color: ExploreListTheme.textMuted,
                       fontSize: 12,
                       fontWeight: FontWeight.w600,
                     ),
@@ -313,11 +381,10 @@ class _ExploreDetailScreenState extends State<ExploreDetailScreen> {
           const SizedBox(height: 16),
           Text(
             widget.place.name,
-            style: Theme.of(context).textTheme.headlineMedium?.copyWith(
-                  fontWeight: FontWeight.w900,
-                  color: Theme.of(context).colorScheme.onSurface,
-                  letterSpacing: -1,
-                ),
+            style: ExploreListTheme.sectionTitleStyle().copyWith(
+              fontSize: 26,
+              letterSpacing: -1,
+            ),
           ),
           const SizedBox(height: 12),
           Row(
@@ -327,10 +394,7 @@ class _ExploreDetailScreenState extends State<ExploreDetailScreen> {
               Expanded(
                 child: Text(
                   widget.place.address,
-                  style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                        color: Theme.of(context).textTheme.bodySmall?.color,
-                        fontWeight: FontWeight.w500,
-                      ),
+                  style: ExploreListTheme.sectionSubtitleStyle(),
                 ),
               ),
             ],
@@ -363,11 +427,7 @@ class _ExploreDetailScreenState extends State<ExploreDetailScreen> {
           const SizedBox(height: 4),
           Text(
             'Otopark, WC ve giriş ücreti OpenStreetMap\'ten canlı çekilir; mekânda teyit edin.',
-            style: TextStyle(
-              fontSize: 11.5,
-              color: Theme.of(context).textTheme.bodySmall?.color,
-              height: 1.35,
-            ),
+            style: ExploreListTheme.sectionSubtitleStyle().copyWith(fontSize: 11.5),
           ),
           const SizedBox(height: 12),
           DynamicPlaceFacilities(place: widget.place),
@@ -396,28 +456,13 @@ class _ExploreDetailScreenState extends State<ExploreDetailScreen> {
       padding: const EdgeInsets.fromLTRB(24, 24, 24, 0),
       child: Container(
         padding: const EdgeInsets.all(16),
-        decoration: BoxDecoration(
-          gradient: LinearGradient(
-            colors: [Colors.teal.shade50.withValues(alpha: 0.9), Colors.teal.shade100.withValues(alpha: 0.8)],
-            begin: Alignment.topLeft,
-            end: Alignment.bottomRight,
-          ),
-          borderRadius: BorderRadius.circular(20),
-          border: Border.all(color: Colors.teal.shade200.withValues(alpha: 0.5), width: 1.5),
-          boxShadow: [
-            BoxShadow(
-              color: Colors.teal.withValues(alpha: 0.05),
-              blurRadius: 10,
-              offset: const Offset(0, 4),
-            ),
-          ],
-        ),
+        decoration: ExploreListTheme.infoPanelDecoration(),
         child: Row(
           children: [
             Container(
               padding: const EdgeInsets.all(10),
-              decoration: BoxDecoration(
-                color: Colors.teal.shade800,
+              decoration: const BoxDecoration(
+                color: AppColors.primaryDark,
                 shape: BoxShape.circle,
               ),
               child: const Icon(Icons.directions_car_rounded, color: Colors.white, size: 22),
@@ -429,26 +474,18 @@ class _ExploreDetailScreenState extends State<ExploreDetailScreen> {
                 children: [
                   Text(
                     'Ulaşım ve Mesafe Bilgisi',
-                    style: TextStyle(
-                      color: Colors.teal.shade900,
-                      fontWeight: FontWeight.w900,
-                      fontSize: 13.5,
-                    ),
+                    style: ExploreListTheme.sectionTitleStyle().copyWith(fontSize: 13.5),
                   ),
                   const SizedBox(height: 5),
                   Text.rich(
                     TextSpan(
                       text: '$positionType uzaklığı: ',
-                      style: TextStyle(
-                        color: Colors.teal.shade900.withValues(alpha: 0.9),
-                        fontSize: 12,
-                        fontWeight: FontWeight.w600,
-                      ),
+                      style: ExploreListTheme.sectionSubtitleStyle().copyWith(fontSize: 12),
                       children: [
                         TextSpan(
                           text: '${distance.toStringAsFixed(1)} km',
-                          style: TextStyle(
-                            color: Colors.teal.shade900,
+                          style: const TextStyle(
+                            color: ExploreListTheme.textPrimary,
                             fontWeight: FontWeight.w900,
                           ),
                         ),
@@ -459,16 +496,12 @@ class _ExploreDetailScreenState extends State<ExploreDetailScreen> {
                   Text.rich(
                     TextSpan(
                       text: 'Tahmini Sürüş Süresi: ',
-                      style: TextStyle(
-                        color: Colors.teal.shade900.withValues(alpha: 0.9),
-                        fontSize: 12,
-                        fontWeight: FontWeight.w600,
-                      ),
+                      style: ExploreListTheme.sectionSubtitleStyle().copyWith(fontSize: 12),
                       children: [
                         TextSpan(
                           text: timeStr,
-                          style: TextStyle(
-                            color: Colors.teal.shade900,
+                          style: const TextStyle(
+                            color: ExploreListTheme.textPrimary,
                             fontWeight: FontWeight.w900,
                           ),
                         ),
@@ -485,6 +518,9 @@ class _ExploreDetailScreenState extends State<ExploreDetailScreen> {
   }
 
   Widget _buildVideoPlayer() {
+    final isYoutube = widget.place.videoUrl != null &&
+        (widget.place.videoUrl!.contains('youtube.com') || widget.place.videoUrl!.contains('youtu.be'));
+
     return Padding(
       padding: const EdgeInsets.fromLTRB(24, 32, 24, 0),
       child: Column(
@@ -494,11 +530,31 @@ class _ExploreDetailScreenState extends State<ExploreDetailScreen> {
           const SizedBox(height: 12),
           ClipRRect(
             borderRadius: BorderRadius.circular(20),
-            child: YoutubePlayer(
-              controller: _youtubeController!,
-              showVideoProgressIndicator: true,
-              progressIndicatorColor: AppColors.primary,
-            ),
+            child: isYoutube
+                ? (_youtubeController != null
+                    ? YoutubePlayer(
+                        controller: _youtubeController!,
+                        showVideoProgressIndicator: true,
+                        progressIndicatorColor: AppColors.primary,
+                      )
+                    : const SizedBox.shrink())
+                : (_videoPlayerController != null && _isVideoPlayerInitialized
+                    ? AspectRatio(
+                        aspectRatio: _videoPlayerController!.value.aspectRatio,
+                        child: Stack(
+                          alignment: Alignment.bottomCenter,
+                          children: [
+                            VideoPlayer(_videoPlayerController!),
+                            _VideoControls(controller: _videoPlayerController!),
+                          ],
+                        ),
+                      )
+                    : const SizedBox(
+                        height: 200,
+                        child: Center(
+                          child: CircularProgressIndicator(color: AppColors.primary),
+                        ),
+                      )),
           ),
         ],
       ),
@@ -515,11 +571,10 @@ class _ExploreDetailScreenState extends State<ExploreDetailScreen> {
           const SizedBox(height: 12),
           Text(
             widget.place.detail,
-            style: Theme.of(context).textTheme.bodyLarge?.copyWith(
-                  color: Theme.of(context).textTheme.bodySmall?.color,
-                  height: 1.7,
-                  fontSize: 15,
-                ),
+            style: ExploreListTheme.sectionSubtitleStyle().copyWith(
+              height: 1.7,
+              fontSize: 15,
+            ),
           ),
         ],
       ),
@@ -546,8 +601,11 @@ class _ExploreDetailScreenState extends State<ExploreDetailScreen> {
                 margin: const EdgeInsets.symmetric(horizontal: 4),
                 decoration: BoxDecoration(
                   borderRadius: BorderRadius.circular(20),
+                  border: Border.all(color: ExploreListTheme.border),
                   image: DecorationImage(
-                    image: NetworkImage(widget.place.gallery![index]),
+                    image: widget.place.gallery![index].startsWith('assets/')
+                        ? AssetImage(widget.place.gallery![index]) as ImageProvider
+                        : NetworkImage(widget.place.gallery![index]) as ImageProvider,
                     fit: BoxFit.cover,
                   ),
                 ),
@@ -576,8 +634,8 @@ class _ExploreDetailScreenState extends State<ExploreDetailScreen> {
                     style: OutlinedButton.styleFrom(
                       padding: const EdgeInsets.symmetric(vertical: 16),
                       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(999)),
-                      side: BorderSide(color: Colors.grey.shade400),
-                      foregroundColor: Theme.of(context).colorScheme.onSurface,
+                      side: const BorderSide(color: ExploreListTheme.border),
+                      foregroundColor: ExploreListTheme.textPrimary,
                     ),
                     child: const Text('Geri', style: TextStyle(fontWeight: FontWeight.w800, fontSize: 15)),
                   ),
@@ -600,7 +658,7 @@ class _ExploreDetailScreenState extends State<ExploreDetailScreen> {
                     icon: const Icon(Icons.flag_rounded, color: Colors.white),
                     label: const Text('Rotaya Devam'),
                     style: ElevatedButton.styleFrom(
-                      backgroundColor: const Color(0xFF4CAF50), // Green
+                      backgroundColor: AppColors.primaryDark,
                       foregroundColor: Colors.white,
                       padding: const EdgeInsets.symmetric(vertical: 16),
                       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(999)),
@@ -649,6 +707,8 @@ class _ExploreDetailScreenState extends State<ExploreDetailScreen> {
                   style: OutlinedButton.styleFrom(
                     padding: const EdgeInsets.symmetric(vertical: 16),
                     shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(999)),
+                    side: const BorderSide(color: ExploreListTheme.border),
+                    foregroundColor: ExploreListTheme.textPrimary,
                   ),
                 ),
               ),
@@ -666,14 +726,7 @@ class _SectionTitle extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Text(
-      title,
-      style: Theme.of(context).textTheme.titleLarge?.copyWith(
-            fontWeight: FontWeight.w900,
-            fontSize: 18,
-            color: Theme.of(context).colorScheme.onSurface,
-          ),
-    );
+    return Text(title, style: ExploreListTheme.sectionTitleStyle());
   }
 }
 
@@ -681,4 +734,59 @@ class _PlaceCoords {
   final double lat;
   final double lng;
   const _PlaceCoords(this.lat, this.lng);
+}
+
+class _VideoControls extends StatefulWidget {
+  const _VideoControls({required this.controller});
+  final VideoPlayerController controller;
+
+  @override
+  State<_VideoControls> createState() => _VideoControlsState();
+}
+
+class _VideoControlsState extends State<_VideoControls> {
+  @override
+  Widget build(BuildContext context) {
+    return GestureDetector(
+      onTap: () {
+        setState(() {
+          widget.controller.value.isPlaying
+              ? widget.controller.pause()
+              : widget.controller.play();
+        });
+      },
+      child: Stack(
+        children: [
+          Positioned.fill(
+            child: Container(
+              color: widget.controller.value.isPlaying ? Colors.transparent : Colors.black38,
+              child: widget.controller.value.isPlaying
+                  ? const SizedBox.shrink()
+                  : const Center(
+                      child: Icon(
+                        Icons.play_arrow_rounded,
+                        color: Colors.white,
+                        size: 64,
+                      ),
+                    ),
+            ),
+          ),
+          Positioned(
+            bottom: 0,
+            left: 0,
+            right: 0,
+            child: VideoProgressIndicator(
+              widget.controller,
+              allowScrubbing: true,
+              colors: const VideoProgressColors(
+                playedColor: AppColors.primary,
+                bufferedColor: Colors.white30,
+                backgroundColor: Colors.white10,
+              ),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
 }

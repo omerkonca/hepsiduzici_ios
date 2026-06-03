@@ -14,6 +14,7 @@ import '../home/widgets/home_header.dart';
 import '../../core/widgets/favorite_button.dart';
 import '../../core/widgets/place_network_image.dart';
 import '../../data/services/favorites_service.dart';
+import 'widgets/explore_list_theme.dart';
 
 class ExploreScreen extends ConsumerWidget {
   const ExploreScreen({super.key});
@@ -40,9 +41,11 @@ class ExploreScreen extends ConsumerWidget {
           ).toList();
         }
 
-        return RefreshIndicator(
+        return ColoredBox(
+          color: ExploreListTheme.background,
+          child: RefreshIndicator(
           onRefresh: () async => ref.invalidate(cityContentProvider),
-          color: AppColors.primary,
+          color: AppColors.primaryDark,
           child: CustomScrollView(
             physics: const AlwaysScrollableScrollPhysics(),
             slivers: [
@@ -160,6 +163,7 @@ class ExploreScreen extends ConsumerWidget {
               const SliverToBoxAdapter(child: SizedBox(height: 60)),
             ],
           ),
+        ),
         );
       },
       loading: () => const _ExploreStatusBody(
@@ -285,7 +289,6 @@ class _CityServiceCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final color = _parseColor(service.color);
     return GestureDetector(
       onTap: onTap,
       child: Column(
@@ -295,31 +298,16 @@ class _CityServiceCard extends StatelessWidget {
             width: 56,
             height: 56,
             decoration: BoxDecoration(
-              gradient: LinearGradient(
-                begin: Alignment.topLeft,
-                end: Alignment.bottomRight,
-                colors: [
-                  color.withValues(alpha: 0.18),
-                  color.withValues(alpha: 0.07),
-                ],
-              ),
-              borderRadius: BorderRadius.circular(18),
-              border: Border.all(color: color.withValues(alpha: 0.2)),
-              boxShadow: [
-                BoxShadow(
-                  color: color.withValues(alpha: 0.16),
-                  blurRadius: 12,
-                  spreadRadius: -6,
-                  offset: const Offset(0, 8),
-                ),
-              ],
+              color: AppColors.primary.withValues(alpha: 0.1),
+              borderRadius: BorderRadius.circular(16),
+              border: Border.all(color: AppColors.primary.withValues(alpha: 0.22)),
             ),
             child: Stack(
               children: [
                 Center(
                   child: Icon(
                     IconMapper.fromName(service.icon),
-                    color: color,
+                    color: AppColors.primaryDark,
                     size: 26,
                   ),
                 ),
@@ -342,10 +330,10 @@ class _CityServiceCard extends StatelessWidget {
             maxLines: 2,
             overflow: TextOverflow.ellipsis,
             textAlign: TextAlign.center,
-            style: TextStyle(
+            style: const TextStyle(
               fontSize: 11,
               fontWeight: FontWeight.w700,
-              color: Theme.of(context).colorScheme.onSurface,
+              color: ExploreListTheme.textPrimary,
               letterSpacing: -0.2,
               height: 1.2,
             ),
@@ -353,15 +341,6 @@ class _CityServiceCard extends StatelessWidget {
         ],
       ),
     );
-  }
-
-  Color _parseColor(String hex) {
-    if (hex.isEmpty) return AppColors.primary;
-    try {
-      return Color(int.parse(hex.replaceFirst('#', '0xFF')));
-    } catch (_) {
-      return AppColors.primary;
-    }
   }
 }
 
@@ -414,17 +393,18 @@ class _FeaturedSliderState extends State<_FeaturedSlider> {
                 child: Container(
                   margin: const EdgeInsets.symmetric(horizontal: 4),
                   decoration: BoxDecoration(
-                    borderRadius: BorderRadius.circular(24),
+                    borderRadius: BorderRadius.circular(20),
+                    border: Border.all(color: ExploreListTheme.border),
                     boxShadow: [
                       BoxShadow(
-                        color: Colors.black.withValues(alpha: 0.15),
-                        blurRadius: 12,
-                        offset: const Offset(0, 6),
+                        color: Colors.black.withValues(alpha: 0.06),
+                        blurRadius: 14,
+                        offset: const Offset(0, 5),
                       ),
                     ],
                   ),
                   child: ClipRRect(
-                    borderRadius: BorderRadius.circular(24),
+                    borderRadius: BorderRadius.circular(20),
                     child: Stack(
                       children: [
                         Positioned.fill(
@@ -464,8 +444,8 @@ class _FeaturedSliderState extends State<_FeaturedSlider> {
                                 padding: const EdgeInsets.symmetric(
                                     horizontal: 8, vertical: 3),
                                 decoration: BoxDecoration(
-                                  color: AppColors.primary.withValues(alpha: 0.9),
-                                  borderRadius: BorderRadius.circular(6),
+                                  color: AppColors.primaryDark.withValues(alpha: 0.92),
+                                  borderRadius: BorderRadius.circular(8),
                                 ),
                                 child: Text(
                                   place.tag.toUpperCase(),
@@ -520,7 +500,7 @@ class _FeaturedSliderState extends State<_FeaturedSlider> {
               height: 5,
               width: _currentPage == index ? 18 : 5,
               decoration: BoxDecoration(
-                color: _currentPage == index ? AppColors.primary : Theme.of(context).disabledColor.withValues(alpha: 0.2),
+                color: _currentPage == index ? AppColors.primaryDark : ExploreListTheme.border,
                 borderRadius: BorderRadius.circular(3),
               ),
             ),
@@ -554,17 +534,18 @@ class _PremiumExploreCard extends StatelessWidget {
       onTap: onTap,
       child: Container(
         decoration: BoxDecoration(
-          borderRadius: BorderRadius.circular(24),
+          borderRadius: BorderRadius.circular(20),
+          border: Border.all(color: ExploreListTheme.border),
           boxShadow: [
             BoxShadow(
-              color: Colors.black.withValues(alpha: 0.1),
+              color: Colors.black.withValues(alpha: 0.05),
               blurRadius: 12,
-              offset: const Offset(0, 6),
+              offset: const Offset(0, 4),
             ),
           ],
         ),
         child: ClipRRect(
-          borderRadius: BorderRadius.circular(24),
+          borderRadius: BorderRadius.circular(20),
           child: Stack(
             children: [
               Positioned.fill(
@@ -673,11 +654,7 @@ class _SectionHeader extends StatelessWidget {
               const SizedBox(width: 10),
               Text(
                 title,
-                style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                      fontWeight: FontWeight.w900,
-                      color: Theme.of(context).colorScheme.onSurface,
-                      letterSpacing: -0.3,
-                    ),
+                style: ExploreListTheme.sectionTitleStyle().copyWith(fontSize: 17),
               ),
             ],
           ),
@@ -725,7 +702,7 @@ class _ExploreStatusBody extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return ColoredBox(
-      color: Theme.of(context).scaffoldBackgroundColor,
+      color: ExploreListTheme.background,
       child: SizedBox.expand(
         child: Center(child: child),
       ),

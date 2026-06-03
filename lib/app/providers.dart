@@ -152,7 +152,7 @@ class NotificationPrefsNotifier extends StateNotifier<NotificationPrefsState> {
   /// Yanlış zamanda bildirimi kapatılırsa false döner (ör. Android izin reddi).
   Future<bool> setSystemTrayNewNews(bool value) async {
     if (value) {
-      final ok = await _notifications.ensureAndroidNotificationPermission();
+      final ok = await _notifications.ensureNotificationPermissions();
       if (ok == false) {
         return false;
       }

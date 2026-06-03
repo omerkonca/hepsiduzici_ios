@@ -61,7 +61,9 @@
 	</array>
 	<key>BGTaskSchedulerPermittedIdentifiers</key>
 	<array>
+		<string>com.hepsiduzici.news_fetch_task</string>
 		<string>be.tramckets.workmanager.BackgroundTask</string>
+		<string>workmanager.background.task</string>
 	</array>
 </dict>
 </plist>

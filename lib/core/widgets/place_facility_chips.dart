@@ -66,18 +66,14 @@ class PlaceFacilityChips extends StatelessWidget {
     final Color fg;
     final Color bg;
     if (positive) {
-      fg = isDark ? const Color(0xFF81C784) : const Color(0xFF2E7D32);
-      bg = fg.withValues(alpha: 0.15);
+      fg = const Color(0xFF2E6B3A);
+      bg = const Color(0xFFE8F5E9);
     } else if (!neutral && label.contains('yok')) {
-      fg = isDark ? const Color(0xFFE57373) : const Color(0xFFC62828);
-      bg = fg.withValues(alpha: 0.12);
+      fg = const Color(0xFF9B4D4D);
+      bg = const Color(0xFFFCE8E8);
     } else {
-      fg = isDark 
-          ? const Color(0xFF9AA3B5) 
-          : Theme.of(context).colorScheme.onSurfaceVariant;
-      bg = isDark 
-          ? const Color(0xFF1E2638) 
-          : Theme.of(context).colorScheme.surfaceContainerHigh;
+      fg = isDark ? const Color(0xFF9AA3B5) : const Color(0xFF5C6370);
+      bg = isDark ? const Color(0xFF1E2638) : const Color(0xFFF0F2F6);
     }
 
     return Container(

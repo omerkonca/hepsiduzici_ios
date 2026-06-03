@@ -9,7 +9,7 @@ import '../../core/widgets/place_network_image.dart';
 import '../../data/providers/trip_planner_provider.dart';
 import 'explore_detail_screen.dart';
 import 'trip_planner_screen.dart';
-import 'widgets/trip_planner_theme.dart';
+import 'widgets/explore_list_theme.dart';
 
 class _PlannerCategory {
   final String id;
@@ -160,16 +160,16 @@ class _ExploreCategoryScreenState extends State<ExploreCategoryScreen> {
 
   // Gezi Planlayıcısı Kategorileri
   static const List<_PlannerCategory> _plannerCategories = [
-    _PlannerCategory(id: 'HEPSİ', name: 'Tümü', icon: Icons.map_rounded, color: Colors.indigo),
-    _PlannerCategory(id: 'KALE', name: 'Kale', icon: Icons.fort_rounded, color: Colors.brown),
-    _PlannerCategory(id: 'TARİHİ YER', name: 'Tarihi Yer', icon: Icons.history_edu_rounded, color: Colors.orange),
-    _PlannerCategory(id: 'LEZZET DURAĞI', name: 'Lezzet Durağı', icon: Icons.restaurant_rounded, color: Colors.red),
-    _PlannerCategory(id: 'KAMP ALANI', name: 'Kamp Alanı', icon: Icons.terrain_rounded, color: Colors.green),
-    _PlannerCategory(id: 'MÜZE', name: 'Müze', icon: Icons.museum_rounded, color: Colors.deepPurple),
-    _PlannerCategory(id: 'YÜRÜYÜŞ ROTASI', name: 'Yürüyüş Rotası', icon: Icons.directions_walk_rounded, color: Colors.teal),
-    _PlannerCategory(id: 'DOĞAL GÜZELLİK', name: 'Doğal Güzellik', icon: Icons.filter_hdr_rounded, color: Colors.blue),
-    _PlannerCategory(id: 'YAYLA', name: 'Yayla', icon: Icons.landscape_rounded, color: Colors.cyan),
-    _PlannerCategory(id: 'PARK', name: 'Park', icon: Icons.park_rounded, color: Colors.lightGreen),
+    _PlannerCategory(id: 'HEPSİ', name: 'Tümü', icon: Icons.map_rounded, color: AppColors.primaryDark),
+    _PlannerCategory(id: 'KALE', name: 'Kale', icon: Icons.fort_rounded, color: AppColors.primaryDark),
+    _PlannerCategory(id: 'TARİHİ YER', name: 'Tarihi Yer', icon: Icons.history_edu_rounded, color: AppColors.primaryDark),
+    _PlannerCategory(id: 'LEZZET DURAĞI', name: 'Lezzet Durağı', icon: Icons.restaurant_rounded, color: AppColors.primaryDark),
+    _PlannerCategory(id: 'KAMP ALANI', name: 'Kamp Alanı', icon: Icons.terrain_rounded, color: AppColors.primaryDark),
+    _PlannerCategory(id: 'MÜZE', name: 'Müze', icon: Icons.museum_rounded, color: AppColors.primaryDark),
+    _PlannerCategory(id: 'YÜRÜYÜŞ ROTASI', name: 'Yürüyüş Rotası', icon: Icons.directions_walk_rounded, color: AppColors.primaryDark),
+    _PlannerCategory(id: 'DOĞAL GÜZELLİK', name: 'Doğal Güzellik', icon: Icons.filter_hdr_rounded, color: AppColors.primaryDark),
+    _PlannerCategory(id: 'YAYLA', name: 'Yayla', icon: Icons.landscape_rounded, color: AppColors.primaryDark),
+    _PlannerCategory(id: 'PARK', name: 'Park', icon: Icons.park_rounded, color: AppColors.primaryDark),
   ];
 
   @override
@@ -447,19 +447,23 @@ class _ExploreCategoryScreenState extends State<ExploreCategoryScreen> {
     final refLng = _userLng ?? (isUsingMahalle ? _mahalleler[_selectedMahalle]!.lng : null);
 
     final plannerCount = _planner.count;
-    final isGeziGuide = widget.title == 'Gezi Rehberi';
 
     Widget buildScaffold(BuildContext context) {
       return Scaffold(
-      backgroundColor: isGeziGuide ? TripPlannerTheme.bg : AppColors.background,
+      backgroundColor: ExploreListTheme.background,
       appBar: AppBar(
         title: Text(
-          isGeziGuide ? 'Gezi Rehberi' : widget.title,
-          style: const TextStyle(fontWeight: FontWeight.w800, letterSpacing: -0.3),
+          widget.title == 'Gezi Rehberi' ? 'Gezi Rehberi' : widget.title,
+          style: const TextStyle(
+            fontWeight: FontWeight.w800,
+            letterSpacing: -0.3,
+            color: ExploreListTheme.textPrimary,
+          ),
         ),
-        backgroundColor: isGeziGuide ? TripPlannerTheme.bg : Theme.of(context).colorScheme.surface,
-        foregroundColor: isGeziGuide ? TripPlannerTheme.textPrimary : Theme.of(context).colorScheme.onSurface,
+        backgroundColor: ExploreListTheme.surface,
+        foregroundColor: ExploreListTheme.textPrimary,
         elevation: 0,
+        scrolledUnderElevation: 0,
         centerTitle: true,
       ),
       floatingActionButton: plannerCount > 0
@@ -468,7 +472,7 @@ class _ExploreCategoryScreenState extends State<ExploreCategoryScreen> {
                 context,
                 MaterialPageRoute(builder: (_) => const TripPlannerScreen()),
               ),
-              backgroundColor: isGeziGuide ? TripPlannerTheme.accentBlue : AppColors.primary,
+              backgroundColor: AppColors.primaryDark,
               foregroundColor: Colors.white,
               icon: const Icon(Icons.route_rounded),
               label: Text(
@@ -484,16 +488,16 @@ class _ExploreCategoryScreenState extends State<ExploreCategoryScreen> {
             child: Container(
               padding: const EdgeInsets.fromLTRB(20, 16, 20, 24),
               decoration: BoxDecoration(
-                color: isGeziGuide ? TripPlannerTheme.surface : Theme.of(context).colorScheme.surface,
+                color: ExploreListTheme.surface,
                 borderRadius: const BorderRadius.only(
-                  bottomLeft: Radius.circular(30),
-                  bottomRight: Radius.circular(30),
+                  bottomLeft: Radius.circular(24),
+                  bottomRight: Radius.circular(24),
                 ),
                 boxShadow: [
                   BoxShadow(
-                    color: Colors.black.withValues(alpha: isGeziGuide ? 0.25 : 0.03),
-                    blurRadius: 10,
-                    offset: const Offset(0, 8),
+                    color: Colors.black.withValues(alpha: 0.05),
+                    blurRadius: 16,
+                    offset: const Offset(0, 6),
                   ),
                 ],
               ),
@@ -505,35 +509,23 @@ class _ExploreCategoryScreenState extends State<ExploreCategoryScreen> {
                     width: double.infinity,
                     padding: const EdgeInsets.all(16),
                     decoration: BoxDecoration(
-                      gradient: LinearGradient(
-                        colors: isGeziGuide
-                            ? [TripPlannerTheme.surfaceElevated, TripPlannerTheme.accent.withValues(alpha: 0.45)]
-                            : const [Color(0xFF1A237E), Color(0xFF0D47A1)],
-                        begin: Alignment.topLeft,
-                        end: Alignment.bottomRight,
-                      ),
-                      borderRadius: BorderRadius.circular(20),
-                      boxShadow: [
-                        BoxShadow(
-                          color: Colors.blue.shade900.withValues(alpha: 0.25),
-                          blurRadius: 10,
-                          offset: const Offset(0, 6),
-                        ),
-                      ],
+                      gradient: ExploreListTheme.headerBanner,
+                      borderRadius: BorderRadius.circular(16),
+                      border: Border.all(color: ExploreListTheme.border),
                     ),
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         Row(
                           children: [
-                            const Icon(Icons.map_rounded, color: Colors.white, size: 20),
+                            Icon(Icons.map_rounded, color: AppColors.primaryDark, size: 20),
                             const SizedBox(width: 8),
                             Text(
                               widget.title == 'Gezi Rehberi'
                                   ? 'Düziçi & Osmaniye Gezi Rehberi'
                                   : 'Osmaniye & Düziçi Gezi Planlayıcısı',
                               style: TextStyle(
-                                color: Colors.white,
+                                color: ExploreListTheme.textPrimary,
                                 fontWeight: FontWeight.w900,
                                 fontSize: 16,
                                 letterSpacing: -0.2,
@@ -541,14 +533,14 @@ class _ExploreCategoryScreenState extends State<ExploreCategoryScreen> {
                             ),
                           ],
                         ),
-                        SizedBox(height: 6),
+                        const SizedBox(height: 6),
                         Text(
                           widget.title == 'Gezi Rehberi'
                               ? 'Harita verileri OpenStreetMap kaynağından alınmaktadır.'
                               : 'İlçemizin ve çevre ilçelerin güzelliklerini ilgi alanınıza göre planlayın.',
                           style: TextStyle(
-                            color: Colors.white70,
-                            fontSize: 11.5,
+                            color: ExploreListTheme.textSecondary,
+                            fontSize: 12,
                             fontWeight: FontWeight.w500,
                             height: 1.4,
                           ),
@@ -562,8 +554,9 @@ class _ExploreCategoryScreenState extends State<ExploreCategoryScreen> {
                   Container(
                     padding: const EdgeInsets.all(4),
                     decoration: BoxDecoration(
-                      color: Theme.of(context).scaffoldBackgroundColor,
-                      borderRadius: BorderRadius.circular(16),
+                      color: ExploreListTheme.surfaceMuted,
+                      borderRadius: BorderRadius.circular(14),
+                      border: Border.all(color: ExploreListTheme.border),
                     ),
                     child: Row(
                       children: [
@@ -578,7 +571,7 @@ class _ExploreCategoryScreenState extends State<ExploreCategoryScreen> {
                             child: Container(
                               padding: const EdgeInsets.symmetric(vertical: 10),
                               decoration: BoxDecoration(
-                                color: isD ? (isGeziGuide ? TripPlannerTheme.accentBlue : const Color(0xFF0D47A1)) : Colors.transparent,
+                                color: isD ? ExploreListTheme.segmentActive : Colors.transparent,
                                 borderRadius: BorderRadius.circular(12),
                               ),
                               child: Center(
@@ -587,14 +580,14 @@ class _ExploreCategoryScreenState extends State<ExploreCategoryScreen> {
                                   children: [
                                     Icon(
                                       Icons.location_on_rounded, 
-                                      color: isD ? Colors.white : (isGeziGuide ? TripPlannerTheme.accentBlue : const Color(0xFF0D47A1)), 
+                                      color: isD ? Colors.white : AppColors.primaryDark, 
                                       size: 15
                                     ),
                                     const SizedBox(width: 6),
                                     Text(
                                       'Düziçi İçi',
                                       style: TextStyle(
-                                        color: isD ? Colors.white : (isGeziGuide ? TripPlannerTheme.textSecondary : Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.8)),
+                                        color: isD ? Colors.white : ExploreListTheme.textSecondary,
                                         fontWeight: FontWeight.w800,
                                         fontSize: 13,
                                       ),
@@ -616,7 +609,7 @@ class _ExploreCategoryScreenState extends State<ExploreCategoryScreen> {
                             child: Container(
                               padding: const EdgeInsets.symmetric(vertical: 10),
                               decoration: BoxDecoration(
-                                color: !isD ? (isGeziGuide ? TripPlannerTheme.accentBlue : const Color(0xFF0D47A1)) : Colors.transparent,
+                                color: !isD ? ExploreListTheme.segmentActive : Colors.transparent,
                                 borderRadius: BorderRadius.circular(12),
                               ),
                               child: Center(
@@ -625,14 +618,14 @@ class _ExploreCategoryScreenState extends State<ExploreCategoryScreen> {
                                   children: [
                                     Icon(
                                       Icons.public_rounded, 
-                                      color: !isD ? Colors.white : (isGeziGuide ? TripPlannerTheme.accentBlue : const Color(0xFF0D47A1)), 
+                                      color: !isD ? Colors.white : AppColors.primaryDark, 
                                       size: 15
                                     ),
                                     const SizedBox(width: 6),
                                     Text(
                                       'Osmaniye Geneli',
                                       style: TextStyle(
-                                        color: !isD ? Colors.white : (isGeziGuide ? TripPlannerTheme.textSecondary : Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.8)),
+                                        color: !isD ? Colors.white : ExploreListTheme.textSecondary,
                                         fontWeight: FontWeight.w800,
                                         fontSize: 13,
                                       ),
@@ -652,19 +645,9 @@ class _ExploreCategoryScreenState extends State<ExploreCategoryScreen> {
                   Container(
                     padding: const EdgeInsets.all(12),
                     decoration: BoxDecoration(
-                      color: isGeziGuide
-                          ? TripPlannerTheme.surfaceElevated
-                          : (Theme.of(context).brightness == Brightness.dark
-                              ? Colors.grey.shade900.withValues(alpha: 0.5)
-                              : Colors.grey.shade100.withValues(alpha: 0.8)),
-                      borderRadius: BorderRadius.circular(18),
-                      border: Border.all(
-                        color: isGeziGuide
-                            ? Colors.white.withValues(alpha: 0.08)
-                            : (Theme.of(context).brightness == Brightness.dark
-                                ? Colors.grey.shade800
-                                : Colors.grey.shade300),
-                      ),
+                      color: ExploreListTheme.surfaceMuted,
+                      borderRadius: BorderRadius.circular(14),
+                      border: Border.all(color: ExploreListTheme.border),
                     ),
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
@@ -678,10 +661,10 @@ class _ExploreCategoryScreenState extends State<ExploreCategoryScreen> {
                                 isUsingGps
                                     ? '📍 GPS Konumuna Göre Sıralı'
                                     : (isUsingMahalle ? '📍 Mahalle Konumuna Göre Sıralı' : 'En Yakın Mekanları Göster:'),
-                                style: TextStyle(
+                                style: const TextStyle(
                                   fontSize: 12,
                                   fontWeight: FontWeight.w800,
-                                  color: Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.9),
+                                  color: ExploreListTheme.textPrimary,
                                 ),
                               ),
                             ),
@@ -694,21 +677,17 @@ class _ExploreCategoryScreenState extends State<ExploreCategoryScreen> {
                               child: Container(
                                 padding: const EdgeInsets.symmetric(horizontal: 12),
                                 decoration: BoxDecoration(
-                                  color: Theme.of(context).colorScheme.surface,
+                                  color: ExploreListTheme.surface,
                                   borderRadius: BorderRadius.circular(12),
-                                  border: Border.all(
-                                    color: Theme.of(context).brightness == Brightness.dark
-                                        ? Colors.grey.shade800
-                                        : Colors.grey.shade300,
-                                  ),
+                                  border: Border.all(color: ExploreListTheme.border),
                                 ),
                                 child: DropdownButtonHideUnderline(
                                   child: DropdownButton<String>(
                                     value: _selectedMahalle,
                                     isExpanded: true,
-                                    dropdownColor: Theme.of(context).scaffoldBackgroundColor,
-                                    style: TextStyle(
-                                      color: Theme.of(context).colorScheme.onSurface,
+                                    dropdownColor: ExploreListTheme.surface,
+                                    style: const TextStyle(
+                                      color: ExploreListTheme.textPrimary,
                                       fontSize: 12.5,
                                       fontWeight: FontWeight.w600,
                                     ),
@@ -742,19 +721,11 @@ class _ExploreCategoryScreenState extends State<ExploreCategoryScreen> {
                                 : IconButton.filled(
                                     style: IconButton.styleFrom(
                                       backgroundColor: isUsingGps
-                                          ? AppColors.primary
-                                          : (isGeziGuide
-                                              ? Colors.white.withValues(alpha: 0.08)
-                                              : (Theme.of(context).brightness == Brightness.dark
-                                                  ? Colors.grey.shade800
-                                                  : Colors.grey.shade200)),
+                                          ? AppColors.primaryDark
+                                          : ExploreListTheme.surface,
                                       foregroundColor: isUsingGps
                                           ? Colors.white
-                                          : (isGeziGuide
-                                              ? TripPlannerTheme.textPrimary
-                                              : (Theme.of(context).brightness == Brightness.dark
-                                                  ? Colors.white
-                                                  : Colors.grey.shade800)),
+                                          : ExploreListTheme.textPrimary,
                                       shape: RoundedRectangleBorder(
                                         borderRadius: BorderRadius.circular(12),
                                       ),
@@ -777,13 +748,11 @@ class _ExploreCategoryScreenState extends State<ExploreCategoryScreen> {
                     onChanged: (value) => setState(() => _query = value),
                     decoration: InputDecoration(
                       hintText: isD ? 'Düziçi içinde mekan ara...' : 'Osmaniye geneli mekan ara...',
-                      hintStyle: TextStyle(
-                        color: Theme.of(context).textTheme.bodySmall?.color?.withValues(alpha: 0.5),
-                      ),
-                      prefixIcon: const Icon(Icons.search_rounded, color: AppColors.primary),
+                      hintStyle: const TextStyle(color: ExploreListTheme.textMuted),
+                      prefixIcon: const Icon(Icons.search_rounded, color: AppColors.primaryDark),
                       suffixIcon: _query.isNotEmpty
                           ? IconButton(
-                              icon: const Icon(Icons.clear_rounded, color: AppColors.primary),
+                              icon: const Icon(Icons.clear_rounded, color: AppColors.primaryDark),
                               onPressed: () {
                                 _searchController.clear();
                                 setState(() => _query = '');
@@ -791,19 +760,19 @@ class _ExploreCategoryScreenState extends State<ExploreCategoryScreen> {
                             )
                           : null,
                       filled: true,
-                      fillColor: isGeziGuide ? TripPlannerTheme.surfaceElevated : Theme.of(context).scaffoldBackgroundColor,
+                      fillColor: ExploreListTheme.surfaceMuted,
                       contentPadding: const EdgeInsets.symmetric(vertical: 14),
                       border: OutlineInputBorder(
-                        borderRadius: BorderRadius.circular(16),
-                        borderSide: isGeziGuide
-                            ? BorderSide(color: Colors.white.withValues(alpha: 0.08), width: 1)
-                            : BorderSide.none,
+                        borderRadius: BorderRadius.circular(14),
+                        borderSide: const BorderSide(color: ExploreListTheme.border),
                       ),
                       enabledBorder: OutlineInputBorder(
-                        borderRadius: BorderRadius.circular(16),
-                        borderSide: isGeziGuide
-                            ? BorderSide(color: Colors.white.withValues(alpha: 0.08), width: 1)
-                            : BorderSide.none,
+                        borderRadius: BorderRadius.circular(14),
+                        borderSide: const BorderSide(color: ExploreListTheme.border),
+                      ),
+                      focusedBorder: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(14),
+                        borderSide: const BorderSide(color: AppColors.primary, width: 1.5),
                       ),
                     ),
                   ),
@@ -832,23 +801,13 @@ class _ExploreCategoryScreenState extends State<ExploreCategoryScreen> {
                   }
 
                   final chipBg = isSelected
-                      ? cat.color
-                      : (isGeziGuide
-                          ? TripPlannerTheme.surfaceElevated
-                          : cat.color.withValues(alpha: 0.06));
+                      ? ExploreListTheme.chipSelected
+                      : ExploreListTheme.chipUnselectedBg;
                   final borderCol = isSelected
-                      ? cat.color
-                      : (isGeziGuide
-                          ? Colors.white.withValues(alpha: 0.08)
-                          : cat.color.withValues(alpha: 0.2));
-                  final iconCol = isSelected
-                      ? Colors.white
-                      : cat.color;
-                  final textCol = isSelected
-                      ? Colors.white
-                      : (isGeziGuide
-                          ? TripPlannerTheme.textSecondary
-                          : Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.8));
+                      ? ExploreListTheme.chipSelected
+                      : ExploreListTheme.chipUnselectedBorder;
+                  final iconCol = isSelected ? Colors.white : AppColors.primaryDark;
+                  final textCol = isSelected ? Colors.white : ExploreListTheme.textSecondary;
 
                   return Container(
                     margin: const EdgeInsets.symmetric(horizontal: 6, vertical: 12),
@@ -892,13 +851,15 @@ class _ExploreCategoryScreenState extends State<ExploreCategoryScreen> {
                               Container(
                                 padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
                                 decoration: BoxDecoration(
-                                  color: isSelected ? Colors.white.withValues(alpha: 0.25) : cat.color.withValues(alpha: 0.15),
+                                  color: isSelected
+                                      ? Colors.white.withValues(alpha: 0.22)
+                                      : AppColors.primary.withValues(alpha: 0.12),
                                   borderRadius: BorderRadius.circular(99),
                                 ),
                                 child: Text(
                                   count.toString(),
                                   style: TextStyle(
-                                    color: isSelected ? Colors.white : cat.color,
+                                    color: isSelected ? Colors.white : AppColors.primaryDark,
                                     fontSize: 9.5,
                                     fontWeight: FontWeight.w900,
                                   ),
@@ -924,8 +885,6 @@ class _ExploreCategoryScreenState extends State<ExploreCategoryScreen> {
                   final p = filtered[index];
                   final double rating = _getRatingForPlace(p);
                   final int reviews = _getReviewCountForPlace(p);
-                  final isDark = Theme.of(context).brightness == Brightness.dark;
-
                   double? distance;
                   if (refLat != null && refLng != null) {
                     final coords = _getCoordsForPlace(p);
@@ -933,26 +892,15 @@ class _ExploreCategoryScreenState extends State<ExploreCategoryScreen> {
                   }
 
                   return Container(
-                    margin: const EdgeInsets.only(bottom: 16),
+                    margin: const EdgeInsets.only(bottom: 14),
                     child: Material(
-                      color: isGeziGuide ? TripPlannerTheme.surfaceElevated : Theme.of(context).colorScheme.surface,
-                      borderRadius: BorderRadius.circular(24),
-                      elevation: isGeziGuide ? 0 : 2,
-                      shadowColor: Colors.black.withValues(alpha: 0.04),
+                      color: Colors.transparent,
                       child: InkWell(
                         onTap: () => _openDetail(context, p),
-                        borderRadius: BorderRadius.circular(24),
+                        borderRadius: BorderRadius.circular(20),
                         child: Container(
                           padding: const EdgeInsets.all(12),
-                          decoration: BoxDecoration(
-                            borderRadius: BorderRadius.circular(24),
-                            border: Border.all(
-                              color: isGeziGuide
-                                  ? Colors.white.withValues(alpha: 0.08)
-                                  : Theme.of(context).dividerColor.withValues(alpha: 0.05),
-                              width: 1,
-                            ),
-                          ),
+                          decoration: ExploreListTheme.cardDecoration(),
                           child: Row(
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
@@ -976,16 +924,16 @@ class _ExploreCategoryScreenState extends State<ExploreCategoryScreen> {
                                     child: Container(
                                       padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
                                       decoration: BoxDecoration(
-                                        color: Colors.black.withValues(alpha: 0.65),
+                                        color: AppColors.primaryDark.withValues(alpha: 0.9),
                                         borderRadius: BorderRadius.circular(8),
                                       ),
                                       child: Text(
                                         p.tag,
                                         style: const TextStyle(
                                           color: Colors.white,
-                                          fontSize: 8,
-                                          fontWeight: FontWeight.w900,
-                                          letterSpacing: 0.5,
+                                          fontSize: 9,
+                                          fontWeight: FontWeight.w800,
+                                          letterSpacing: 0.3,
                                         ),
                                       ),
                                     ),
@@ -1002,7 +950,7 @@ class _ExploreCategoryScreenState extends State<ExploreCategoryScreen> {
                                     // Puan ve Yorumlar
                                     Row(
                                       children: [
-                                        const Icon(Icons.star_rounded, color: Colors.amber, size: 16),
+                                        const Icon(Icons.star_rounded, color: AppColors.primary, size: 16),
                                         const SizedBox(width: 3),
                                         Text(
                                           rating.toStringAsFixed(1),
@@ -1053,14 +1001,14 @@ class _ExploreCategoryScreenState extends State<ExploreCategoryScreen> {
                                     if (distance != null) ...[
                                       Row(
                                         children: [
-                                          Icon(Icons.directions_car_rounded, size: 11, color: isDark ? TripPlannerTheme.accentBlue : Colors.blue),
+                                          const Icon(Icons.directions_car_rounded, size: 11, color: AppColors.primaryDark),
                                           const SizedBox(width: 4),
                                           Text(
-                                            '📍 ${distance.toStringAsFixed(1)} km uzaklıkta',
-                                            style: TextStyle(
+                                            '${distance.toStringAsFixed(1)} km uzaklıkta',
+                                            style: const TextStyle(
                                               fontSize: 10,
-                                              fontWeight: FontWeight.bold,
-                                              color: isDark ? TripPlannerTheme.accentBlue : Colors.blue.shade700,
+                                              fontWeight: FontWeight.w700,
+                                              color: AppColors.primaryDark,
                                             ),
                                           ),
                                         ],
@@ -1161,26 +1109,20 @@ class _ExploreCategoryScreenState extends State<ExploreCategoryScreen> {
                       width: 80,
                       height: 80,
                       decoration: BoxDecoration(
-                        color: isGeziGuide
-                            ? Colors.white.withValues(alpha: 0.06)
-                            : Theme.of(context).disabledColor.withValues(alpha: 0.06),
+                        color: ExploreListTheme.surfaceMuted,
                         shape: BoxShape.circle,
                       ),
-                      child: Icon(
+                      child: const Icon(
                         Icons.search_off_rounded,
                         size: 40,
-                        color: isGeziGuide
-                            ? Colors.white.withValues(alpha: 0.3)
-                            : Theme.of(context).disabledColor.withValues(alpha: 0.3),
+                        color: ExploreListTheme.textMuted,
                       ),
                     ).animate().scale(begin: const Offset(0.7, 0.7), curve: Curves.elasticOut),
                     const SizedBox(height: 20),
                     Text(
                       'Bu kategoride mekan bulunamadı',
-                      style: TextStyle(
-                        color: isGeziGuide
-                            ? TripPlannerTheme.textSecondary
-                            : Theme.of(context).textTheme.bodySmall?.color,
+                      style: const TextStyle(
+                        color: ExploreListTheme.textPrimary,
                         fontWeight: FontWeight.w800,
                         fontSize: 16,
                       ),
@@ -1188,10 +1130,8 @@ class _ExploreCategoryScreenState extends State<ExploreCategoryScreen> {
                     const SizedBox(height: 8),
                     Text(
                       'Farklı bir kategori veya bölge deneyin',
-                      style: TextStyle(
-                        color: isGeziGuide
-                            ? TripPlannerTheme.textSecondary
-                            : Theme.of(context).textTheme.bodySmall?.color?.withValues(alpha: 0.6),
+                      style: const TextStyle(
+                        color: ExploreListTheme.textSecondary,
                         fontSize: 13,
                         fontWeight: FontWeight.w500,
                       ),
@@ -1205,14 +1145,6 @@ class _ExploreCategoryScreenState extends State<ExploreCategoryScreen> {
     );
     }
 
-    if (isGeziGuide) {
-      return Theme(
-        data: TripPlannerTheme.theme(),
-        child: Builder(
-          builder: (context) => buildScaffold(context),
-        ),
-      );
-    }
     return buildScaffold(context);
   }
 
