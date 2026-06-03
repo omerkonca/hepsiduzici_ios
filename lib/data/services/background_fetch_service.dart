@@ -1,3 +1,6 @@
+import 'dart:io' show Platform;
+
+import 'package:flutter/foundation.dart' show kIsWeb;
 import 'package:workmanager/workmanager.dart';
 
 import 'news_background_checker.dart';
@@ -21,6 +24,9 @@ class BackgroundFetchService {
   }
 
   static Future<void> registerPeriodicTask() async {
+    // workmanager 0.5.2: periyodik kayıt yalnızca Android; iOS Background Fetch kullanır.
+    if (!kIsWeb && Platform.isIOS) return;
+
     await Workmanager().registerPeriodicTask(
       _uniqueTaskName,
       newsFetchTask,

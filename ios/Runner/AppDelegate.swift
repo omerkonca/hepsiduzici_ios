@@ -10,13 +10,13 @@ import workmanager
   ) -> Bool {
     GeneratedPluginRegistrant.register(with: self)
 
-    // iOS arka plan haber kontrolü (BGTaskScheduler) — 15 dk minimum
-    if #available(iOS 13.0, *) {
-      WorkmanagerPlugin.registerPeriodicTask(
-        withIdentifier: "com.hepsiduzici.news_fetch_task",
-        frequency: NSNumber(value: 15 * 60)
-      )
+    // Arka plan isolate içinde diğer plugin'lerin çalışması için (workmanager 0.5.2)
+    WorkmanagerPlugin.setPluginRegistrantCallback { registry in
+      GeneratedPluginRegistrant.register(with: registry)
     }
+
+    // iOS periyodik görev: Background Fetch (registerPeriodicTask yalnızca Android)
+    UIApplication.shared.setMinimumBackgroundFetchInterval(15 * 60)
 
     return super.application(application, didFinishLaunchingWithOptions: launchOptions)
   }
