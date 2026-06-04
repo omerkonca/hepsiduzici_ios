@@ -2,6 +2,7 @@ import 'package:dio/dio.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
+import '../../core/config/app_config.dart';
 import 'notification_preferences_service.dart';
 import 'notification_service.dart';
 
@@ -30,8 +31,12 @@ class NewsBackgroundChecker {
 
       final dio = Dio();
       final response = await dio.get(
-        'https://hdbackend-vo99.onrender.com/api/news',
+        AppConfig.newsUrl,
         queryParameters: {'max': 5},
+        options: Options(
+          connectTimeout: const Duration(seconds: 20),
+          receiveTimeout: const Duration(seconds: 25),
+        ),
       );
 
       if (response.statusCode != 200 || response.data == null) {

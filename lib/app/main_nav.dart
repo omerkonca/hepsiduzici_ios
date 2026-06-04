@@ -1,5 +1,3 @@
-import 'dart:io' show Platform;
-
 import 'package:flutter/foundation.dart' show kIsWeb;
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -34,7 +32,10 @@ class _MainNavState extends ConsumerState<MainNav> with WidgetsBindingObserver {
   void initState() {
     super.initState();
     WidgetsBinding.instance.addObserver(this);
-    Future.microtask(_loadPendingNewsTap);
+    Future.microtask(() async {
+      await _loadPendingNewsTap();
+      await _checkNewsOnResume();
+    });
   }
 
   @override
@@ -51,11 +52,9 @@ class _MainNavState extends ConsumerState<MainNav> with WidgetsBindingObserver {
     }
   }
 
-  /// iOS arka plan görevleri güvenilir değil; uygulama açılınca haber kontrolü.
+  /// Arka plan görevleri her cihazda güvenilir değil; açılış / ön plana dönüşte kontrol.
   Future<void> _checkNewsOnResume() async {
     if (kIsWeb) return;
-    final isIos = !kIsWeb && Platform.isIOS;
-    if (!isIos) return;
 
     final prefs = ref.read(notificationPreferencesServiceProvider);
     final enabled = await prefs.getSystemTrayNewNews();
@@ -66,6 +65,7 @@ class _MainNavState extends ConsumerState<MainNav> with WidgetsBindingObserver {
     if (!granted) return;
 
     await notify.checkAndNotifyNewHeadline();
+    ref.invalidate(stampedNewsProvider);
   }
 
   @override

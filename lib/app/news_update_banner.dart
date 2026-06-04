@@ -28,12 +28,24 @@ Future<void> handleStampedNewsNotification(
   }
   if (last == key) return;
 
-  await prefsSvc.setLastSeenNewsHeadlineKey(key);
-
   final inApp = await prefsSvc.getInAppNewNewsBanner();
   final systemTray = await prefsSvc.getSystemTrayNewNews();
   final lifecycle = ref.read(appLifecycleStateProvider);
   final foreground = lifecycle == AppLifecycleState.resumed;
+
+  var notified = false;
+
+  if (systemTray) {
+    final granted = await notifySvc.areSystemNotificationsEnabled();
+    if (granted) {
+      final trackingKey = head.id.trim().isNotEmpty ? head.id.trim() : head.title.trim();
+      await notifySvc.showNewsHeadlineUpdate(
+        title: head.title,
+        trackingKey: trackingKey,
+      );
+      notified = true;
+    }
+  }
 
   if (!context.mounted) return;
 
@@ -122,14 +134,9 @@ Future<void> handleStampedNewsNotification(
       if (!context.mounted) return;
       messenger.hideCurrentMaterialBanner();
     });
-    return;
   }
 
-  if (systemTray && (!foreground || !inApp)) {
-    final trackingKey = head.id.trim().isNotEmpty ? head.id.trim() : head.title.trim();
-    await notifySvc.showNewsHeadlineUpdate(
-      title: head.title,
-      trackingKey: trackingKey,
-    );
+  if (notified || (foreground && inApp)) {
+    await prefsSvc.setLastSeenNewsHeadlineKey(key);
   }
 }
