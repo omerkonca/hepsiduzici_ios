@@ -3,6 +3,9 @@ import 'package:flutter_animate/flutter_animate.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../app/providers.dart';
 import '../../core/theme/app_colors.dart';
+import '../../core/theme/ui_tokens.dart';
+import '../../core/widgets/app_section_header.dart';
+import '../../core/widgets/app_pressable.dart';
 import '../../core/utils/color_utils.dart';
 import '../../core/utils/icon_mapper.dart';
 import '../../core/utils/target_router.dart';
@@ -62,7 +65,10 @@ class MoreScreen extends ConsumerWidget {
       final section = sections[si];
       slivers.add(
         SliverToBoxAdapter(
-          child: _SectionTitle(title: section.title)
+          child: AppSectionHeader(
+            title: section.title,
+            padding: const EdgeInsets.fromLTRB(24, 26, 24, 14),
+          )
               .animate(delay: delay.ms)
               .fadeIn(),
         ),
@@ -242,27 +248,6 @@ class _HeaderAction extends StatelessWidget {
   }
 }
 
-class _SectionTitle extends StatelessWidget {
-  const _SectionTitle({required this.title});
-  final String title;
-
-  @override
-  Widget build(BuildContext context) {
-    return Padding(
-      padding: const EdgeInsets.fromLTRB(24, 28, 24, 16),
-      child: Text(
-        title.toUpperCase(),
-        style: Theme.of(context).textTheme.labelLarge?.copyWith(
-              fontWeight: FontWeight.w900,
-              color: Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.5),
-              letterSpacing: 1.5,
-              fontSize: 12,
-            ),
-      ),
-    );
-  }
-}
-
 class _MoreTile extends StatelessWidget {
   const _MoreTile({
     required this.icon,
@@ -284,21 +269,15 @@ class _MoreTile extends StatelessWidget {
       margin: const EdgeInsets.only(bottom: 12),
       decoration: BoxDecoration(
         color: Theme.of(context).colorScheme.surface,
-        borderRadius: BorderRadius.circular(24),
+        borderRadius: BorderRadius.circular(UiTokens.radiusCard),
         border: Border.all(color: Theme.of(context).dividerColor.withValues(alpha: 0.08)),
-        boxShadow: [
-          BoxShadow(
-            color: Colors.black.withValues(alpha: 0.03),
-            blurRadius: 10,
-            offset: const Offset(0, 4),
-          ),
-        ],
+        boxShadow: UiTokens.softShadow(opacity: 0.03),
       ),
       child: Material(
         color: Colors.transparent,
-        child: InkWell(
+        child: AppPressable(
           onTap: onTap,
-          borderRadius: BorderRadius.circular(24),
+          borderRadius: BorderRadius.circular(UiTokens.radiusCard),
           child: Padding(
             padding: const EdgeInsets.all(16),
             child: Row(

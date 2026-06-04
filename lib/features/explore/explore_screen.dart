@@ -12,6 +12,7 @@ import 'auto_gallery_screen.dart';
 import '../veterinary/veterinary_screen.dart';
 import '../home/widgets/home_header.dart';
 import '../../core/widgets/favorite_button.dart';
+import '../../core/widgets/app_section_header.dart';
 import '../../core/widgets/place_network_image.dart';
 import '../../data/services/favorites_service.dart';
 import 'widgets/explore_list_theme.dart';
@@ -57,7 +58,7 @@ class ExploreScreen extends ConsumerWidget {
               // === ŞEHİR HİZMETLERİ GRID ===
               if (services.isNotEmpty) ...[
                 SliverToBoxAdapter(
-                  child: const _SectionHeader(title: 'Şehir Hizmetleri')
+                  child: const AppSectionHeader(title: 'Şehir Hizmetleri')
                       .animate(delay: 100.ms)
                       .fadeIn(),
                 ),
@@ -90,7 +91,11 @@ class ExploreScreen extends ConsumerWidget {
 
               // === GEZİ KATEGORİLERİ ===
               SliverToBoxAdapter(
-                child: const _SectionHeader(title: 'Gezi & Keşfet', showAll: true)
+                child: AppSectionHeader(
+                  title: 'Gezi & Keşfet',
+                  actionLabel: 'Tümü',
+                  onAction: () {},
+                )
                     .animate(delay: 350.ms)
                     .fadeIn(),
               ),
@@ -104,7 +109,7 @@ class ExploreScreen extends ConsumerWidget {
 
               // === KATEGORİ KARTLARI ===
               SliverToBoxAdapter(
-                child: const _SectionHeader(title: 'Kategoriler')
+                child: const AppSectionHeader(title: 'Kategoriler')
                     .animate(delay: 450.ms)
                     .fadeIn(),
               ),
@@ -140,6 +145,8 @@ class ExploreScreen extends ConsumerWidget {
                         preSelected = 'YAYLA';
                       } else if (item.id == 'thermal') {
                         preSelected = 'DOĞAL GÜZELLİK';
+                      } else if (item.id == 'museums') {
+                        preSelected = 'MÜZE';
                       }
 
                       return _PremiumExploreCard(
@@ -627,62 +634,6 @@ class _PremiumExploreCard extends StatelessWidget {
 // ╔══════════════════════════════════════════════════════════════╗
 // ║                   SECTION HEADER                            ║
 // ╚══════════════════════════════════════════════════════════════╝
-
-class _SectionHeader extends StatelessWidget {
-  const _SectionHeader({required this.title, this.showAll = false});
-
-  final String title;
-  final bool showAll;
-
-  @override
-  Widget build(BuildContext context) {
-    return Padding(
-      padding: const EdgeInsets.fromLTRB(20, 24, 20, 12),
-      child: Row(
-        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-        children: [
-          Row(
-            children: [
-              Container(
-                width: 5,
-                height: 20,
-                decoration: BoxDecoration(
-                  color: AppColors.primary,
-                  borderRadius: BorderRadius.circular(999),
-                ),
-              ),
-              const SizedBox(width: 10),
-              Text(
-                title,
-                style: ExploreListTheme.sectionTitleStyle().copyWith(fontSize: 17),
-              ),
-            ],
-          ),
-          if (showAll)
-            TextButton(
-              onPressed: () {},
-              style: TextButton.styleFrom(
-                visualDensity: VisualDensity.compact,
-                foregroundColor: AppColors.primaryDark,
-                backgroundColor: AppColors.primary.withValues(alpha: 0.08),
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(999),
-                ),
-              ),
-              child: const Row(
-                children: [
-                  Text('Tümü',
-                      style: TextStyle(fontWeight: FontWeight.w700, fontSize: 13)),
-                  SizedBox(width: 4),
-                  Icon(Icons.arrow_forward_ios_rounded, size: 10),
-                ],
-              ),
-            ),
-        ],
-      ),
-    );
-  }
-}
 
 // ╔══════════════════════════════════════════════════════════════╗
 // ║                   PROVIDERS                                 ║

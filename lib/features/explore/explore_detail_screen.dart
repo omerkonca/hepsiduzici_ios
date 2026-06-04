@@ -86,6 +86,29 @@ class _ExploreDetailScreenState extends State<ExploreDetailScreen> {
     'Kara yolu ile Düziçi': 4.1,
     'Tren ve havaalanı bağlantıları': 4.3,
     'Resmî iletişim ve güncelleme': 4.0,
+    'Dumanlı Yaylası': 4.9,
+    'Düldül Yaylası': 4.8,
+    'Belediye Yaylası': 4.6,
+    'Mezdağ (Mezdağı) Yaylası': 4.5,
+    'Tozluyurt Yaylası': 4.7,
+    'Yukarı Hacılar Yaylası': 4.4,
+    'Kurtlar Yaylası': 4.3,
+    'Nacar Yaylası': 4.5,
+    'Hodu Yaylası': 4.6,
+    'Zorkun Yaylası': 4.8,
+    'Düldül Yaylası Kamp Alanı': 4.8,
+    'Mezdağ (Mezdağı) Yaylası Kamp Alanı': 4.6,
+    'Tozluyurt Yaylası Kamp Alanı': 4.7,
+    'Kurtlar Yaylası Kamp Alanı': 4.4,
+    'Hodu Yaylası Kamp Alanı': 4.5,
+    'Dumanlı Yaylası Yürüyüş Parkuru': 4.7,
+    'Düldül Yaylası Doğa Yürüyüşü': 4.9,
+    'Mezdağ (Mezdağı) Yaylası Yürüyüş Rotası': 4.5,
+    'Kurtlar Yaylası Trekking Parkuru': 4.4,
+    'Hodu Yaylası Doğa Yürüyüşü': 4.6,
+    'Düziçi Köy Enstitüsü Müzesi (Eğitim Tarihi Müzesi)': 4.8,
+    'Karatepe-Aslantaş Açık Hava Müzesi': 4.9,
+    'Osmaniye Kent Müzesi': 4.7,
   };
 
   static const Map<String, int> _placeReviewCounts = {
@@ -102,6 +125,29 @@ class _ExploreDetailScreenState extends State<ExploreDetailScreen> {
     'Kara yolu ile Düziçi': 89,
     'Tren ve havaalanı bağlantıları': 156,
     'Resmî iletişim ve güncelleme': 32,
+    'Dumanlı Yaylası': 892,
+    'Düldül Yaylası': 450,
+    'Belediye Yaylası': 320,
+    'Mezdağ (Mezdağı) Yaylası': 120,
+    'Tozluyurt Yaylası': 180,
+    'Yukarı Hacılar Yaylası': 95,
+    'Kurtlar Yaylası': 60,
+    'Nacar Yaylası': 80,
+    'Hodu Yaylası': 110,
+    'Zorkun Yaylası': 920,
+    'Düldül Yaylası Kamp Alanı': 140,
+    'Mezdağ (Mezdağı) Yaylası Kamp Alanı': 55,
+    'Tozluyurt Yaylası Kamp Alanı': 70,
+    'Kurtlar Yaylası Kamp Alanı': 35,
+    'Hodu Yaylası Kamp Alanı': 45,
+    'Dumanlı Yaylası Yürüyüş Parkuru': 280,
+    'Düldül Yaylası Doğa Yürüyüşü': 320,
+    'Mezdağ (Mezdağı) Yaylası Yürüyüş Rotası': 75,
+    'Kurtlar Yaylası Trekking Parkuru': 42,
+    'Hodu Yaylası Doğa Yürüyüşü': 85,
+    'Düziçi Köy Enstitüsü Müzesi (Eğitim Tarihi Müzesi)': 156,
+    'Karatepe-Aslantaş Açık Hava Müzesi': 1120,
+    'Osmaniye Kent Müzesi': 340,
   };
 
   @override
@@ -110,32 +156,27 @@ class _ExploreDetailScreenState extends State<ExploreDetailScreen> {
     final videoUrl = widget.place.videoUrl;
     if (videoUrl != null && videoUrl.isNotEmpty) {
       final isYoutube = videoUrl.contains('youtube.com') || videoUrl.contains('youtu.be');
-      if (isYoutube) {
-        final videoId = YoutubePlayer.convertUrlToId(videoUrl);
-        if (videoId != null) {
-          _youtubeController = YoutubePlayerController(
-            initialVideoId: videoId,
-            flags: const YoutubePlayerFlags(
-              autoPlay: false,
-              mute: false,
-              disableDragSeek: false,
-              loop: false,
-              isLive: false,
-              forceHD: false,
-              enableCaption: true,
-            ),
-          );
+      if (!isYoutube) {
+        if (videoUrl.startsWith('assets/')) {
+          _videoPlayerController = VideoPlayerController.asset(videoUrl)
+            ..initialize().then((_) {
+              if (mounted) {
+                setState(() {
+                  _isVideoPlayerInitialized = true;
+                });
+              }
+            });
+        } else {
+          _videoPlayerController = VideoPlayerController.networkUrl(
+            Uri.parse(videoUrl),
+          )..initialize().then((_) {
+              if (mounted) {
+                setState(() {
+                  _isVideoPlayerInitialized = true;
+                });
+              }
+            });
         }
-      } else {
-        _videoPlayerController = VideoPlayerController.networkUrl(
-          Uri.parse(videoUrl),
-        )..initialize().then((_) {
-            if (mounted) {
-              setState(() {
-                _isVideoPlayerInitialized = true;
-              });
-            }
-          });
       }
     }
   }
@@ -270,16 +311,18 @@ class _ExploreDetailScreenState extends State<ExploreDetailScreen> {
                 heroTag: 'place_image_${widget.place.name}',
                 maxHeight: 1200,
               ),
-            DecoratedBox(
-              decoration: BoxDecoration(
-                gradient: LinearGradient(
-                  begin: Alignment.topCenter,
-                  end: Alignment.bottomCenter,
-                  colors: [
-                    Colors.black.withValues(alpha: 0.4),
-                    Colors.transparent,
-                    Colors.black.withValues(alpha: 0.7),
-                  ],
+            IgnorePointer(
+              child: DecoratedBox(
+                decoration: BoxDecoration(
+                  gradient: LinearGradient(
+                    begin: Alignment.topCenter,
+                    end: Alignment.bottomCenter,
+                    colors: [
+                      Colors.black.withValues(alpha: 0.4),
+                      Colors.transparent,
+                      Colors.black.withValues(alpha: 0.7),
+                    ],
+                  ),
                 ),
               ),
             ),
@@ -288,19 +331,21 @@ class _ExploreDetailScreenState extends State<ExploreDetailScreen> {
                 bottom: 45,
                 left: 0,
                 right: 0,
-                child: Row(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: List.generate(
-                    widget.place.gallery!.length,
-                    (index) => Container(
-                      margin: const EdgeInsets.symmetric(horizontal: 4),
-                      width: 8,
-                      height: 8,
-                      decoration: BoxDecoration(
-                        shape: BoxShape.circle,
-                        color: _currentGalleryIndex == index
-                            ? Colors.white
-                            : Colors.white.withValues(alpha: 0.4),
+                child: IgnorePointer(
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: List.generate(
+                      widget.place.gallery!.length,
+                      (index) => Container(
+                        margin: const EdgeInsets.symmetric(horizontal: 4),
+                        width: 8,
+                        height: 8,
+                        decoration: BoxDecoration(
+                          shape: BoxShape.circle,
+                          color: _currentGalleryIndex == index
+                              ? Colors.white
+                              : Colors.white.withValues(alpha: 0.4),
+                        ),
                       ),
                     ),
                   ),
@@ -531,13 +576,61 @@ class _ExploreDetailScreenState extends State<ExploreDetailScreen> {
           ClipRRect(
             borderRadius: BorderRadius.circular(20),
             child: isYoutube
-                ? (_youtubeController != null
-                    ? YoutubePlayer(
-                        controller: _youtubeController!,
-                        showVideoProgressIndicator: true,
-                        progressIndicatorColor: AppColors.primary,
-                      )
-                    : const SizedBox.shrink())
+                ? InkWell(
+                    onTap: () => LauncherUtils.openUrlExternal(context, widget.place.videoUrl!),
+                    child: Stack(
+                      alignment: Alignment.center,
+                      children: [
+                        _buildYoutubeThumbnail(),
+                        Positioned.fill(
+                          child: Container(
+                            color: Colors.black26,
+                            child: Center(
+                              child: Container(
+                                padding: const EdgeInsets.all(16),
+                                decoration: BoxDecoration(
+                                  color: Colors.black54,
+                                  shape: BoxShape.circle,
+                                  border: Border.all(color: Colors.white, width: 2),
+                                ),
+                                child: const Icon(
+                                  Icons.play_arrow_rounded,
+                                  color: Colors.white,
+                                  size: 40,
+                                ),
+                              ),
+                            ),
+                          ),
+                        ),
+                        Positioned(
+                          bottom: 12,
+                          right: 12,
+                          child: Container(
+                            padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
+                            decoration: BoxDecoration(
+                              color: Colors.red.withValues(alpha: 0.9),
+                              borderRadius: BorderRadius.circular(8),
+                            ),
+                            child: const Row(
+                              mainAxisSize: MainAxisSize.min,
+                              children: [
+                                Icon(Icons.open_in_new_rounded, color: Colors.white, size: 14),
+                                SizedBox(width: 6),
+                                Text(
+                                  'YouTube\'da İzle',
+                                  style: TextStyle(
+                                    color: Colors.white,
+                                    fontSize: 12,
+                                    fontWeight: FontWeight.bold,
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ),
+                        ),
+                      ],
+                    ),
+                  )
                 : (_videoPlayerController != null && _isVideoPlayerInitialized
                     ? AspectRatio(
                         aspectRatio: _videoPlayerController!.value.aspectRatio,
@@ -558,6 +651,32 @@ class _ExploreDetailScreenState extends State<ExploreDetailScreen> {
           ),
         ],
       ),
+    );
+  }
+
+  Widget _buildYoutubeThumbnail() {
+    final videoId = YoutubePlayer.convertUrlToId(widget.place.videoUrl!);
+    if (videoId != null) {
+      return Image.network(
+        'https://img.youtube.com/vi/$videoId/hqdefault.jpg',
+        width: double.infinity,
+        height: 200,
+        fit: BoxFit.cover,
+        errorBuilder: (context, error, stackTrace) {
+          return Container(
+            width: double.infinity,
+            height: 200,
+            color: Colors.black87,
+            child: const Icon(Icons.video_library_rounded, color: Colors.white54, size: 48),
+          );
+        },
+      );
+    }
+    return Container(
+      width: double.infinity,
+      height: 200,
+      color: Colors.black87,
+      child: const Icon(Icons.video_library_rounded, color: Colors.white54, size: 48),
     );
   }
 

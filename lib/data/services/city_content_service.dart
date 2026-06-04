@@ -16,6 +16,10 @@ class CityContentService {
     return _reconcile(remote, bundled);
   }
 
+  Future<CityContent> loadBundledOnly() => _loadBundled();
+  Future<CityContent?> loadRemoteOnly() => _loadRemote();
+  CityContent reconcileOnly(CityContent remote, CityContent bundled) => _reconcile(remote, bundled);
+
   Future<CityContent> _loadBundled() async {
     final jsonString = await rootBundle.loadString('assets/data/city_content.json');
     final decoded = jsonDecode(jsonString) as Map<String, dynamic>;

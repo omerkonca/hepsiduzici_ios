@@ -5,7 +5,11 @@ import 'package:intl/intl.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import '../../app/providers.dart';
 import '../../core/theme/app_colors.dart';
+import '../../core/theme/ui_tokens.dart';
+import '../../core/utils/app_navigation.dart';
 import '../../core/utils/launcher_utils.dart';
+import '../../core/widgets/app_pressable.dart';
+import '../../core/widgets/skeleton_shimmer.dart';
 import '../../data/models/event_item.dart';
 import 'event_detail_screen.dart';
 import 'my_calendar_screen.dart';
@@ -69,7 +73,7 @@ class _EventsScreenState extends ConsumerState<EventsScreen> {
                               style: Theme.of(context).textTheme.headlineSmall?.copyWith(
                                     fontWeight: FontWeight.w900,
                                     color: Theme.of(context).colorScheme.onSurface,
-                                    letterSpacing: -0.8,
+                                    letterSpacing: -1.0,
                                   ),
                             ),
                             const SizedBox(height: 2),
@@ -85,18 +89,18 @@ class _EventsScreenState extends ConsumerState<EventsScreen> {
                           ],
                         ),
                         Container(
-                          padding: const EdgeInsets.all(10),
+                          padding: const EdgeInsets.all(11),
                           decoration: BoxDecoration(
                             color: Theme.of(context).colorScheme.surface,
                             shape: BoxShape.circle,
                             boxShadow: [
                               BoxShadow(
-                                color: Colors.black.withValues(alpha: 0.05),
-                                blurRadius: 10,
-                                offset: const Offset(0, 4),
+                                color: Colors.black.withValues(alpha: 0.045),
+                                blurRadius: 14,
+                                offset: const Offset(0, 6),
                               ),
                             ],
-                            border: Border.all(color: Theme.of(context).dividerColor.withValues(alpha: 0.1)),
+                            border: Border.all(color: Theme.of(context).dividerColor.withValues(alpha: 0.16)),
                           ),
                           child: Icon(Icons.search_rounded, color: Theme.of(context).colorScheme.onSurface),
                         ),
@@ -156,10 +160,8 @@ class _EventsScreenState extends ConsumerState<EventsScreen> {
                       label: 'Favoriler',
                       color: const Color(0xFFFFF0F0),
                       iconColor: const Color(0xFFE74C3C),
-                      onTap: () => Navigator.push(
-                        context,
-                        MaterialPageRoute(builder: (_) => const MyCalendarScreen()),
-                      ),
+                      onTap: () =>
+                          AppNavigation.push<void>(context, const MyCalendarScreen()),
                     ),
                     const SizedBox(width: 12),
                     _QuickActionButton(
@@ -167,10 +169,8 @@ class _EventsScreenState extends ConsumerState<EventsScreen> {
                       label: 'Takvimim',
                       color: const Color(0xFFF0F7FF),
                       iconColor: const Color(0xFF3498DB),
-                      onTap: () => Navigator.push(
-                        context,
-                        MaterialPageRoute(builder: (_) => const MyCalendarScreen()),
-                      ),
+                      onTap: () =>
+                          AppNavigation.push<void>(context, const MyCalendarScreen()),
                     ),
                     const SizedBox(width: 12),
                     _QuickActionButton(
@@ -178,10 +178,8 @@ class _EventsScreenState extends ConsumerState<EventsScreen> {
                       label: 'Alarmlar',
                       color: const Color(0xFFFFF8E1),
                       iconColor: const Color(0xFFF1C40F),
-                      onTap: () => Navigator.push(
-                        context,
-                        MaterialPageRoute(builder: (_) => const MyCalendarScreen()),
-                      ),
+                      onTap: () =>
+                          AppNavigation.push<void>(context, const MyCalendarScreen()),
                     ),
                   ],
                 ),
@@ -229,11 +227,9 @@ class _EventsScreenState extends ConsumerState<EventsScreen> {
                             final item = filtered[index];
                             return _EventCard(
                               item: item,
-                              onTap: () => Navigator.push(
+                              onTap: () => AppNavigation.push<void>(
                                 context,
-                                MaterialPageRoute(
-                                  builder: (_) => EventDetailScreen(event: item),
-                                ),
+                                EventDetailScreen(event: item),
                               ),
                             ).animate(delay: (200 + (index * 50)).ms).fadeIn().slideY(begin: 0.1, end: 0);
                           },
@@ -277,11 +273,9 @@ class _EventsScreenState extends ConsumerState<EventsScreen> {
                             final item = upcoming[index];
                             return _EventCard(
                               item: item,
-                              onTap: () => Navigator.push(
+                              onTap: () => AppNavigation.push<void>(
                                 context,
-                                MaterialPageRoute(
-                                  builder: (_) => EventDetailScreen(event: item),
-                                ),
+                                EventDetailScreen(event: item),
                               ),
                             ).animate(delay: (100 + (index * 50)).ms).fadeIn().slideY(begin: 0.1, end: 0);
                           },
@@ -292,9 +286,7 @@ class _EventsScreenState extends ConsumerState<EventsScreen> {
                   ],
                 );
               },
-              loading: () => const SliverFillRemaining(
-                child: Center(child: CircularProgressIndicator(color: AppColors.primaryDark)),
-              ),
+              loading: () => const _EventsLoadingSliver(),
               error: (err, _) => SliverFillRemaining(
                 child: Center(child: Text('Hata: $err')),
               ),
@@ -519,15 +511,16 @@ class _QuickActionButton extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Expanded(
-      child: GestureDetector(
+      child: AppPressable(
         onTap: onTap,
+        borderRadius: BorderRadius.circular(UiTokens.radiusCard),
         child: Container(
           padding: const EdgeInsets.symmetric(vertical: 16),
           decoration: BoxDecoration(
             color: Theme.of(context).brightness == Brightness.dark 
                 ? color.withValues(alpha: 0.1) 
                 : color,
-            borderRadius: BorderRadius.circular(22),
+            borderRadius: BorderRadius.circular(UiTokens.radiusCard),
             border: Theme.of(context).brightness == Brightness.dark 
                 ? Border.all(color: iconColor.withValues(alpha: 0.3)) 
                 : null,
@@ -575,15 +568,9 @@ class _DropdownFilter extends StatelessWidget {
         padding: const EdgeInsets.all(14),
         decoration: BoxDecoration(
           color: Theme.of(context).colorScheme.surface,
-          borderRadius: BorderRadius.circular(20),
+          borderRadius: BorderRadius.circular(UiTokens.radiusControl),
           border: Border.all(color: Theme.of(context).dividerColor.withValues(alpha: 0.1)),
-          boxShadow: [
-            BoxShadow(
-              color: Colors.black.withValues(alpha: 0.04),
-              blurRadius: 12,
-              offset: const Offset(0, 4),
-            ),
-          ],
+          boxShadow: UiTokens.softShadow(opacity: 0.04),
         ),
         child: Row(
           children: [
@@ -642,23 +629,18 @@ class _EventCard extends ConsumerWidget {
 
     return Padding(
       padding: const EdgeInsets.fromLTRB(20, 0, 20, 16),
-      child: GestureDetector(
+      child: AppPressable(
         onTap: onTap,
+        borderRadius: BorderRadius.circular(UiTokens.radiusCard),
         child: Container(
           decoration: BoxDecoration(
             color: Theme.of(context).colorScheme.surface,
-            borderRadius: BorderRadius.circular(24),
+            borderRadius: BorderRadius.circular(UiTokens.radiusCard),
             border: Border.all(color: Theme.of(context).dividerColor.withValues(alpha: 0.1)),
-            boxShadow: [
-              BoxShadow(
-                color: Colors.black.withValues(alpha: 0.05),
-                blurRadius: 20,
-                offset: const Offset(0, 10),
-              ),
-            ],
+            boxShadow: UiTokens.softShadow(),
           ),
           child: ClipRRect(
-            borderRadius: BorderRadius.circular(24),
+            borderRadius: BorderRadius.circular(UiTokens.radiusCard),
             child: IntrinsicHeight(
               child: Row(
                 children: [
@@ -788,6 +770,30 @@ class _EventCard extends ConsumerWidget {
             ),
           ),
         ),
+      ),
+    );
+  }
+}
+
+class _EventsLoadingSliver extends StatelessWidget {
+  const _EventsLoadingSliver();
+
+  @override
+  Widget build(BuildContext context) {
+    return SliverList(
+      delegate: SliverChildBuilderDelegate(
+        (context, index) {
+          return Padding(
+            padding: const EdgeInsets.fromLTRB(20, 0, 20, 16),
+            child: SkeletonShimmer(
+              child: const SkeletonBlock(
+                height: 182,
+                radius: UiTokens.radiusCard,
+              ),
+            ),
+          );
+        },
+        childCount: 3,
       ),
     );
   }

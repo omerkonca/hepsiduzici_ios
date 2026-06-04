@@ -3,6 +3,11 @@ import 'package:flutter_animate/flutter_animate.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../app/providers.dart';
 import '../../core/theme/app_colors.dart';
+import '../../core/theme/ui_tokens.dart';
+import '../../core/widgets/app_section_header.dart';
+import '../../core/widgets/app_pressable.dart';
+import '../../core/widgets/skeleton_shimmer.dart';
+import '../../core/utils/app_navigation.dart';
 import '../../core/utils/weather_wmo_tr.dart';
 import '../../core/utils/icon_mapper.dart';
 import 'emergency_numbers_screen.dart';
@@ -100,7 +105,7 @@ class _ServicesScreenState extends ConsumerState<ServicesScreen> {
               
               if (filteredAcil.isNotEmpty) ...[
                 SliverToBoxAdapter(
-                  child: const _SectionTitle(title: 'Acil ve Sağlık')
+                  child: const AppSectionHeader(title: 'Acil ve Sağlık')
                       .animate(delay: 250.ms).fadeIn(),
                 ),
                 SliverList(
@@ -116,7 +121,7 @@ class _ServicesScreenState extends ConsumerState<ServicesScreen> {
 
               if (filteredSehir.isNotEmpty) ...[
                 SliverToBoxAdapter(
-                  child: const _SectionTitle(title: 'Şehir Dinamiği')
+                  child: const AppSectionHeader(title: 'Şehir Dinamiği')
                       .animate(delay: 400.ms).fadeIn(),
                 ),
                 SliverList(
@@ -132,7 +137,7 @@ class _ServicesScreenState extends ConsumerState<ServicesScreen> {
 
               if (filteredResmi.isNotEmpty) ...[
                 SliverToBoxAdapter(
-                  child: const _SectionTitle(title: 'Resmi İşlemler')
+                  child: const AppSectionHeader(title: 'Resmi İşlemler')
                       .animate(delay: 550.ms).fadeIn(),
                 ),
                 SliverList(
@@ -148,7 +153,7 @@ class _ServicesScreenState extends ConsumerState<ServicesScreen> {
 
               if (_searchQuery.isEmpty) ...[
                 SliverToBoxAdapter(
-                  child: const _SectionTitle(title: 'Hızlı İletişim')
+                  child: const AppSectionHeader(title: 'Hızlı İletişim')
                       .animate(delay: 700.ms).fadeIn(),
                 ),
                 SliverToBoxAdapter(
@@ -184,15 +189,13 @@ class _ServicesScreenState extends ConsumerState<ServicesScreen> {
           ),
         );
       },
-      loading: () => const Center(child: CircularProgressIndicator()),
+      loading: () => const _ServicesLoadingSkeleton(),
       error: (e, _) => _ErrorState(error: e.toString(), onRetry: () => ref.invalidate(cityContentProvider)),
     );
   }
 
   void _push(BuildContext context, Widget page) {
-    Navigator.of(context).push(
-      MaterialPageRoute(builder: (_) => page),
-    );
+    AppNavigation.push<void>(context, page);
   }
 
   void _openServiceTarget(BuildContext context, String target, CityContent content) {
@@ -308,6 +311,37 @@ class _ErrorState extends StatelessWidget {
   }
 }
 
+class _ServicesLoadingSkeleton extends StatelessWidget {
+  const _ServicesLoadingSkeleton();
+
+  @override
+  Widget build(BuildContext context) {
+    return ListView(
+      physics: const AlwaysScrollableScrollPhysics(),
+      padding: const EdgeInsets.fromLTRB(20, 28, 20, 24),
+      children: [
+        const SkeletonBlock(height: 30, width: 210, radius: 10),
+        const SizedBox(height: 12),
+        const SkeletonBlock(height: 14, width: 170, radius: 8),
+        const SizedBox(height: 22),
+        const SkeletonBlock(height: 52, radius: 18),
+        const SizedBox(height: 20),
+        const SkeletonBlock(height: 180, radius: 28),
+        const SizedBox(height: 24),
+        const SkeletonBlock(height: 22, width: 180, radius: 8),
+        const SizedBox(height: 12),
+        ...List.generate(
+          4,
+          (i) => Padding(
+            padding: const EdgeInsets.only(bottom: 12),
+            child: const SkeletonBlock(height: 92, radius: 24),
+          ),
+        ),
+      ],
+    );
+  }
+}
+
 class _ServiceHeader extends StatelessWidget {
   final ValueChanged<String> onSearchChanged;
 
@@ -315,8 +349,9 @@ class _ServiceHeader extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final textTheme = Theme.of(context).textTheme;
     return Container(
-      padding: const EdgeInsets.fromLTRB(20, 32, 20, 28),
+      padding: const EdgeInsets.fromLTRB(20, 28, 20, 24),
       decoration: BoxDecoration(
         gradient: LinearGradient(
           begin: Alignment.topLeft,
@@ -349,16 +384,16 @@ class _ServiceHeader extends StatelessWidget {
                 children: [
                   Text(
                     'Şehir Hizmetleri',
-                    style: Theme.of(context).textTheme.headlineSmall?.copyWith(
+                    style: textTheme.headlineSmall?.copyWith(
                           fontWeight: FontWeight.w900,
                           color: Theme.of(context).colorScheme.onSurface,
                           letterSpacing: -1.2,
-                          fontSize: 28,
+                          fontSize: 28.0,
                         ),
                   ),
                   Text(
                     'İhtiyacın olan her şey burada.',
-                    style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                    style: textTheme.bodyMedium?.copyWith(
                           color: AppColors.textMuted,
                           fontWeight: FontWeight.w600,
                         ),
@@ -379,14 +414,8 @@ class _ServiceHeader extends StatelessWidget {
           Container(
             decoration: BoxDecoration(
               color: Theme.of(context).colorScheme.surface,
-              borderRadius: BorderRadius.circular(20),
-              boxShadow: [
-                BoxShadow(
-                  color: Colors.black.withValues(alpha: 0.03),
-                  blurRadius: 10,
-                  offset: const Offset(0, 4),
-                ),
-              ],
+              borderRadius: BorderRadius.circular(UiTokens.radiusControl),
+              boxShadow: UiTokens.softShadow(opacity: 0.035),
               border: Border.all(color: Theme.of(context).dividerColor.withValues(alpha: 0.1)),
             ),
             child: TextField(
@@ -654,41 +683,6 @@ class _BentoItem extends StatelessWidget {
   }
 }
 
-class _SectionTitle extends StatelessWidget {
-  const _SectionTitle({required this.title});
-
-  final String title;
-
-  @override
-  Widget build(BuildContext context) {
-    return Padding(
-      padding: const EdgeInsets.fromLTRB(20, 24, 20, 16),
-      child: Row(
-        children: [
-          Container(
-            width: 4,
-            height: 18,
-            decoration: BoxDecoration(
-              color: AppColors.primary,
-              borderRadius: BorderRadius.circular(2),
-            ),
-          ),
-          const SizedBox(width: 12),
-          Text(
-            title,
-            style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                  fontWeight: FontWeight.w900,
-                  color: Theme.of(context).colorScheme.onSurface,
-                  letterSpacing: -0.5,
-                  fontSize: 18,
-                ),
-          ),
-        ],
-      ),
-    );
-  }
-}
-
 class _ServiceTile extends StatelessWidget {
   const _ServiceTile({
     required this.tile,
@@ -703,82 +697,73 @@ class _ServiceTile extends StatelessWidget {
     final color = _getTileColor(tile.id);
     return Padding(
       padding: const EdgeInsets.fromLTRB(20, 0, 20, 14),
-      child: Container(
-        decoration: BoxDecoration(
-          color: Theme.of(context).cardTheme.color ?? Theme.of(context).colorScheme.surface,
-          borderRadius: BorderRadius.circular(24),
-          border: Border.all(color: Theme.of(context).dividerColor.withValues(alpha: 0.1)),
-          boxShadow: [
-            BoxShadow(
-              color: Colors.black.withValues(alpha: 0.02),
-              blurRadius: 10,
-              offset: const Offset(0, 4),
-            ),
-          ],
-        ),
-        child: Material(
-          color: Colors.transparent,
-          borderRadius: BorderRadius.circular(24),
-          child: InkWell(
-            onTap: onTap,
-            borderRadius: BorderRadius.circular(24),
-            child: Container(
-              padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 18),
-              decoration: BoxDecoration(
-                borderRadius: BorderRadius.circular(24),
-              ),
-              child: Row(
-                children: [
-                  Container(
-                    padding: const EdgeInsets.all(14),
-                    decoration: BoxDecoration(
-                      gradient: LinearGradient(
-                        begin: Alignment.topLeft,
-                        end: Alignment.bottomRight,
-                        colors: [
-                          color.withValues(alpha: 0.15),
-                          color.withValues(alpha: 0.05),
-                        ],
-                      ),
-                      borderRadius: BorderRadius.circular(18),
-                    ),
-                    child: Icon(IconMapper.fromName(tile.icon), color: color, size: 26),
-                  ),
-                  const SizedBox(width: 18),
-                  Expanded(
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Text(
-                          tile.title,
-                          style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                                fontWeight: FontWeight.w900,
-                                color: Theme.of(context).colorScheme.onSurface,
-                                letterSpacing: -0.4,
-                              ),
-                        ),
-                        const SizedBox(height: 4),
-                        Text(
-                          tile.subtitle,
-                          style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                                color: AppColors.textMuted,
-                                fontWeight: FontWeight.w600,
-                                fontSize: 12,
-                              ),
-                        ),
+      child: AppPressable(
+        onTap: onTap,
+        borderRadius: BorderRadius.circular(UiTokens.radiusCard),
+        child: Container(
+          decoration: BoxDecoration(
+            color: Theme.of(context).cardTheme.color ?? Theme.of(context).colorScheme.surface,
+            borderRadius: BorderRadius.circular(UiTokens.radiusCard),
+            border: Border.all(color: Theme.of(context).dividerColor.withValues(alpha: 0.1)),
+            boxShadow: UiTokens.softShadow(opacity: 0.03),
+          ),
+          child: Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 18),
+            child: Row(
+              children: [
+                Container(
+                  padding: const EdgeInsets.all(14),
+                  decoration: BoxDecoration(
+                    gradient: LinearGradient(
+                      begin: Alignment.topLeft,
+                      end: Alignment.bottomRight,
+                      colors: [
+                        color.withValues(alpha: 0.15),
+                        color.withValues(alpha: 0.05),
                       ],
                     ),
+                    borderRadius: BorderRadius.circular(18),
                   ),
-                  Container(
-                    padding: const EdgeInsets.all(8),
-                    decoration: BoxDecoration(
-                      color: AppColors.background,
-                      shape: BoxShape.circle,
-                    ),
-                    child: const Icon(Icons.chevron_right_rounded, color: AppColors.softGrey, size: 20),
+                  child: Icon(IconMapper.fromName(tile.icon), color: color, size: 26),
+                ),
+                const SizedBox(width: 18),
+                Expanded(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        tile.title,
+                        style: Theme.of(context).textTheme.titleMedium?.copyWith(
+                              fontWeight: FontWeight.w900,
+                              color: Theme.of(context).colorScheme.onSurface,
+                              letterSpacing: -0.4,
+                            ),
+                      ),
+                      const SizedBox(height: 4),
+                      Text(
+                        tile.subtitle,
+                        style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                              color: AppColors.textMuted,
+                              fontWeight: FontWeight.w600,
+                              fontSize: 12,
+                            ),
+                      ),
+                    ],
                   ),
-                ],
-              ),
+                ),
+                Container(
+                  padding: const EdgeInsets.all(8),
+                  decoration: const BoxDecoration(
+                    color: AppColors.background,
+                    shape: BoxShape.circle,
+                  ),
+                  child: const Icon(
+                    Icons.chevron_right_rounded,
+                    color: AppColors.softGrey,
+                    size: 20,
+                  ),
+                ),
+              ],
             ),
           ),
         ),
@@ -788,16 +773,26 @@ class _ServiceTile extends StatelessWidget {
 
   Color _getTileColor(String id) {
     switch (id) {
-      case 'pharmacy': return Colors.teal;
-      case 'prayer': return Colors.green[700]!;
-      case 'weather': return Colors.blue[600]!;
-      case 'news_center': return Colors.indigoAccent;
-      case 'health': return Colors.blueAccent;
-      case 'emergency': return Colors.redAccent;
-      case 'municipality': return Colors.amber[800]!;
-      case 'outages': return Colors.orange;
-      case 'transport': return Colors.deepPurple;
-      default: return AppColors.primary;
+      case 'pharmacy':
+        return Colors.teal;
+      case 'prayer':
+        return Colors.green[700]!;
+      case 'weather':
+        return Colors.blue[600]!;
+      case 'news_center':
+        return Colors.indigoAccent;
+      case 'health':
+        return Colors.blueAccent;
+      case 'emergency':
+        return Colors.redAccent;
+      case 'municipality':
+        return Colors.amber[800]!;
+      case 'outages':
+        return Colors.orange;
+      case 'transport':
+        return Colors.deepPurple;
+      default:
+        return AppColors.primary;
     }
   }
 }

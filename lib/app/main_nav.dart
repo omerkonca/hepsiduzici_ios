@@ -5,6 +5,7 @@ import 'package:flutter_animate/flutter_animate.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'dart:ui' as ui;
 import '../core/theme/app_colors.dart';
+import '../core/utils/app_navigation.dart';
 import '../data/models/news_item.dart';
 import '../data/models/stamped_data.dart';
 import '../data/services/news_notification_utils.dart';
@@ -232,9 +233,7 @@ class _MainNavState extends ConsumerState<MainNav> with WidgetsBindingObserver {
     ref.read(currentIndexProvider.notifier).state = 0;
     WidgetsBinding.instance.addPostFrameCallback((_) async {
       if (!mounted) return;
-      await Navigator.of(context).push(
-        MaterialPageRoute(builder: (_) => NewsDetailScreen(item: target!)),
-      );
+      await AppNavigation.push<void>(context, NewsDetailScreen(item: target!));
       _openingFromNotification = false;
     });
   }
@@ -297,6 +296,22 @@ class _NavItem extends StatelessWidget {
             border: selected
                 ? Border.all(color: AppColors.primary.withValues(alpha: 0.22), width: 1)
                 : Border.all(color: Colors.transparent),
+            boxShadow: selected
+                ? [
+                    BoxShadow(
+                      color: AppColors.primary.withValues(alpha: 0.24),
+                      blurRadius: 18,
+                      spreadRadius: -7,
+                      offset: const Offset(0, 7),
+                    ),
+                    BoxShadow(
+                      color: const Color(0xFFFFD66D).withValues(alpha: 0.3),
+                      blurRadius: 12,
+                      spreadRadius: -9,
+                      offset: const Offset(0, 3),
+                    ),
+                  ]
+                : null,
           ),
           child: Column(
             mainAxisSize: MainAxisSize.min,
@@ -320,10 +335,39 @@ class _NavItem extends StatelessWidget {
                         ]
                       : null,
                 ),
-                child: _NavIcon(
-                  selected: selected,
-                  iconAsset: selected ? selectedIconAsset : iconAsset,
-                  fallbackIcon: selected ? selectedFallbackIcon : fallbackIcon,
+                child: TweenAnimationBuilder<double>(
+                  tween: Tween<double>(begin: 0.94, end: selected ? 1.06 : 1.0),
+                  duration: const Duration(milliseconds: 260),
+                  curve: Curves.easeOutBack,
+                  builder: (context, scale, child) {
+                    return Transform.scale(scale: scale, child: child);
+                  },
+                  child: Stack(
+                    clipBehavior: Clip.none,
+                    children: [
+                      _NavIcon(
+                        selected: selected,
+                        iconAsset: selected ? selectedIconAsset : iconAsset,
+                        fallbackIcon: selected ? selectedFallbackIcon : fallbackIcon,
+                      ),
+                      if (selected)
+                        Positioned(
+                          top: -3,
+                          right: -4,
+                          child: Container(
+                            width: 5,
+                            height: 5,
+                            decoration: const BoxDecoration(
+                              color: Color(0xFFFFD66D),
+                              shape: BoxShape.circle,
+                            ),
+                          ).animate(onPlay: (c) => c.repeat()).fadeOut(
+                                duration: 850.ms,
+                                begin: 1,
+                              ),
+                        ),
+                    ],
+                  ),
                 ),
               ),
               const SizedBox(height: 3),

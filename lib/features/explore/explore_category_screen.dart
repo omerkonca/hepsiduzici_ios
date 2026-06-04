@@ -105,6 +105,17 @@ class _ExploreCategoryScreenState extends State<ExploreCategoryScreen> {
     'Dumanlı Yaylası çevresi': _PlaceCoords(37.2880, 36.5650),
     'Kuşçu Yaylası': _PlaceCoords(37.2750, 36.4900),
     'Haruniye-Kuşçu Doğa Yolu': _PlaceCoords(37.2750, 36.4900),
+    'Düldül Yaylası Kamp Alanı': _PlaceCoords(37.349, 36.561),
+    'Mezdağ (Mezdağı) Yaylası Kamp Alanı': _PlaceCoords(37.320, 36.540),
+    'Tozluyurt Yaylası Kamp Alanı': _PlaceCoords(37.330, 36.550),
+    'Kurtlar Yaylası Kamp Alanı': _PlaceCoords(37.275, 36.435),
+    'Hodu Yaylası Kamp Alanı': _PlaceCoords(37.315, 36.530),
+    'Dumanlı Yaylası Yürüyüş Parkuru': _PlaceCoords(37.2880, 36.5650),
+    'Düldül Yaylası Doğa Yürüyüşü': _PlaceCoords(37.349, 36.561),
+    'Mezdağ (Mezdağı) Yaylası Yürüyüş Rotası': _PlaceCoords(37.320, 36.540),
+    'Kurtlar Yaylası Trekking Parkuru': _PlaceCoords(37.275, 36.435),
+    'Hodu Yaylası Doğa Yürüyüşü': _PlaceCoords(37.315, 36.530),
+    'Düziçi Köy Enstitüsü Müzesi (Eğitim Tarihi Müzesi)': _PlaceCoords(37.2440, 36.4510),
     
     'Karasu Şelalesi (Sabun Çayı)': _PlaceCoords(37.2510, 36.4680),
     'Karasu Şelalesi': _PlaceCoords(37.2510, 36.4680),
@@ -133,8 +144,8 @@ class _ExploreCategoryScreenState extends State<ExploreCategoryScreen> {
     'Düziçi Mesire Alanları': _PlaceCoords(37.2500, 36.4600),
     
     // Osmaniye
-    'Karatepe-Aslantaş Açık Hava Müzesi': _PlaceCoords(37.2990, 36.2480),
-    'Karatepe-Aslantaş Açık Hava Müzesi (Kadirli)': _PlaceCoords(37.2990, 36.2480),
+    'Karatepe-Aslantaş Açık Hava Müzesi': _PlaceCoords(37.294, 36.257),
+    'Karatepe-Aslantaş Açık Hava Müzesi (Kadirli)': _PlaceCoords(37.294, 36.257),
     'Aslantaş Barajı': _PlaceCoords(37.2850, 36.2550),
     'Kastabala (Hierapolis) Antik Kenti': _PlaceCoords(37.1760, 36.1830),
     'Kastabala Antik Kenti (Merkez)': _PlaceCoords(37.1760, 36.1830),

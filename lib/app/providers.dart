@@ -479,10 +479,35 @@ final newsFullTextProvider = FutureProvider.family<String?, String?>((ref, url) 
 /// Haber listesinde secili kategori (kaynak adi). null = Tumu.
 final selectedNewsCategoryProvider = StateProvider<String?>((ref) => null);
 
-final cityContentProvider = FutureProvider<CityContent>((ref) {
-  final service = ref.watch(cityContentServiceProvider);
-  return service.loadContent();
-});
+class CityContentNotifier extends AsyncNotifier<CityContent> {
+  @override
+  FutureOr<CityContent> build() async {
+    final service = ref.watch(cityContentServiceProvider);
+    
+    // 1. Yerel veriyi hemen yükle ve ilk durum olarak ata
+    final bundled = await service.loadBundledOnly();
+    
+    // 2. Uzak veriyi arka planda yüklemeyi başlat
+    _loadRemoteInBackground(service, bundled);
+    
+    return bundled;
+  }
+  
+  Future<void> _loadRemoteInBackground(CityContentService service, CityContent bundled) async {
+    try {
+      final remote = await service.loadRemoteOnly();
+      if (remote != null) {
+        state = AsyncValue.data(service.reconcileOnly(remote, bundled));
+      }
+    } catch (_) {
+      // Arka plandaki ağ hatalarını yut ve yerel veriyle devam et
+    }
+  }
+}
+
+final cityContentProvider = AsyncNotifierProvider<CityContentNotifier, CityContent>(
+  CityContentNotifier.new,
+);
 
 /// Backend'den gelen branding bilgisi (yoksa null).
 final brandingProvider = Provider<BrandingInfo?>((ref) {

@@ -24,6 +24,7 @@ import '../../features/services/transportation_screen.dart';
 import '../../features/settings/notification_preferences_screen.dart';
 import '../../features/veterinary/veterinary_screen.dart';
 import '../../features/weather/weather_screen.dart';
+import 'app_navigation.dart';
 import 'launcher_utils.dart';
 
 /// Backend tarafindan dondurulen "target" stringleri uygular.
@@ -182,9 +183,7 @@ class TargetRouter {
 
   static Future<void> _pushPage(BuildContext context, Widget page) async {
     if (!context.mounted) return;
-    await Navigator.of(context).push(
-      MaterialPageRoute<void>(builder: (_) => page),
-    );
+    await AppNavigation.push<void>(context, page);
   }
 
   static Future<void> _openOutages(BuildContext context) async {
@@ -224,11 +223,7 @@ class TargetRouter {
       _info(context, 'Gezi Rehberi için henüz içerik yok.');
       return;
     }
-    await Navigator.of(context).push(
-      MaterialPageRoute<void>(
-        builder: (_) => const TripPlannerScreen(),
-      ),
-    );
+    await AppNavigation.push<void>(context, const TripPlannerScreen());
   }
 
   static void _info(BuildContext context, String msg) {

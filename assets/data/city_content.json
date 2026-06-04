@@ -1324,6 +1324,64 @@
         ]
       },
       {
+        "id": "museums",
+        "icon": "museum",
+        "title": "Müzeler",
+        "subtitle": "Bölgemizin tarihi, arkeolojisi ve eğitim mirası",
+        "badge": "Müze",
+        "places": [
+          {
+            "name": "Düziçi Köy Enstitüsü Müzesi (Eğitim Tarihi Müzesi)",
+            "shortDescription": "Türkiye eğitim tarihinin en önemli miraslarından 1940 yapımı Haruniye Köy Enstitüsü müzesi.",
+            "detail": "Düziçi’nin Türkiye eğitim tarihindeki en büyük gururlarından biri, 1940 yılında açılan Haruniye Köy Enstitüsü’dür. Bugün Düziçi Fen Lisesi olan bu tarihi kampüs içerisinde yer alan müze; enstitü döneminden kalan tarihi binaları, öğrencilerin kullandığı tarım aletlerini, müzik aletlerini, eski fotoğrafları, ders kitaplarını ve o dönemin ruhunu yansıtan birçok tarihi objeyi barındırır. İlçemizin köklü eğitim geçmişini ve kültürel kimliğini anlamak için ziyaret edilmesi gereken ilk ve en önemli müzedir. Genellikle okul saatleri ve mesai günlerinde ziyaret edilebilmektedir.\n\n• Tuvalet: Var (Okul/kampüs içerisindeki lavabolar kullanılabiliyor)\n• Otopark: Var (Okul çevresinde ve kampüs girişinde araç bırakılabilecek alanlar mevcut)\n• Giriş Ücreti: Ücretsiz",
+            "address": "Düziçi Fen Lisesi Kampüsü İçi, 80600 Düziçi/Osmaniye",
+            "tag": "MÜZE",
+            "image": "assets/images/koy_enstitusu.jpg",
+            "gallery": [
+              "assets/images/koy_enstitusu.jpg"
+            ],
+            "lat": 37.2440,
+            "lng": 36.4510,
+            "parking": "var",
+            "restroom": "var",
+            "entryFee": "ucretsiz",
+            "osmUrl": "https://www.openstreetmap.org/#map=17/37.2440/36.4510"
+          },
+          {
+            "name": "Karatepe-Aslantaş Açık Hava Müzesi",
+            "shortDescription": "UNESCO adayı Geç Hitit dönemi, Türkiye'nin ilk açık hava müzesi.",
+            "detail": "Türkiye’nin ilk açık hava müzesidir ve dünya arkeoloji tarihi açısından çok büyük bir öneme sahiptir. Geç Hitit dönemine ait olan bu kalede, Hitit hiyerogliflerinin çözülmesini sağlayan ünlü çift dilli yazıtlar (Fenike ve Hitit dilinde) yer alır. Ormanlık bir millî parkın içinde, Aslantaş Baraj Gölü'nün kıyısında bulunur. Devasa taş aslan heykellerini, kabartmaları ve tarihi kale surlarını doğa yürüyüşü yaparak inceleyebileceğiniz muazzam bir kültür alanıdır.\n\n• Tuvalet: Var (Müze girişindeki karşılama ve dinlenme tesisinde temiz tuvaletler mevcuttur)\n• Otopark: Var (Müzenin geniş ve düzenli bir ziyaretçi otoparkı bulunmaktadır)\n• Giriş Ücreti: Ücretli (Kültür ve Turizm Bakanlığı'na bağlıdır, Müzekart geçerlidir)",
+            "address": "Kızyusuflu Köyü, Kadirli / Osmaniye",
+            "tag": "MÜZE",
+            "image": "assets/images/karatepe.jpg",
+            "gallery": [
+              "assets/images/karatepe.jpg"
+            ],
+            "lat": 37.294,
+            "lng": 36.257,
+            "parking": "var",
+            "restroom": "var",
+            "entryFee": "ucretli",
+            "entryFeeNote": "Müzekart geçerlidir.",
+            "osmUrl": "https://www.openstreetmap.org/#map=17/37.294/36.257"
+          },
+          {
+            "name": "Osmaniye Kent Müzesi",
+            "shortDescription": "Geleneksel Çukurova yaşamı ve el sanatlarını canlandıran etnografik müze.",
+            "detail": "Bölgemizin (Çukurova ve Düziçi çevresinin) geleneksel yaşam tarzını, el sanatlarını, mutfak kültürünü ve tarihini çok güzel özetleyen etnografik bir müzedir. Eski bir tekel binasının restore edilmesiyle kurulmuştur. Müze içerisinde eski dönemlerin esnaf sokakları (demirci, halıcı, bıçakçı vb.) balmumu heykellerle canlandırılmıştır. Yöremizin geçmişte günlük hayatta neler kullandığını, nasıl giyindiğini ve kültürünü yakından görmek isteyen aileler ve çocuklar için harika bir hafta sonu aktivitesidir.\n\n• Tuvalet: Var (Müze kompleksi içerisinde düzenli lavabolar mevcuttur)\n• Otopark: Var (Müze çevresindeki cadde üstü park alanları veya şehir içi otoparklar kullanılabilir)\n• Giriş Ücreti: Ücretsiz (Osmaniye Belediyesi'ne bağlıdır)",
+            "address": "Osmaniye İl Merkezi, Osmaniye",
+            "tag": "MÜZE",
+            "image": "https://upload.wikimedia.org/wikipedia/commons/thumb/0/0c/Osmaniye_Stadt%C3%BCbersicht.png/960px-Osmaniye_Stadt%C3%BCbersicht.png.png",
+            "lat": 37.074,
+            "lng": 36.248,
+            "parking": "var",
+            "restroom": "var",
+            "entryFee": "ucretsiz",
+            "osmUrl": "https://www.openstreetmap.org/#map=17/37.074/36.248"
+          }
+        ]
+      },
+      {
         "id": "nature",
         "icon": "water_drop",
         "title": "Doğal Güzellikler",
@@ -1362,7 +1420,6 @@
               "assets/images/yesil_2.jpg",
               "assets/images/yesil_3.jpg"
             ],
-            "videoUrl": "https://www.youtube.com/watch?v=ornek_youtube_linki",
             "lat": 37.322,
             "lng": 36.292,
             "parking": "sinirli",
@@ -1596,6 +1653,76 @@
             "osmUrl": "https://www.openstreetmap.org/#map=17/37.288/36.565"
           },
           {
+            "name": "Dumanlı Yaylası Yürüyüş Parkuru",
+            "shortDescription": "Çam ve köknar ormanları arasında, bol oksijenli orta zorlukta yürüyüş parkuru.",
+            "detail": "Dumanlı Yaylası'nın asırlık çam, sedir ve köknar ağaçlarıyla kaplı eşsiz doğasında yapılan bu yürüyüş, doğa severler için harika bir alternatiftir. Yaklaşık 5-8 km uzunluğundaki parkur, hafif engebeli yapısıyla doğa yürüyüşüne yeni başlayanlar ve aileler için uygundur.\n\n• Tuvalet: Sınırlı (Yayla merkezindeki imkanlar dışında ormanlık alanda tesis yoktur)\n• Otopark: Var\n• Giriş Ücreti: Ücretsiz",
+            "address": "Amanos Dağları, Dumanlı Mevkii, Düziçi",
+            "tag": "ORTA",
+            "image": "https://upload.wikimedia.org/wikipedia/commons/thumb/d/d5/D%C3%BCld%C3%BCl_Da%C4%9F%C4%B1_-_Mount_D%C3%BCld%C3%BCl_02.JPG/960px-D%C3%BCld%C3%BCl_Da%C4%9F%C4%B1_-_Mount_D%C3%BCld%C3%BCl_02.JPG",
+            "lat": 37.288,
+            "lng": 36.565,
+            "parking": "var",
+            "restroom": "var",
+            "entryFee": "ucretsiz",
+            "osmUrl": "https://www.openstreetmap.org/#map=17/37.288/36.565"
+          },
+          {
+            "name": "Düldül Yaylası Doğa Yürüyüşü",
+            "shortDescription": "Heybetli Düldül Dağı eteklerinde, dik yamaçlar ve harika manzaralar sunan zorlu trekking rotası.",
+            "detail": "Düldül Dağı'nın dik yamaçlarında yer alan bu yürüyüş rotası, yüksek kondisyon gerektiren dağlık bir parkurdur. Yürüyüş boyunca Düziçi Ovası'nın ve baraj gölünün panoramik manzarasını izleme imkanı sunar. Sadece deneyimli yürüyüşçüler için önerilir.\n\n• Tuvalet: Yok (Tamamen doğal ve bakir bir alan)\n• Otopark: Doğal Arazi\n• Giriş Ücreti: Ücretsiz",
+            "address": "Düldül Dağı Etekleri, Düziçi",
+            "tag": "ZORLU",
+            "image": "https://upload.wikimedia.org/wikipedia/commons/thumb/a/a5/D%C3%BCld%C3%BCl_Da%C4%9F%C4%B1_-_Mount_D%C3%BCld%C3%BCl_05.JPG/960px-D%C3%BCld%C3%BCl_Da%C4%9F%C4%B1_-_Mount_D%C3%BCld%C3%BCl_05.JPG",
+            "lat": 37.349,
+            "lng": 36.561,
+            "parking": "sinirli",
+            "restroom": "yok",
+            "entryFee": "ucretsiz",
+            "osmUrl": "https://www.openstreetmap.org/#map=14/37.349/36.561"
+          },
+          {
+            "name": "Mezdağ (Mezdağı) Yaylası Yürüyüş Rotası",
+            "shortDescription": "Amanosların el değmemiş sessiz orman patikalarında huzurlu bir yürüyüş deneyimi.",
+            "detail": "Mezdağı Yaylası çevresindeki sık orman patikaları, kalabalıktan uzaklaşarak doğanın sesini dinlemek isteyenler için ideal bir orta zorlukta yürüyüş sunar. Temiz dağ havası ve el değmemiş flora yürüyüş boyunca size eşlik eder.\n\n• Tuvalet: Yok\n• Otopark: Doğal Arazi\n• Giriş Ücreti: Ücretsiz",
+            "address": "Mezdağı Mevkii, Amanos Dağları, Düziçi",
+            "tag": "ORTA",
+            "image": "https://upload.wikimedia.org/wikipedia/commons/thumb/d/d5/D%C3%BCld%C3%BCl_Da%C4%9F%C4%B1_-_Mount_D%C3%BCld%C3%BCl_02.JPG/960px-D%C3%BCld%C3%BCl_Da%C4%9F%C4%B1_-_Mount_D%C3%BCld%C3%BCl_02.JPG",
+            "lat": 37.320,
+            "lng": 36.540,
+            "parking": "sinirli",
+            "restroom": "yok",
+            "entryFee": "ucretsiz",
+            "osmUrl": "https://www.openstreetmap.org/#map=15/37.320/36.540"
+          },
+          {
+            "name": "Kurtlar Yaylası Trekking Parkuru",
+            "shortDescription": "Sarp kayalıklar ve dik yamaçlar arasında macera dolu, ileri seviye doğa yürüyüşü rotası.",
+            "detail": "Kurtlar Köyü'nün üst kesimlerinden başlayan bu rota, dik tırmanışlar ve sarp geçitler içeren macera dolu bir trekking parkurudur. Çetin doğa koşullarına sahip olan bu güzergahta trekking yaparken uygun ekipman ve rehber bulundurulması tavsiye edilir.\n\n• Tuvalet: Yok\n• Otopark: Doğal Arazi\n• Giriş Ücreti: Ücretsiz",
+            "address": "Kurtlar Köyü Üst Kesimleri, Düziçi",
+            "tag": "ZORLU",
+            "image": "https://upload.wikimedia.org/wikipedia/commons/thumb/d/d5/D%C3%BCld%C3%BCl_Da%C4%9F%C4%B1_-_Mount_D%C3%BCld%C3%BCl_02.JPG/960px-D%C3%BCld%C3%BCl_Da%C4%9F%C4%B1_-_Mount_D%C3%BCld%C3%BCl_02.JPG",
+            "lat": 37.275,
+            "lng": 36.435,
+            "parking": "sinirli",
+            "restroom": "yok",
+            "entryFee": "ucretsiz",
+            "osmUrl": "https://www.openstreetmap.org/#map=15/37.275/36.435"
+          },
+          {
+            "name": "Hodu Yaylası Doğa Yürüyüşü",
+            "shortDescription": "Buz gibi pınarlar ve el değmemiş yayla düzlükleri boyunca sakin bir yürüyüş parkuru.",
+            "detail": "Hodu Yaylası'nın tertemiz dağ havasında, buz gibi akan doğal pınarların etrafında yapılan doğa yürüyüşüdür. Kolay-orta seviyedeki patikalarıyla sakin ve huzurlu bir yürüyüş rotası arayanlar için idealdir.\n\n• Tuvalet: Yok\n• Otopark: Doğal Arazi\n• Giriş Ücreti: Ücretsiz",
+            "address": "Hodu Mevkii, Düziçi",
+            "tag": "ORTA",
+            "image": "https://upload.wikimedia.org/wikipedia/commons/thumb/b/be/D%C3%BCld%C3%BCl_Da%C4%9F%C4%B1_-_Mount_D%C3%BCld%C3%BCl_04.JPG/960px-D%C3%BCld%C3%BCl_Da%C4%9F%C4%B1_-_Mount_D%C3%BCld%C3%BCl_04.JPG",
+            "lat": 37.315,
+            "lng": 36.530,
+            "parking": "sinirli",
+            "restroom": "yok",
+            "entryFee": "ucretsiz",
+            "osmUrl": "https://www.openstreetmap.org/#map=15/37.315/36.530"
+          },
+          {
             "name": "Sabun Çayı Vadisi Yürüyüşü",
             "shortDescription": "Dere boyunca kolay-orta zorlukta doğa parkuru.",
             "detail": "Sabun Çayı vadisi boyunca uzanan bu rota, Karasu Şelalesi'ne kadar doğa içinde keyifli bir yürüyüş sunar. Yaklaşık 5-8 km uzunluğundaki parkur, orta zorluk seviyesindedir. Vadide kuş gözlemciliği yapılabilir ve doğal havuzlarda mola verilir. İlkbahar ve sonbahar en ideal dönemlerdir.",
@@ -1659,6 +1786,76 @@
             "restroom": "yok",
             "entryFee": "ucretsiz",
             "osmUrl": "https://www.openstreetmap.org/#map=17/37.288/36.565"
+          },
+          {
+            "name": "Düldül Yaylası Kamp Alanı",
+            "shortDescription": "Düldül Dağı eteklerinde, bol oksijenli ve yüksek rakımlı dağ kampı rotası.",
+            "detail": "Düldül Dağı'nın eteklerinde yer alan bu bölge, Düziçi'nin en yüksek ve en bol oksijenli kamp alanlarından biridir. Dağcılık, trekking ve çadır kampı için son derece elverişlidir. Tamamen bakir bir doğaya sahip olduğu için kampçıların tüm ihtiyaçlarını yanlarında getirmeleri gerekmektedir.\n\n• Tuvalet: Yok (Tamamen doğal ve bakir bir alan)\n• Otopark: Doğal Arazi (Kamp kurulacak düzlüklere yakın noktalara araç bırakılabilir)\n• Giriş Ücreti: Ücretsiz",
+            "address": "Düldül Dağı Etekleri, Düziçi",
+            "tag": "KAMP",
+            "image": "https://upload.wikimedia.org/wikipedia/commons/thumb/a/a5/D%C3%BCld%C3%BCl_Da%C4%9F%C4%B1_-_Mount_D%C3%BCld%C3%BCl_05.JPG/960px-D%C3%BCld%C3%BCl_Da%C4%9F%C4%B1_-_Mount_D%C3%BCld%C3%BCl_05.JPG",
+            "lat": 37.349,
+            "lng": 36.561,
+            "parking": "sinirli",
+            "restroom": "yok",
+            "entryFee": "ucretsiz",
+            "osmUrl": "https://www.openstreetmap.org/#map=14/37.349/36.561"
+          },
+          {
+            "name": "Mezdağ (Mezdağı) Yaylası Kamp Alanı",
+            "shortDescription": "Amanosların sessiz kollarında, kalabalıktan uzak izole bir kamp yeri.",
+            "detail": "Mezdağı Yaylası, kalabalıktan uzaklaşmak ve doğa ile baş başa kalmak isteyen kampçılar için harika bir inziva noktasıdır. Çam ormanları ile çevrili düzlükleri çadır kurulumu için çok uygundur. Gece serinliği ve temiz havası ile meşhurdur.\n\n• Tuvalet: Yok (Tesis bulunmamaktadır)\n• Otopark: Doğal Arazi\n• Giriş Ücreti: Ücretsiz",
+            "address": "Mezdağı Mevkii, Amanos Dağları, Düziçi",
+            "tag": "KAMP",
+            "image": "https://upload.wikimedia.org/wikipedia/commons/thumb/d/d5/D%C3%BCld%C3%BCl_Da%C4%9F%C4%B1_-_Mount_D%C3%BCld%C3%BCl_02.JPG/960px-D%C3%BCld%C3%BCl_Da%C4%9F%C4%B1_-_Mount_D%C3%BCld%C3%BCl_02.JPG",
+            "lat": 37.320,
+            "lng": 36.540,
+            "parking": "sinirli",
+            "restroom": "yok",
+            "entryFee": "ucretsiz",
+            "osmUrl": "https://www.openstreetmap.org/#map=15/37.320/36.540"
+          },
+          {
+            "name": "Tozluyurt Yaylası Kamp Alanı",
+            "shortDescription": "Yüksek rakımlı, buz gibi havası ve soğuk pınarlarıyla bilinen otantik kamp rotası.",
+            "detail": "Tozluyurt Yaylası, yüksek rakımda serin bir kamp deneyimi yaşamak isteyenlerin tercihidir. Soğuk su pınarlarının yakınında kamp kurma imkanı sunar. Doğa yürüyüşü ve fotoğrafçılık için de oldukça elverişli bir coğrafyaya sahiptir.\n\n• Tuvalet: Sınırlı (Yayla yerleşimindeki ortak alanlar kullanılabilir)\n• Otopark: Doğal Arazi\n• Giriş Ücreti: Ücretsiz",
+            "address": "Tozluyurt Mevkii, Düziçi",
+            "tag": "KAMP",
+            "image": "https://upload.wikimedia.org/wikipedia/commons/thumb/a/a5/D%C3%BCld%C3%BCl_Da%C4%9F%C4%B1_-_Mount_D%C3%BCld%C3%BCl_05.JPG/960px-D%C3%BCld%C3%BCl_Da%C4%9F%C4%B1_-_Mount_D%C3%BCld%C3%BCl_05.JPG",
+            "lat": 37.330,
+            "lng": 36.550,
+            "parking": "sinirli",
+            "restroom": "var",
+            "entryFee": "ucretsiz",
+            "osmUrl": "https://www.openstreetmap.org/#map=15/37.330/36.550"
+          },
+          {
+            "name": "Kurtlar Yaylası Kamp Alanı",
+            "shortDescription": "Sarp dağ yapısı ve sık ormanları arasında macera kampı arayanlar için ideal parkur.",
+            "detail": "Kurtlar Köyü üst kesimlerinde yer alan bu dağlık yayla, macera sever ve deneyimli kampçılara hitap eder. Sık orman dokusu ve sarp arazi yapısıyla tam bir vahşi doğa kampı deneyimi sunar. Yabani hayat ve zorlu doğa koşullarına hazırlıklı gelinmelidir.\n\n• Tuvalet: Yok\n• Otopark: Doğal Arazi (Araçlar köyün üst kısımlarına bırakılarak kamp alanına yürünür)\n• Giriş Ücreti: Ücretsiz",
+            "address": "Kurtlar Köyü Üst Kesimleri, Düziçi",
+            "tag": "KAMP",
+            "image": "https://upload.wikimedia.org/wikipedia/commons/thumb/d/d5/D%C3%BCld%C3%BCl_Da%C4%9F%C4%B1_-_Mount_D%C3%BCld%C3%BCl_02.JPG/960px-D%C3%BCld%C3%BCl_Da%C4%9F%C4%B1_-_Mount_D%C3%BCld%C3%BCl_02.JPG",
+            "lat": 37.275,
+            "lng": 36.435,
+            "parking": "sinirli",
+            "restroom": "yok",
+            "entryFee": "ucretsiz",
+            "osmUrl": "https://www.openstreetmap.org/#map=15/37.275/36.435"
+          },
+          {
+            "name": "Hodu Yaylası Kamp Alanı",
+            "shortDescription": "Buz gibi doğal kaynak suları ve el değmemiş doğası ile sakin çadır kampı noktası.",
+            "detail": "Hodu Yaylası, kalabalıktan uzak, sessiz sakin bir çadır kampı yapmak isteyenlerin Düziçi'ndeki gizli adreslerindendir. Buz gibi akan pınarları ve tertemiz dağ havasıyla kamp süresince tam bir yenilenme sağlar.\n\n• Tuvalet: Yok\n• Otopark: Doğal Arazi\n• Giriş Ücreti: Ücretsiz",
+            "address": "Hodu Mevkii, Düziçi",
+            "tag": "KAMP",
+            "image": "https://upload.wikimedia.org/wikipedia/commons/thumb/b/be/D%C3%BCld%C3%BCl_Da%C4%9F%C4%B1_-_Mount_D%C3%BCld%C3%BCl_04.JPG/960px-D%C3%BCld%C3%BCl_Da%C4%9F%C4%B1_-_Mount_D%C3%BCld%C3%BCl_04.JPG",
+            "lat": 37.315,
+            "lng": 36.530,
+            "parking": "sinirli",
+            "restroom": "yok",
+            "entryFee": "ucretsiz",
+            "osmUrl": "https://www.openstreetmap.org/#map=15/37.315/36.530"
           },
           {
             "name": "Berke Barajı Kıyısı Kamp",

@@ -4,11 +4,14 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:intl/intl.dart';
 import '../../app/providers.dart';
 import '../../core/theme/app_colors.dart';
+import '../../core/widgets/app_section_header.dart';
+import '../../core/utils/app_navigation.dart';
 import '../../core/utils/target_router.dart';
 import '../../core/utils/weather_wmo_tr.dart';
 import '../news/news_screen.dart';
 import '../pharmacy/pharmacy_screen.dart';
 import 'widgets/highlights_strip.dart';
+import 'widgets/home_stories_strip.dart';
 import 'widgets/quick_actions_row.dart';
 import 'widgets/top_news_carousel.dart';
 
@@ -39,9 +42,10 @@ class HomeScreen extends ConsumerWidget {
       child: CustomScrollView(
         physics: const BouncingScrollPhysics(parent: AlwaysScrollableScrollPhysics()),
         slivers: [
-          // Premium Top Bar — logo, selamlama, hava durumu, aksiyonlar
           const SliverToBoxAdapter(child: _PremiumTopBar()),
-          const SliverToBoxAdapter(child: SizedBox(height: 12)),
+          const SliverToBoxAdapter(child: SizedBox(height: 10)),
+          const SliverToBoxAdapter(child: HomeStoriesStrip()),
+          const SliverToBoxAdapter(child: SizedBox(height: 8)),
 
           // 0) Nöbetçi Eczane — header altında kompakt satır
           SliverToBoxAdapter(
@@ -53,7 +57,7 @@ class HomeScreen extends ConsumerWidget {
 
           // 1) Anlık şerit
           SliverToBoxAdapter(
-            child: const _SectionTitle(title: 'Anlık Bilgiler')
+            child: const AppSectionHeader(title: 'Anlık Bilgiler', compact: true)
                 .animate(delay: 100.ms)
                 .fadeIn(duration: 280.ms),
           ),
@@ -72,10 +76,12 @@ class HomeScreen extends ConsumerWidget {
               child: Row(
                 children: [
                   Expanded(
-                    child: _SectionTitle(
+                    child: AppSectionHeader(
                       title: '$selectedCategory Haberleri',
                       actionLabel: 'Tümü',
                       onAction: () => _push(context, const NewsScreen()),
+                      compact: true,
+                      padding: const EdgeInsets.fromLTRB(20, 6, 16, 12),
                     ),
                   ),
                 ],
@@ -99,7 +105,7 @@ class HomeScreen extends ConsumerWidget {
 
           // 3) Hızlı erişim — haberlerin altında
           SliverToBoxAdapter(
-            child: const _SectionTitle(title: 'Hızlı Erişim')
+            child: const AppSectionHeader(title: 'Hızlı Erişim', compact: true)
                 .animate(delay: 380.ms)
                 .fadeIn(duration: 280.ms),
           ),
@@ -116,9 +122,7 @@ class HomeScreen extends ConsumerWidget {
   }
 
   void _push(BuildContext context, Widget page) {
-    Navigator.of(context).push(
-      MaterialPageRoute(builder: (_) => page),
-    );
+    AppNavigation.push<void>(context, page);
   }
 }
 
@@ -198,76 +202,6 @@ class _HomeNewsTabs extends StatelessWidget {
             ),
           );
         }).toList(),
-      ),
-    );
-  }
-}
-
-class _SectionTitle extends StatelessWidget {
-  const _SectionTitle({required this.title, this.actionLabel, this.onAction});
-
-  final String title;
-  final String? actionLabel;
-  final VoidCallback? onAction;
-
-  @override
-  Widget build(BuildContext context) {
-    final isDark = Theme.of(context).brightness == Brightness.dark;
-    return Padding(
-      padding: const EdgeInsets.fromLTRB(20, 6, 16, 12),
-      child: Row(
-        children: [
-          Container(
-            width: 4,
-            height: 20,
-            decoration: BoxDecoration(
-              gradient: LinearGradient(
-                begin: Alignment.topCenter,
-                end: Alignment.bottomCenter,
-                colors: [AppColors.primary, AppColors.primaryDark],
-              ),
-              borderRadius: BorderRadius.circular(999),
-            ),
-          ),
-          const SizedBox(width: 10),
-          Expanded(
-            child: Text(
-              title,
-              style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                    fontWeight: FontWeight.w800,
-                    letterSpacing: -0.3,
-                    color: isDark ? Colors.white : const Color(0xFF1A1D2E),
-                    fontSize: 16,
-                  ),
-            ),
-          ),
-          if (actionLabel != null && onAction != null)
-            GestureDetector(
-              onTap: onAction,
-              child: Container(
-                padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 5),
-                decoration: BoxDecoration(
-                  color: AppColors.primary.withValues(alpha: 0.1),
-                  borderRadius: BorderRadius.circular(20),
-                ),
-                child: Row(
-                  mainAxisSize: MainAxisSize.min,
-                  children: [
-                    Text(
-                      actionLabel!,
-                      style: TextStyle(
-                        color: AppColors.primary,
-                        fontWeight: FontWeight.w700,
-                        fontSize: 12,
-                      ),
-                    ),
-                    const SizedBox(width: 2),
-                    Icon(Icons.arrow_forward_rounded, size: 13, color: AppColors.primary),
-                  ],
-                ),
-              ),
-            ),
-        ],
       ),
     );
   }
@@ -457,9 +391,7 @@ class _DutyPharmacyCard extends ConsumerWidget {
                   child: FilledButton.icon(
                     onPressed: () {
                       Navigator.of(context).pop();
-                      Navigator.of(context).push(
-                        MaterialPageRoute(builder: (_) => const PharmacyScreen()),
-                      );
+                      AppNavigation.push<void>(context, const PharmacyScreen());
                     },
                     icon: const Icon(Icons.list_alt_rounded),
                     label: const Text('Tüm eczane listesini aç'),
@@ -589,15 +521,15 @@ class _PremiumTopBar extends ConsumerWidget {
     return 'İyi Akşamlar';
   }
 
-  static String _formattedDate() {
-    return DateFormat('d MMMM EEEE', 'tr_TR').format(DateTime.now());
+  static String _formattedDateShort() {
+    return DateFormat('d MMM EEE', 'tr_TR').format(DateTime.now());
   }
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final weatherAsync = ref.watch(weatherProvider);
     final greeting = _greeting();
-    final date = _formattedDate();
+    final dateShort = _formattedDateShort();
     final isDark = Theme.of(context).brightness == Brightness.dark;
 
     final hour = DateTime.now().hour;
@@ -732,268 +664,206 @@ class _PremiumTopBar extends ConsumerWidget {
             );
     }
 
+    final logoColor =
+        isNight || isEvening || isDark ? Colors.white : AppColors.textDark;
+
     return SafeArea(
       bottom: false,
       child: Padding(
-        padding: const EdgeInsets.fromLTRB(16, 12, 16, 0),
+        padding: const EdgeInsets.fromLTRB(16, 10, 16, 0),
         child: Container(
           width: double.infinity,
-          padding: const EdgeInsets.fromLTRB(18, 16, 18, 16),
+          padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
           decoration: BoxDecoration(
             gradient: LinearGradient(
               begin: Alignment.topLeft,
               end: Alignment.bottomRight,
               colors: gTheme.gradientColors,
             ),
-            borderRadius: BorderRadius.circular(22),
-            border: Border.all(
-              color: gTheme.borderColor,
-            ),
+            borderRadius: BorderRadius.circular(18),
+            border: Border.all(color: gTheme.borderColor),
             boxShadow: [
               BoxShadow(
                 color: gTheme.shadowColor.withValues(alpha: 0.08),
-                blurRadius: 18,
+                blurRadius: 14,
                 spreadRadius: -4,
-                offset: const Offset(0, 8),
+                offset: const Offset(0, 6),
               ),
             ],
           ),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
+          child: Row(
             children: [
-              // 1. Logo & Actions Row
-              Row(
-                children: [
-                  // Logo
-                  Expanded(
+              _CompactLogo(textColor: logoColor),
+              const SizedBox(width: 8),
+              Container(
+                width: 34,
+                height: 34,
+                decoration: BoxDecoration(
+                  gradient: LinearGradient(
+                    colors: gTheme.iconGradientColors,
+                  ),
+                  borderRadius: BorderRadius.circular(11),
+                ),
+                child: Icon(gTheme.icon, color: Colors.white, size: 18),
+              ),
+              const SizedBox(width: 8),
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    Text(
+                      '$greeting 👋',
+                      maxLines: 1,
+                      overflow: TextOverflow.ellipsis,
+                      style: TextStyle(
+                        fontWeight: FontWeight.w800,
+                        fontSize: 15,
+                        color: gTheme.textColor,
+                        letterSpacing: -0.3,
+                        height: 1.15,
+                      ),
+                    ),
+                    Text(
+                      '$dateShort · Akdeniz\'in İncisi',
+                      maxLines: 1,
+                      overflow: TextOverflow.ellipsis,
+                      style: TextStyle(
+                        fontWeight: FontWeight.w600,
+                        fontSize: 11,
+                        color: gTheme.subTextColor,
+                        height: 1.2,
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+              const SizedBox(width: 6),
+              Consumer(
+                builder: (context, ref, child) {
+                  final unreadCount = ref.watch(unreadNotificationsCountProvider);
+                  final badgeLabel = unreadCount > 99 ? '99+' : unreadCount.toString();
+                  return Stack(
+                    clipBehavior: Clip.none,
+                    children: [
+                      _ActionButtonDynamic(
+                        icon: Icons.notifications_none_rounded,
+                        color: gTheme.textColor,
+                        onTap: () => TargetRouter.handle(context, 'screen:notifications'),
+                      ),
+                      if (unreadCount > 0)
+                        Positioned(
+                          right: -2,
+                          top: -2,
+                          child: Container(
+                            padding: EdgeInsets.symmetric(
+                              horizontal: unreadCount > 9 ? 4 : 5,
+                              vertical: 2,
+                            ),
+                            decoration: const BoxDecoration(
+                              color: Color(0xFFE53935),
+                              shape: BoxShape.circle,
+                            ),
+                            constraints: const BoxConstraints(minWidth: 15, minHeight: 15),
+                            child: Text(
+                              badgeLabel,
+                              style: const TextStyle(
+                                color: Colors.white,
+                                fontSize: 8,
+                                fontWeight: FontWeight.w900,
+                              ),
+                              textAlign: TextAlign.center,
+                            ),
+                          ),
+                        ),
+                    ],
+                  );
+                },
+              ),
+              const SizedBox(width: 6),
+              weatherAsync.when(
+                data: (w) => GestureDetector(
+                  onTap: () => TargetRouter.handle(context, 'screen:weather'),
+                  child: Container(
+                    padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 5),
+                    decoration: BoxDecoration(
+                      color: gTheme.textColor.withValues(alpha: 0.10),
+                      borderRadius: BorderRadius.circular(12),
+                      border: Border.all(color: gTheme.textColor.withValues(alpha: 0.16)),
+                    ),
                     child: Row(
                       mainAxisSize: MainAxisSize.min,
                       children: [
+                        WeatherAnimatedIcon(
+                          conditionCode: w.conditionCode,
+                          isDay: w.isDay,
+                          size: 14,
+                          color: gTheme.textColor,
+                        ),
+                        const SizedBox(width: 4),
                         Text(
-                          'HEPSİ',
+                          '${w.temperature.round()}°',
                           style: TextStyle(
                             fontWeight: FontWeight.w900,
-                            color: isNight || isEvening || isDark ? Colors.white : AppColors.textDark,
-                            letterSpacing: -0.8,
-                            fontSize: 19,
-                            height: 1.0,
-                          ),
-                        ),
-                        const SizedBox(width: 5),
-                        Container(
-                          padding: const EdgeInsets.symmetric(horizontal: 9, vertical: 3.5),
-                          decoration: BoxDecoration(
-                            gradient: const LinearGradient(
-                              colors: [Color(0xFFE3AF4C), Color(0xFFD4941A)],
-                            ),
-                            borderRadius: BorderRadius.circular(6),
-                            boxShadow: [
-                              BoxShadow(
-                                color: const Color(0xFFE3AF4C).withValues(alpha: 0.3),
-                                blurRadius: 8,
-                                offset: const Offset(0, 2),
-                              ),
-                            ],
-                          ),
-                          child: const Text(
-                            'DÜZİÇİ',
-                            style: TextStyle(
-                              color: Colors.white,
-                              fontWeight: FontWeight.w900,
-                              fontSize: 13.5,
-                              letterSpacing: -0.3,
-                              height: 1.0,
-                            ),
-                          ),
-                        ),
-                      ],
-                    ),
-                  ),
-
-                  // Notifications
-                  Consumer(
-                    builder: (context, ref, child) {
-                      final unreadCount = ref.watch(unreadNotificationsCountProvider);
-                      final badgeLabel =
-                          unreadCount > 99 ? '99+' : unreadCount.toString();
-                      return Stack(
-                        clipBehavior: Clip.none,
-                        children: [
-                          _ActionButtonDynamic(
-                            icon: Icons.notifications_none_rounded,
-                            color: gTheme.textColor,
-                            onTap: () async {
-                              await TargetRouter.handle(context, 'screen:notifications');
-                            },
-                          ),
-                          if (unreadCount > 0)
-                            Positioned(
-                              right: -2,
-                              top: -2,
-                              child: Container(
-                                padding: EdgeInsets.symmetric(
-                                  horizontal: unreadCount > 9 ? 4 : 5,
-                                  vertical: 3,
-                                ),
-                                decoration: const BoxDecoration(
-                                  color: Color(0xFFE53935),
-                                  shape: BoxShape.circle,
-                                ),
-                                constraints: const BoxConstraints(
-                                  minWidth: 16,
-                                  minHeight: 16,
-                                ),
-                                child: Text(
-                                  badgeLabel,
-                                  style: const TextStyle(
-                                    color: Colors.white,
-                                    fontSize: 8.5,
-                                    fontWeight: FontWeight.w900,
-                                  ),
-                                  textAlign: TextAlign.center,
-                                ),
-                              ),
-                            ),
-                        ],
-                      );
-                    },
-                  ).animate().fadeIn(delay: 50.ms).scale(begin: const Offset(0.9, 0.9)),
-
-                  const SizedBox(width: 8),
-
-                  // Weather pill
-                  weatherAsync.when(
-                    data: (w) {
-                      return GestureDetector(
-                        onTap: () => TargetRouter.handle(context, 'screen:weather'),
-                        child: Container(
-                          padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
-                          decoration: BoxDecoration(
-                            color: gTheme.textColor.withValues(alpha: 0.10),
-                            borderRadius: BorderRadius.circular(14),
-                            border: Border.all(
-                              color: gTheme.textColor.withValues(alpha: 0.18),
-                            ),
-                          ),
-                          child: Row(
-                            mainAxisSize: MainAxisSize.min,
-                            children: [
-                              WeatherAnimatedIcon(
-                                conditionCode: w.conditionCode,
-                                isDay: w.isDay,
-                                size: 15,
-                                color: gTheme.textColor,
-                              ),
-                              const SizedBox(width: 5),
-                              Text(
-                                '${w.temperature.round()}°',
-                                style: TextStyle(
-                                  fontWeight: FontWeight.w900,
-                                  fontSize: 13.5,
-                                  color: gTheme.textColor,
-                                  letterSpacing: -0.2,
-                                ),
-                              ),
-                            ],
-                          ),
-                        ),
-                      ).animate().fadeIn(delay: 100.ms, duration: 300.ms).scale(begin: const Offset(0.9, 0.9));
-                    },
-                    loading: () => const SizedBox(width: 50, height: 32),
-                    error: (_, __) => const SizedBox.shrink(),
-                  ),
-                ],
-              ),
-
-              const SizedBox(height: 14),
-
-              // Glass Divider Line
-              Container(
-                height: 1,
-                width: double.infinity,
-                color: gTheme.textColor.withValues(alpha: 0.12),
-              ),
-
-              const SizedBox(height: 14),
-
-              // 2. Greeting & Info Row
-              Row(
-                children: [
-                  // Greeting Icon
-                  Container(
-                    width: 42,
-                    height: 42,
-                    decoration: BoxDecoration(
-                      gradient: LinearGradient(
-                        begin: Alignment.topLeft,
-                        end: Alignment.bottomRight,
-                        colors: gTheme.iconGradientColors,
-                      ),
-                      borderRadius: BorderRadius.circular(14),
-                      boxShadow: [
-                        BoxShadow(
-                          color: gTheme.iconGradientColors.first.withValues(alpha: 0.2),
-                          blurRadius: 8,
-                          offset: const Offset(0, 3),
-                        ),
-                      ],
-                    ),
-                    child: Icon(
-                      gTheme.icon,
-                      color: Colors.white,
-                      size: 22,
-                    ),
-                  ),
-                  const SizedBox(width: 12),
-                  Expanded(
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Text(
-                          '$greeting 👋',
-                          style: TextStyle(
-                            fontWeight: FontWeight.w800,
-                            fontSize: 17,
-                            color: gTheme.textColor,
-                            letterSpacing: -0.3,
-                          ),
-                        ),
-                        const SizedBox(height: 2),
-                        Text(
-                          date,
-                          style: TextStyle(
-                            fontWeight: FontWeight.w600,
                             fontSize: 12.5,
-                            color: gTheme.subTextColor,
-                            letterSpacing: -0.1,
+                            color: gTheme.textColor,
                           ),
                         ),
                       ],
                     ),
                   ),
-                  // Tagline badge
-                  Container(
-                    padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
-                    decoration: BoxDecoration(
-                      color: gTheme.badgeBgColor,
-                      borderRadius: BorderRadius.circular(10),
-                    ),
-                    child: Text(
-                      "Akdeniz'in İncisi",
-                      style: TextStyle(
-                        fontWeight: FontWeight.w700,
-                        fontSize: 10,
-                        color: gTheme.badgeTextColor,
-                        letterSpacing: 0.2,
-                      ),
-                    ),
-                  ),
-                ],
+                ),
+                loading: () => const SizedBox(width: 44, height: 30),
+                error: (_, __) => const SizedBox.shrink(),
               ),
             ],
           ),
         ),
       ).animate(delay: 80.ms).fadeIn(duration: 350.ms).slideY(begin: 0.04, end: 0),
+    );
+  }
+}
+
+class _CompactLogo extends StatelessWidget {
+  const _CompactLogo({required this.textColor});
+
+  final Color textColor;
+
+  @override
+  Widget build(BuildContext context) {
+    return Row(
+      mainAxisSize: MainAxisSize.min,
+      children: [
+        Text(
+          'HEPSİ',
+          style: TextStyle(
+            fontWeight: FontWeight.w900,
+            color: textColor,
+            letterSpacing: -0.6,
+            fontSize: 15,
+            height: 1,
+          ),
+        ),
+        const SizedBox(width: 4),
+        Container(
+          padding: const EdgeInsets.symmetric(horizontal: 7, vertical: 3),
+          decoration: BoxDecoration(
+            gradient: const LinearGradient(
+              colors: [Color(0xFFE3AF4C), Color(0xFFD4941A)],
+            ),
+            borderRadius: BorderRadius.circular(5),
+          ),
+          child: const Text(
+            'DÜZİÇİ',
+            style: TextStyle(
+              color: Colors.white,
+              fontWeight: FontWeight.w900,
+              fontSize: 11.5,
+              height: 1,
+            ),
+          ),
+        ),
+      ],
     );
   }
 }
