@@ -139,9 +139,10 @@ class _ExploreCategoryScreenState extends State<ExploreCategoryScreen> {
     'Yarbaşı Tren İstasyonu': _PlaceCoords(37.1990, 36.4300),
     'Tren ve havaalanı bağlantıları': _PlaceCoords(37.1990, 36.4300),
     'Düziçi Çarşı ve Hamamları': _PlaceCoords(37.2400, 36.4460),
-    'Düziçi Kent Parkı': _PlaceCoords(37.2420, 36.4500),
-    'Atatürk Parkı ve Çay Bahçeleri': _PlaceCoords(37.2400, 36.4460),
-    'Düziçi Mesire Alanları': _PlaceCoords(37.2500, 36.4600),
+    'Harun Reşit Çocuk Parkı ve Millet Bahçesi': _PlaceCoords(37.2395, 36.4468),
+    'Eğitimci Bekir İlyas Kara Çocuk Köyü': _PlaceCoords(37.2440, 36.4510),
+    'Atatürk Parkı (Park Restorant)': _PlaceCoords(37.2400, 36.4460),
+    'Sabun Çayı Mesire Alanı': _PlaceCoords(37.2550, 36.4650),
     
     // Osmaniye
     'Karatepe-Aslantaş Açık Hava Müzesi': _PlaceCoords(37.294, 36.257),

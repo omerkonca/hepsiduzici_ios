@@ -1,5 +1,4 @@
 import 'dart:convert';
-import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
@@ -22,6 +21,14 @@ class FakeNotificationService extends NotificationService {
   Future<bool> areSystemNotificationsEnabled() async => false;
 }
 
+class FakeCityContentNotifier extends CityContentNotifier {
+  FakeCityContentNotifier(this.value);
+  final CityContent value;
+
+  @override
+  Future<CityContent> build() async => value;
+}
+
 void main() {
   testWidgets('App starts and shows Hepsi Düziçi', (WidgetTester tester) async {
     // Set a realistic viewport to avoid layout overflow issues in test environment
@@ -41,7 +48,7 @@ void main() {
       ProviderScope(
         overrides: [
           notificationServiceProvider.overrideWithValue(FakeNotificationService()),
-          cityContentProvider.overrideWith((ref) => cityContent),
+          cityContentProvider.overrideWith(() => FakeCityContentNotifier(cityContent)),
           unreadNotificationsCountProvider.overrideWithValue(0),
           weatherProvider.overrideWith((ref) => const WeatherInfo(
             temperature: 24.0,

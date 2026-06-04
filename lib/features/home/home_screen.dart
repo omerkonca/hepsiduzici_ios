@@ -16,6 +16,9 @@ import 'widgets/quick_actions_row.dart';
 import 'widgets/top_news_carousel.dart';
 
 final _homeNewsCategoryProvider = StateProvider<String>((ref) => 'Düziçi');
+final _homeEntryFadeDuration = 320.ms;
+final _homeEntrySlideDuration = 320.ms;
+const _homeEntryCurve = Curves.easeOutCubic;
 
 class HomeScreen extends ConsumerWidget {
   const HomeScreen({super.key});
@@ -43,31 +46,36 @@ class HomeScreen extends ConsumerWidget {
         physics: const BouncingScrollPhysics(parent: AlwaysScrollableScrollPhysics()),
         slivers: [
           const SliverToBoxAdapter(child: _PremiumTopBar()),
-          const SliverToBoxAdapter(child: SizedBox(height: 10)),
+          const SliverToBoxAdapter(child: SizedBox(height: 12)),
           const SliverToBoxAdapter(child: HomeStoriesStrip()),
-          const SliverToBoxAdapter(child: SizedBox(height: 8)),
+          const SliverToBoxAdapter(child: SizedBox(height: 12)),
 
           // 0) Nöbetçi Eczane — header altında kompakt satır
           SliverToBoxAdapter(
             child: const _DutyPharmacyCard()
                 .animate(delay: 60.ms)
-                .fadeIn(duration: 300.ms),
+                .fadeIn(duration: _homeEntryFadeDuration, curve: _homeEntryCurve),
           ),
-          const SliverToBoxAdapter(child: SizedBox(height: 16)),
+          const SliverToBoxAdapter(child: SizedBox(height: 20)),
 
           // 1) Anlık şerit
           SliverToBoxAdapter(
             child: const AppSectionHeader(title: 'Anlık Bilgiler', compact: true)
                 .animate(delay: 100.ms)
-                .fadeIn(duration: 280.ms),
+                .fadeIn(duration: _homeEntryFadeDuration, curve: _homeEntryCurve),
           ),
           SliverToBoxAdapter(
             child: const HighlightsStrip()
                 .animate(delay: 140.ms)
-                .fadeIn(duration: 320.ms)
-                .slideX(begin: 0.05, end: 0),
+                .fadeIn(duration: _homeEntryFadeDuration, curve: _homeEntryCurve)
+                .slideX(
+                  begin: 0.05,
+                  end: 0,
+                  duration: _homeEntrySlideDuration,
+                  curve: _homeEntryCurve,
+                ),
           ),
-          const SliverToBoxAdapter(child: SizedBox(height: 22)),
+          const SliverToBoxAdapter(child: SizedBox(height: 26)),
 
           // 2) Haberler
           SliverToBoxAdapter(
@@ -86,34 +94,50 @@ class HomeScreen extends ConsumerWidget {
                   ),
                 ],
               ),
-            ).animate(delay: 200.ms).fadeIn(duration: 280.ms),
+            ).animate(delay: 200.ms).fadeIn(
+              duration: _homeEntryFadeDuration,
+              curve: _homeEntryCurve,
+            ),
           ),
           SliverToBoxAdapter(
             child: _HomeNewsTabs(
               selectedCategory: selectedCategory,
               onChanged: (cat) => ref.read(_homeNewsCategoryProvider.notifier).state = cat,
-            ).animate(delay: 220.ms).fadeIn(),
+            ).animate(delay: 220.ms).fadeIn(
+              duration: _homeEntryFadeDuration,
+              curve: _homeEntryCurve,
+            ),
           ),
-          const SliverToBoxAdapter(child: SizedBox(height: 16)),
+          const SliverToBoxAdapter(child: SizedBox(height: 18)),
           SliverToBoxAdapter(
             child: TopNewsCarousel(category: selectedCategory)
                 .animate(key: ValueKey(selectedCategory))
-                .fadeIn(duration: 320.ms)
-                .slideY(begin: 0.05, end: 0, curve: Curves.easeOutCubic),
+                .fadeIn(duration: _homeEntryFadeDuration, curve: _homeEntryCurve)
+                .slideY(
+                  begin: 0.05,
+                  end: 0,
+                  duration: _homeEntrySlideDuration,
+                  curve: _homeEntryCurve,
+                ),
           ),
-          const SliverToBoxAdapter(child: SizedBox(height: 24)),
+          const SliverToBoxAdapter(child: SizedBox(height: 28)),
 
           // 3) Hızlı erişim — haberlerin altında
           SliverToBoxAdapter(
             child: const AppSectionHeader(title: 'Hızlı Erişim', compact: true)
                 .animate(delay: 380.ms)
-                .fadeIn(duration: 280.ms),
+                .fadeIn(duration: _homeEntryFadeDuration, curve: _homeEntryCurve),
           ),
           SliverToBoxAdapter(
             child: const QuickActionsRow()
                 .animate(delay: 420.ms)
-                .fadeIn(duration: 320.ms)
-                .slideY(begin: 0.06, end: 0),
+                .fadeIn(duration: _homeEntryFadeDuration, curve: _homeEntryCurve)
+                .slideY(
+                  begin: 0.06,
+                  end: 0,
+                  duration: _homeEntrySlideDuration,
+                  curve: _homeEntryCurve,
+                ),
           ),
           const SliverToBoxAdapter(child: SizedBox(height: 32)),
         ],
@@ -136,72 +160,83 @@ class _HomeNewsTabs extends StatelessWidget {
     final categories = ['Düziçi', 'Osmaniye'];
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 20),
-      child: Row(
-        children: categories.map((cat) {
-          final isSelected = cat == selectedCategory;
-          final selectedColor = cat == 'Osmaniye' ? AppColors.accentBlue : AppColors.primary;
-          return Padding(
-            padding: const EdgeInsets.only(right: 10),
-            child: GestureDetector(
-              onTap: () => onChanged(cat),
-              child: AnimatedContainer(
-                duration: 220.ms,
-                padding: const EdgeInsets.symmetric(horizontal: 18, vertical: 8),
-                decoration: BoxDecoration(
-                  gradient: isSelected
-                      ? LinearGradient(
-                          colors: [
-                            Color.lerp(selectedColor, Colors.white, 0.15)!,
-                            selectedColor,
-                          ],
-                          begin: Alignment.topLeft,
-                          end: Alignment.bottomRight,
-                        )
-                      : null,
-                  color: isSelected ? null : Theme.of(context).colorScheme.surface,
-                  borderRadius: BorderRadius.circular(22),
-                  border: Border.all(
-                    color: isSelected
-                        ? Colors.transparent
-                        : Theme.of(context).dividerColor.withValues(alpha: 0.15),
+      child: Container(
+        padding: const EdgeInsets.all(4),
+        decoration: BoxDecoration(
+          color: Theme.of(context).colorScheme.surface,
+          borderRadius: BorderRadius.circular(999),
+          border: Border.all(
+            color: Theme.of(context).dividerColor.withValues(alpha: 0.12),
+          ),
+          boxShadow: [
+            BoxShadow(
+              color: Colors.black.withValues(alpha: 0.03),
+              blurRadius: 10,
+              offset: const Offset(0, 4),
+            ),
+          ],
+        ),
+        child: Row(
+          children: categories.map((cat) {
+            final isSelected = cat == selectedCategory;
+            final selectedColor = cat == 'Osmaniye' ? AppColors.accentBlue : AppColors.primary;
+            return Expanded(
+              child: GestureDetector(
+                onTap: () => onChanged(cat),
+                child: AnimatedContainer(
+                  duration: 220.ms,
+                  padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 9),
+                  decoration: BoxDecoration(
+                    gradient: isSelected
+                        ? LinearGradient(
+                            colors: [
+                              Color.lerp(selectedColor, Colors.white, 0.15)!,
+                              selectedColor,
+                            ],
+                            begin: Alignment.topLeft,
+                            end: Alignment.bottomRight,
+                          )
+                        : null,
+                    color: isSelected ? null : Colors.transparent,
+                    borderRadius: BorderRadius.circular(999),
+                    boxShadow: isSelected
+                        ? [
+                            BoxShadow(
+                              color: selectedColor.withValues(alpha: 0.28),
+                              blurRadius: 10,
+                              offset: const Offset(0, 4),
+                            ),
+                          ]
+                        : null,
                   ),
-                  boxShadow: isSelected
-                      ? [
-                          BoxShadow(
-                            color: selectedColor.withValues(alpha: 0.32),
-                            blurRadius: 12,
-                            offset: const Offset(0, 5),
-                          ),
-                        ]
-                      : [],
-                ),
-                child: Row(
-                  mainAxisSize: MainAxisSize.min,
-                  children: [
-                    if (isSelected) ...[
-                      Icon(
-                        cat == 'Osmaniye' ? Icons.location_city_rounded : Icons.home_rounded,
-                        color: Colors.white,
-                        size: 14,
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      if (isSelected) ...[
+                        Icon(
+                          cat == 'Osmaniye' ? Icons.location_city_rounded : Icons.home_rounded,
+                          color: Colors.white,
+                          size: 14,
+                        ),
+                        const SizedBox(width: 5),
+                      ],
+                      Text(
+                        cat,
+                        style: TextStyle(
+                          color: isSelected
+                              ? Colors.white
+                              : Theme.of(context).textTheme.bodySmall?.color,
+                          fontWeight: isSelected ? FontWeight.w800 : FontWeight.w700,
+                          fontSize: 13,
+                        ),
                       ),
-                      const SizedBox(width: 5),
                     ],
-                    Text(
-                      cat,
-                      style: TextStyle(
-                        color: isSelected
-                            ? Colors.white
-                            : Theme.of(context).textTheme.bodySmall?.color,
-                        fontWeight: isSelected ? FontWeight.w800 : FontWeight.w600,
-                        fontSize: 13,
-                      ),
-                    ),
-                  ],
+                  ),
                 ),
               ),
-            ),
-          );
-        }).toList(),
+            );
+          }).toList(),
+        ),
       ),
     );
   }
@@ -222,14 +257,14 @@ class _DutyPharmacyCard extends ConsumerWidget {
           padding: const EdgeInsets.symmetric(horizontal: 16),
           child: Material(
             color: Colors.transparent,
-            borderRadius: BorderRadius.circular(16),
+            borderRadius: BorderRadius.circular(18),
             child: InkWell(
-              borderRadius: BorderRadius.circular(16),
+              borderRadius: BorderRadius.circular(18),
               onTap: () => _showDutyPharmacySheet(context, list),
               child: Container(
-                padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 12),
+                padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 13),
                 decoration: BoxDecoration(
-                  borderRadius: BorderRadius.circular(16),
+                  borderRadius: BorderRadius.circular(18),
                   color: isDark
                       ? const Color(0xFF004D40).withValues(alpha: 0.55)
                       : const Color(0xFFE8F5E9),
@@ -239,6 +274,13 @@ class _DutyPharmacyCard extends ConsumerWidget {
                         : const Color(0xFFA5D6A7),
                     width: 1.2,
                   ),
+                  boxShadow: [
+                    BoxShadow(
+                      color: Colors.black.withValues(alpha: 0.035),
+                      blurRadius: 12,
+                      offset: const Offset(0, 5),
+                    ),
+                  ],
                 ),
                 child: Row(
                   children: [
@@ -691,135 +733,204 @@ class _PremiumTopBar extends ConsumerWidget {
               ),
             ],
           ),
-          child: Row(
+          child: Stack(
             children: [
-              _CompactLogo(textColor: logoColor),
-              const SizedBox(width: 8),
-              Container(
-                width: 34,
-                height: 34,
-                decoration: BoxDecoration(
-                  gradient: LinearGradient(
-                    colors: gTheme.iconGradientColors,
-                  ),
-                  borderRadius: BorderRadius.circular(11),
-                ),
-                child: Icon(gTheme.icon, color: Colors.white, size: 18),
-              ),
-              const SizedBox(width: 8),
-              Expanded(
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  mainAxisSize: MainAxisSize.min,
-                  children: [
-                    Text(
-                      '$greeting 👋',
-                      maxLines: 1,
-                      overflow: TextOverflow.ellipsis,
-                      style: TextStyle(
-                        fontWeight: FontWeight.w800,
-                        fontSize: 15,
-                        color: gTheme.textColor,
-                        letterSpacing: -0.3,
-                        height: 1.15,
+              // Hafif cam hissi: üstte parlak yansıma + sağda yumuşak glow.
+              Positioned.fill(
+                child: IgnorePointer(
+                  child: DecoratedBox(
+                    decoration: BoxDecoration(
+                      borderRadius: BorderRadius.circular(18),
+                      gradient: LinearGradient(
+                        begin: Alignment.topLeft,
+                        end: Alignment.bottomRight,
+                        colors: [
+                          Colors.white.withValues(alpha: 0.22),
+                          Colors.white.withValues(alpha: 0.03),
+                          Colors.transparent,
+                        ],
+                        stops: const [0.0, 0.42, 1.0],
                       ),
                     ),
-                    Text(
-                      '$dateShort · Akdeniz\'in İncisi',
-                      maxLines: 1,
-                      overflow: TextOverflow.ellipsis,
-                      style: TextStyle(
-                        fontWeight: FontWeight.w600,
-                        fontSize: 11,
-                        color: gTheme.subTextColor,
-                        height: 1.2,
+                  ),
+                ),
+              ),
+              Positioned(
+                right: -36,
+                top: -34,
+                child: IgnorePointer(
+                  child: Container(
+                    width: 128,
+                    height: 128,
+                    decoration: BoxDecoration(
+                      shape: BoxShape.circle,
+                      color: Colors.white.withValues(alpha: 0.12),
+                    ),
+                  ),
+                ),
+              ),
+              SizedBox(
+                height: 46,
+                child: Row(
+                  children: [
+                    Expanded(
+                      flex: 5,
+                      child: Row(
+                        children: [
+                          Container(
+                            width: 32,
+                            height: 32,
+                            decoration: BoxDecoration(
+                              gradient: LinearGradient(colors: gTheme.iconGradientColors),
+                              borderRadius: BorderRadius.circular(10),
+                            ),
+                            child: Icon(gTheme.icon, color: Colors.white, size: 17),
+                          ),
+                          const SizedBox(width: 8),
+                          Expanded(
+                            child: Column(
+                              mainAxisAlignment: MainAxisAlignment.center,
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                Text(
+                                  '$greeting 👋',
+                                  maxLines: 1,
+                                  overflow: TextOverflow.ellipsis,
+                                  style: TextStyle(
+                                    fontWeight: FontWeight.w800,
+                                    fontSize: 14.4,
+                                    color: gTheme.textColor,
+                                    letterSpacing: -0.3,
+                                    height: 1.1,
+                                  ),
+                                ),
+                                Text(
+                                  dateShort,
+                                  maxLines: 1,
+                                  overflow: TextOverflow.ellipsis,
+                                  style: TextStyle(
+                                    fontWeight: FontWeight.w600,
+                                    fontSize: 10.7,
+                                    color: gTheme.subTextColor,
+                                    height: 1.12,
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                    Expanded(
+                      flex: 3,
+                      child: Center(
+                        child: SizedBox(
+                          width: 92,
+                          child: _CompactLogo(textColor: logoColor),
+                        ),
+                      ),
+                    ),
+                    Expanded(
+                      flex: 4,
+                      child: Row(
+                        mainAxisAlignment: MainAxisAlignment.end,
+                        children: [
+                          Consumer(
+                            builder: (context, ref, child) {
+                              final unreadCount = ref.watch(unreadNotificationsCountProvider);
+                              final badgeLabel = unreadCount > 99 ? '99+' : unreadCount.toString();
+                              return Stack(
+                                clipBehavior: Clip.none,
+                                children: [
+                                  _ActionButtonDynamic(
+                                    icon: Icons.notifications_none_rounded,
+                                    color: gTheme.textColor,
+                                    onTap: () => TargetRouter.handle(context, 'screen:notifications'),
+                                  ),
+                                  if (unreadCount > 0)
+                                    Positioned(
+                                      right: -2,
+                                      top: -2,
+                                      child: Container(
+                                        padding: EdgeInsets.symmetric(
+                                          horizontal: unreadCount > 9 ? 4 : 5,
+                                          vertical: 2,
+                                        ),
+                                        decoration: const BoxDecoration(
+                                          color: Color(0xFFE53935),
+                                          shape: BoxShape.circle,
+                                        ),
+                                        constraints:
+                                            const BoxConstraints(minWidth: 15, minHeight: 15),
+                                        child: Text(
+                                          badgeLabel,
+                                          style: const TextStyle(
+                                            color: Colors.white,
+                                            fontSize: 8,
+                                            fontWeight: FontWeight.w900,
+                                          ),
+                                          textAlign: TextAlign.center,
+                                        ),
+                                      ),
+                                    ),
+                                ],
+                              );
+                            },
+                          ),
+                          const SizedBox(width: 6),
+                          weatherAsync.when(
+                            data: (w) => GestureDetector(
+                              onTap: () => TargetRouter.handle(context, 'screen:weather'),
+                              child: Container(
+                                padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 5),
+                                decoration: BoxDecoration(
+                                  color: gTheme.textColor.withValues(alpha: 0.10),
+                                  borderRadius: BorderRadius.circular(12),
+                                  border: Border.all(color: gTheme.textColor.withValues(alpha: 0.16)),
+                                ),
+                                child: Row(
+                                  mainAxisSize: MainAxisSize.min,
+                                  children: [
+                                    WeatherAnimatedIcon(
+                                      conditionCode: w.conditionCode,
+                                      isDay: w.isDay,
+                                      size: 14,
+                                      color: gTheme.textColor,
+                                    ),
+                                    const SizedBox(width: 4),
+                                    Text(
+                                      '${w.temperature.round()}°',
+                                      style: TextStyle(
+                                        fontWeight: FontWeight.w900,
+                                        fontSize: 12.5,
+                                        color: gTheme.textColor,
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                              ),
+                            ),
+                            loading: () => const SizedBox(width: 44, height: 30),
+                            error: (_, __) => const SizedBox.shrink(),
+                          ),
+                        ],
                       ),
                     ),
                   ],
                 ),
               ),
-              const SizedBox(width: 6),
-              Consumer(
-                builder: (context, ref, child) {
-                  final unreadCount = ref.watch(unreadNotificationsCountProvider);
-                  final badgeLabel = unreadCount > 99 ? '99+' : unreadCount.toString();
-                  return Stack(
-                    clipBehavior: Clip.none,
-                    children: [
-                      _ActionButtonDynamic(
-                        icon: Icons.notifications_none_rounded,
-                        color: gTheme.textColor,
-                        onTap: () => TargetRouter.handle(context, 'screen:notifications'),
-                      ),
-                      if (unreadCount > 0)
-                        Positioned(
-                          right: -2,
-                          top: -2,
-                          child: Container(
-                            padding: EdgeInsets.symmetric(
-                              horizontal: unreadCount > 9 ? 4 : 5,
-                              vertical: 2,
-                            ),
-                            decoration: const BoxDecoration(
-                              color: Color(0xFFE53935),
-                              shape: BoxShape.circle,
-                            ),
-                            constraints: const BoxConstraints(minWidth: 15, minHeight: 15),
-                            child: Text(
-                              badgeLabel,
-                              style: const TextStyle(
-                                color: Colors.white,
-                                fontSize: 8,
-                                fontWeight: FontWeight.w900,
-                              ),
-                              textAlign: TextAlign.center,
-                            ),
-                          ),
-                        ),
-                    ],
-                  );
-                },
-              ),
-              const SizedBox(width: 6),
-              weatherAsync.when(
-                data: (w) => GestureDetector(
-                  onTap: () => TargetRouter.handle(context, 'screen:weather'),
-                  child: Container(
-                    padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 5),
-                    decoration: BoxDecoration(
-                      color: gTheme.textColor.withValues(alpha: 0.10),
-                      borderRadius: BorderRadius.circular(12),
-                      border: Border.all(color: gTheme.textColor.withValues(alpha: 0.16)),
-                    ),
-                    child: Row(
-                      mainAxisSize: MainAxisSize.min,
-                      children: [
-                        WeatherAnimatedIcon(
-                          conditionCode: w.conditionCode,
-                          isDay: w.isDay,
-                          size: 14,
-                          color: gTheme.textColor,
-                        ),
-                        const SizedBox(width: 4),
-                        Text(
-                          '${w.temperature.round()}°',
-                          style: TextStyle(
-                            fontWeight: FontWeight.w900,
-                            fontSize: 12.5,
-                            color: gTheme.textColor,
-                          ),
-                        ),
-                      ],
-                    ),
-                  ),
-                ),
-                loading: () => const SizedBox(width: 44, height: 30),
-                error: (_, __) => const SizedBox.shrink(),
-              ),
             ],
           ),
         ),
-      ).animate(delay: 80.ms).fadeIn(duration: 350.ms).slideY(begin: 0.04, end: 0),
+      ).animate(delay: 80.ms).fadeIn(
+        duration: _homeEntryFadeDuration,
+        curve: _homeEntryCurve,
+      ).slideY(
+        begin: 0.04,
+        end: 0,
+        duration: _homeEntrySlideDuration,
+        curve: _homeEntryCurve,
+      ),
     );
   }
 }
@@ -831,39 +942,48 @@ class _CompactLogo extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Row(
-      mainAxisSize: MainAxisSize.min,
-      children: [
-        Text(
-          'HEPSİ',
-          style: TextStyle(
-            fontWeight: FontWeight.w900,
-            color: textColor,
-            letterSpacing: -0.6,
-            fontSize: 15,
-            height: 1,
-          ),
-        ),
-        const SizedBox(width: 4),
-        Container(
-          padding: const EdgeInsets.symmetric(horizontal: 7, vertical: 3),
-          decoration: BoxDecoration(
-            gradient: const LinearGradient(
-              colors: [Color(0xFFE3AF4C), Color(0xFFD4941A)],
-            ),
-            borderRadius: BorderRadius.circular(5),
-          ),
-          child: const Text(
-            'DÜZİÇİ',
+    return FittedBox(
+      fit: BoxFit.scaleDown,
+      child: Row(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          Text(
+            'HEPSİ',
+            maxLines: 1,
+            softWrap: false,
+            overflow: TextOverflow.clip,
             style: TextStyle(
-              color: Colors.white,
               fontWeight: FontWeight.w900,
-              fontSize: 11.5,
+              color: textColor,
+              letterSpacing: -0.55,
+              fontSize: 14.2,
               height: 1,
             ),
           ),
-        ),
-      ],
+          const SizedBox(width: 4),
+          Container(
+            padding: const EdgeInsets.symmetric(horizontal: 6.5, vertical: 3),
+            decoration: BoxDecoration(
+              gradient: const LinearGradient(
+                colors: [Color(0xFFE3AF4C), Color(0xFFD4941A)],
+              ),
+              borderRadius: BorderRadius.circular(5),
+            ),
+            child: const Text(
+              'DÜZİÇİ',
+              maxLines: 1,
+              softWrap: false,
+              overflow: TextOverflow.clip,
+              style: TextStyle(
+                color: Colors.white,
+                fontWeight: FontWeight.w900,
+                fontSize: 10.8,
+                height: 1,
+              ),
+            ),
+          ),
+        ],
+      ),
     );
   }
 }

@@ -17,6 +17,9 @@ import '../../core/widgets/place_network_image.dart';
 import '../../data/services/favorites_service.dart';
 import 'widgets/explore_list_theme.dart';
 
+final _exploreEntryDuration = 320.ms;
+const _exploreEntryCurve = Curves.easeOutCubic;
+
 class ExploreScreen extends ConsumerWidget {
   const ExploreScreen({super.key});
 
@@ -60,7 +63,7 @@ class ExploreScreen extends ConsumerWidget {
                 SliverToBoxAdapter(
                   child: const AppSectionHeader(title: 'Şehir Hizmetleri')
                       .animate(delay: 100.ms)
-                      .fadeIn(),
+                      .fadeIn(duration: _exploreEntryDuration, curve: _exploreEntryCurve),
                 ),
                 SliverPadding(
                   padding: const EdgeInsets.symmetric(horizontal: 20),
@@ -77,10 +80,14 @@ class ExploreScreen extends ConsumerWidget {
                         return _CityServiceCard(
                           service: svc,
                           onTap: () => _handleServiceTap(context, svc),
-                        ).animate(delay: (120 + index * 30).ms).fadeIn().scale(
-                              begin: const Offset(0.9, 0.9),
+                        ).animate(delay: (120 + index * 30).ms).fadeIn(
+                              duration: _exploreEntryDuration,
+                              curve: _exploreEntryCurve,
+                            ).scale(
+                              begin: const Offset(0.94, 0.94),
                               end: const Offset(1, 1),
-                              curve: Curves.easeOutBack,
+                              duration: _exploreEntryDuration,
+                              curve: _exploreEntryCurve,
                             );
                       },
                       childCount: services.length,
@@ -97,21 +104,29 @@ class ExploreScreen extends ConsumerWidget {
                   onAction: () {},
                 )
                     .animate(delay: 350.ms)
-                    .fadeIn(),
+                    .fadeIn(duration: _exploreEntryDuration, curve: _exploreEntryCurve),
               ),
               SliverToBoxAdapter(
                 child: _FeaturedSlider(
-                    places: categories.expand((c) => c.places).take(5).toList())
+                    places: categories
+                        .where((c) => c.id != 'guide')
+                        .expand((c) => c.places)
+                        .take(5)
+                        .toList())
                     .animate(delay: 400.ms)
-                    .fadeIn()
-                    .scale(begin: const Offset(0.98, 0.98)),
+                    .fadeIn(duration: _exploreEntryDuration, curve: _exploreEntryCurve)
+                    .scale(
+                      begin: const Offset(0.985, 0.985),
+                      duration: _exploreEntryDuration,
+                      curve: _exploreEntryCurve,
+                    ),
               ),
 
               // === KATEGORİ KARTLARI ===
               SliverToBoxAdapter(
                 child: const AppSectionHeader(title: 'Kategoriler')
                     .animate(delay: 450.ms)
-                    .fadeIn(),
+                    .fadeIn(duration: _exploreEntryDuration, curve: _exploreEntryCurve),
               ),
               SliverPadding(
                 padding: const EdgeInsets.symmetric(horizontal: 20),
@@ -160,7 +175,15 @@ class ExploreScreen extends ConsumerWidget {
                           preSelectedCategory: preSelected,
                           initialScope: item.id == 'osmaniye' ? 'OSMANIYE' : 'DUZICI',
                         ),
-                      ).animate(delay: (500 + index * 80).ms).fadeIn().moveY(begin: 16, end: 0);
+                      ).animate(delay: (500 + index * 80).ms).fadeIn(
+                        duration: _exploreEntryDuration,
+                        curve: _exploreEntryCurve,
+                      ).moveY(
+                        begin: 16,
+                        end: 0,
+                        duration: _exploreEntryDuration,
+                        curve: _exploreEntryCurve,
+                      );
                     },
                     childCount: categories.length,
                   ),
@@ -318,16 +341,6 @@ class _CityServiceCard extends StatelessWidget {
                     size: 26,
                   ),
                 ),
-                Positioned(
-                  top: 0,
-                  right: 0,
-                  child: FavoriteButton(
-                    id: service.id,
-                    category: FavoriteCategory.service,
-                    size: 14,
-                    padding: const EdgeInsets.all(4),
-                  ),
-                ),
               ],
             ),
           ),
@@ -434,13 +447,14 @@ class _FeaturedSliderState extends State<_FeaturedSlider> {
                           padding: const EdgeInsets.all(20),
                           decoration: BoxDecoration(
                             gradient: LinearGradient(
-                              begin: Alignment.topCenter,
-                              end: Alignment.bottomCenter,
+                              begin: Alignment.topLeft,
+                              end: Alignment.bottomRight,
                               colors: [
-                                Colors.transparent,
-                                Colors.black.withValues(alpha: 0.75),
+                                Colors.black.withValues(alpha: 0.06),
+                                Colors.black.withValues(alpha: 0.5),
+                                Colors.black.withValues(alpha: 0.82),
                               ],
-                              stops: const [0.4, 1.0],
+                              stops: const [0.05, 0.55, 1.0],
                             ),
                           ),
                           child: Column(
@@ -467,11 +481,18 @@ class _FeaturedSliderState extends State<_FeaturedSlider> {
                               const SizedBox(height: 8),
                               Text(
                                 place.name,
-                                style: const TextStyle(
+                                style: TextStyle(
                                   color: Colors.white,
                                   fontSize: 18,
                                   fontWeight: FontWeight.w900,
                                   letterSpacing: -0.3,
+                                  shadows: [
+                                    Shadow(
+                                      color: Colors.black.withValues(alpha: 0.42),
+                                      blurRadius: 10,
+                                      offset: const Offset(0, 2),
+                                    ),
+                                  ],
                                 ),
                               ),
                               const SizedBox(height: 2),
@@ -486,6 +507,29 @@ class _FeaturedSliderState extends State<_FeaturedSlider> {
                                 ),
                               ),
                             ],
+                          ),
+                        ),
+                        Positioned.fill(
+                          child: IgnorePointer(
+                            child: DecoratedBox(
+                              decoration: BoxDecoration(
+                                borderRadius: BorderRadius.circular(20),
+                                border: Border.all(
+                                  color: Colors.white.withValues(alpha: 0.15),
+                                  width: 1.1,
+                                ),
+                                gradient: LinearGradient(
+                                  begin: Alignment.centerLeft,
+                                  end: Alignment.centerRight,
+                                  colors: [
+                                    Colors.black.withValues(alpha: 0.14),
+                                    Colors.transparent,
+                                    Colors.black.withValues(alpha: 0.12),
+                                  ],
+                                  stops: const [0, 0.5, 1],
+                                ),
+                              ),
+                            ),
                           ),
                         ),
                       ],
@@ -586,13 +630,14 @@ class _PremiumExploreCard extends StatelessWidget {
                 padding: const EdgeInsets.all(16),
                 decoration: BoxDecoration(
                   gradient: LinearGradient(
-                    begin: Alignment.topCenter,
-                    end: Alignment.bottomCenter,
+                    begin: Alignment.topLeft,
+                    end: Alignment.bottomRight,
                     colors: [
-                      Colors.black.withValues(alpha: 0.0),
-                      Colors.black.withValues(alpha: 0.7),
+                      Colors.black.withValues(alpha: 0.04),
+                      Colors.black.withValues(alpha: 0.45),
+                      Colors.black.withValues(alpha: 0.78),
                     ],
-                    stops: const [0.4, 1.0],
+                    stops: const [0.05, 0.55, 1.0],
                   ),
                 ),
                 child: Column(
@@ -601,11 +646,18 @@ class _PremiumExploreCard extends StatelessWidget {
                   children: [
                     Text(
                       title,
-                      style: const TextStyle(
+                      style: TextStyle(
                         color: Colors.white,
                         fontSize: 15,
                         fontWeight: FontWeight.w900,
                         letterSpacing: -0.2,
+                        shadows: [
+                          Shadow(
+                            color: Colors.black.withValues(alpha: 0.42),
+                            blurRadius: 8,
+                            offset: const Offset(0, 2),
+                          ),
+                        ],
                       ),
                     ),
                     const SizedBox(height: 3),
@@ -621,6 +673,29 @@ class _PremiumExploreCard extends StatelessWidget {
                       overflow: TextOverflow.ellipsis,
                     ),
                   ],
+                ),
+              ),
+              Positioned.fill(
+                child: IgnorePointer(
+                  child: DecoratedBox(
+                    decoration: BoxDecoration(
+                      borderRadius: BorderRadius.circular(20),
+                      border: Border.all(
+                        color: Colors.white.withValues(alpha: 0.13),
+                        width: 1.0,
+                      ),
+                      gradient: LinearGradient(
+                        begin: Alignment.centerLeft,
+                        end: Alignment.centerRight,
+                        colors: [
+                          Colors.black.withValues(alpha: 0.12),
+                          Colors.transparent,
+                          Colors.black.withValues(alpha: 0.1),
+                        ],
+                        stops: const [0, 0.5, 1],
+                      ),
+                    ),
+                  ),
                 ),
               ),
             ],

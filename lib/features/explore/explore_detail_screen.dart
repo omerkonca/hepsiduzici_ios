@@ -6,6 +6,8 @@ import 'package:video_player/video_player.dart';
 import '../../data/models/city_content.dart';
 import '../../core/theme/app_colors.dart';
 import '../../core/utils/launcher_utils.dart';
+import '../../core/utils/media_url_resolver.dart';
+import 'package:cached_network_image/cached_network_image.dart';
 import '../../core/widgets/favorite_button.dart';
 import '../../core/widgets/dynamic_place_facilities.dart';
 import '../../core/widgets/place_network_image.dart';
@@ -275,6 +277,39 @@ class _ExploreDetailScreenState extends State<ExploreDetailScreen> {
     );
   }
 
+  Widget _buildGalleryImage(String imgPath, {String? heroTag}) {
+    if (MediaUrlResolver.isBundledAsset(imgPath)) {
+      return Image.asset(
+        imgPath,
+        fit: BoxFit.cover,
+        width: double.infinity,
+        height: double.infinity,
+        errorBuilder: (_, __, ___) => PlaceNetworkImage(
+          place: widget.place,
+          fit: BoxFit.cover,
+          maxHeight: 1200,
+        ),
+      );
+    }
+
+    final resolved = MediaUrlResolver.resolve(imgPath);
+    return CachedNetworkImage(
+      imageUrl: resolved,
+      fit: BoxFit.cover,
+      width: double.infinity,
+      height: double.infinity,
+      placeholder: (_, __) => const ColoredBox(
+        color: Color(0xFF1A2030),
+        child: Center(child: CircularProgressIndicator(strokeWidth: 2)),
+      ),
+      errorWidget: (_, __, ___) => PlaceNetworkImage(
+        place: widget.place,
+        fit: BoxFit.cover,
+        maxHeight: 1200,
+      ),
+    );
+  }
+
   Widget _buildAppBar() {
     final hasGallery = widget.place.gallery != null && widget.place.gallery!.isNotEmpty;
 
@@ -296,11 +331,12 @@ class _ExploreDetailScreenState extends State<ExploreDetailScreen> {
                 },
                 itemBuilder: (context, index) {
                   final imgPath = widget.place.gallery![index];
+                  final heroTag = index == 0
+                      ? 'place_image_${widget.place.name}'
+                      : 'place_image_${widget.place.name}_$index';
                   return Hero(
-                    tag: index == 0 ? 'place_image_${widget.place.name}' : 'place_image_${widget.place.name}_$index',
-                    child: imgPath.startsWith('assets/')
-                        ? Image.asset(imgPath, fit: BoxFit.cover)
-                        : Image.network(imgPath, fit: BoxFit.cover),
+                    tag: heroTag,
+                    child: _buildGalleryImage(imgPath, heroTag: heroTag),
                   );
                 },
               )
@@ -315,13 +351,50 @@ class _ExploreDetailScreenState extends State<ExploreDetailScreen> {
               child: DecoratedBox(
                 decoration: BoxDecoration(
                   gradient: LinearGradient(
-                    begin: Alignment.topCenter,
-                    end: Alignment.bottomCenter,
+                    begin: Alignment.topLeft,
+                    end: Alignment.bottomRight,
                     colors: [
-                      Colors.black.withValues(alpha: 0.4),
-                      Colors.transparent,
-                      Colors.black.withValues(alpha: 0.7),
+                      Colors.black.withValues(alpha: 0.45),
+                      Colors.black.withValues(alpha: 0.12),
+                      Colors.black.withValues(alpha: 0.78),
                     ],
+                    stops: const [0.0, 0.48, 1.0],
+                  ),
+                ),
+              ),
+            ),
+            Positioned.fill(
+              child: IgnorePointer(
+                child: DecoratedBox(
+                  decoration: BoxDecoration(
+                    border: Border.all(
+                      color: Colors.white.withValues(alpha: 0.16),
+                      width: 1.2,
+                    ),
+                    gradient: LinearGradient(
+                      begin: Alignment.centerLeft,
+                      end: Alignment.centerRight,
+                      colors: [
+                        Colors.black.withValues(alpha: 0.18),
+                        Colors.transparent,
+                        Colors.black.withValues(alpha: 0.14),
+                      ],
+                      stops: const [0, 0.5, 1],
+                    ),
+                  ),
+                ),
+              ),
+            ),
+            Positioned(
+              top: -42,
+              right: -38,
+              child: IgnorePointer(
+                child: Container(
+                  width: 138,
+                  height: 138,
+                  decoration: BoxDecoration(
+                    shape: BoxShape.circle,
+                    color: Colors.white.withValues(alpha: 0.12),
                   ),
                 ),
               ),

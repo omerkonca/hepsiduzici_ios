@@ -3,10 +3,12 @@ import 'package:flutter_animate/flutter_animate.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../../app/providers.dart';
 import '../../../core/theme/app_colors.dart';
-import '../../../core/utils/color_utils.dart';
 import '../../../core/utils/icon_mapper.dart';
 import '../../../core/utils/target_router.dart';
 import '../../../data/models/city_content.dart';
+
+final _quickActionEntryDuration = 320.ms;
+const _quickActionEntryCurve = Curves.easeOutCubic;
 
 class QuickActionsRow extends ConsumerWidget {
   const QuickActionsRow({super.key});
@@ -89,8 +91,13 @@ class QuickActionsRow extends ConsumerWidget {
           final item = actions[index];
           return _QuickActionCard(item: item, index: index)
               .animate(delay: (index * 50).ms)
-              .fadeIn(duration: 280.ms)
-              .slideY(begin: 0.08, end: 0, curve: Curves.easeOutCubic);
+              .fadeIn(duration: _quickActionEntryDuration, curve: _quickActionEntryCurve)
+              .slideY(
+                begin: 0.08,
+                end: 0,
+                duration: _quickActionEntryDuration,
+                curve: _quickActionEntryCurve,
+              );
         },
       ),
     );
@@ -113,7 +120,8 @@ class _QuickActionCardState extends State<_QuickActionCard> {
   @override
   Widget build(BuildContext context) {
     final isDark = Theme.of(context).brightness == Brightness.dark;
-    final accent = hexToColor(widget.item.color, AppColors.primary);
+    final accent = isDark ? const Color(0xFFE3AF4C) : AppColors.primaryDark;
+    final accentSoft = isDark ? const Color(0xFFB8872F) : const Color(0xFF9B7A2F);
     final icon = IconMapper.fromName(widget.item.icon);
     final subtitle = (widget.item.subtitle?.isNotEmpty == true) ? widget.item.subtitle! : '';
 
@@ -137,7 +145,7 @@ class _QuickActionCardState extends State<_QuickActionCard> {
             border: Border.all(
               color: isDark
                   ? AppColors.darkCardBorder
-                  : accent.withValues(alpha: 0.14),
+                  : accent.withValues(alpha: 0.18),
             ),
             boxShadow: _pressed
                 ? []
@@ -145,7 +153,7 @@ class _QuickActionCardState extends State<_QuickActionCard> {
                     BoxShadow(
                       color: isDark
                           ? Colors.black.withValues(alpha: 0.35)
-                          : accent.withValues(alpha: 0.10),
+                          : accent.withValues(alpha: 0.11),
                       blurRadius: 14,
                       offset: const Offset(0, 4),
                     ),
@@ -157,8 +165,18 @@ class _QuickActionCardState extends State<_QuickActionCard> {
                 width: 44,
                 height: 44,
                 decoration: BoxDecoration(
-                  color: accent.withValues(alpha: isDark ? 0.22 : 0.12),
+                  gradient: LinearGradient(
+                    begin: Alignment.topLeft,
+                    end: Alignment.bottomRight,
+                    colors: [
+                      accent.withValues(alpha: isDark ? 0.26 : 0.18),
+                      accentSoft.withValues(alpha: isDark ? 0.18 : 0.12),
+                    ],
+                  ),
                   borderRadius: BorderRadius.circular(13),
+                  border: Border.all(
+                    color: accent.withValues(alpha: isDark ? 0.34 : 0.22),
+                  ),
                 ),
                 child: Icon(icon, color: accent, size: 24),
               ),
@@ -198,7 +216,7 @@ class _QuickActionCardState extends State<_QuickActionCard> {
               Icon(
                 Icons.arrow_forward_ios_rounded,
                 size: 12,
-                color: accent.withValues(alpha: 0.55),
+                color: accent.withValues(alpha: 0.62),
               ),
             ],
           ),

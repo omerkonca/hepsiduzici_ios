@@ -1163,13 +1163,14 @@
             "detail": "Düziçi'nin en yoğun ticaret alanı Kurtuluş ve Cumhuriyet mahallelerindedir. Çamiçi güzergâhındaki Recep Tayyip Erdoğan Bulvarı (eski Refik Cesur kesimi) çarşı girişinden Yeraltı Camii'ne kadar uzanır. Esnaf lokantaları, pastaneler, kırtasiye ve günlük ihtiyaç dükkanları bu bölgededir.",
             "address": "Kurtuluş / Cumhuriyet Mah., RTE Bulvarı, Düziçi",
             "tag": "MERKEZ",
-            "image": "https://upload.wikimedia.org/wikipedia/commons/thumb/b/b1/Osmaniye_Market_in_2010_1919.jpg/960px-Osmaniye_Market_in_2010_1919.jpg",
+            "image": "https://images.unsplash.com/photo-1542810634-71277d95dcbb?w=960",
             "parking": "bilinmiyor",
             "restroom": "bilinmiyor",
             "entryFee": "bilinmiyor",
             "lat": 37.232,
             "lng": 36.441,
-            "osmUrl": "https://www.openstreetmap.org/#map=17/37.232/36.441"
+            "osmUrl": "https://www.openstreetmap.org/#map=17/37.232/36.441",
+            "googleMapsUrl": "https://www.google.com/maps/search/?api=1&query=37.232,36.441"
           },
           {
             "name": "Düziçi Şehirlerarası Otogar",
@@ -1183,7 +1184,8 @@
             "entryFee": "bilinmiyor",
             "lat": 37.199,
             "lng": 36.432,
-            "osmUrl": "https://www.openstreetmap.org/#map=17/37.199/36.432"
+            "osmUrl": "https://www.openstreetmap.org/#map=17/37.199/36.432",
+            "googleMapsUrl": "https://www.google.com/maps/search/?api=1&query=37.199,36.432"
           },
           {
             "name": "O-52 ve D-400 Gişe Kavşağı",
@@ -1208,7 +1210,8 @@
             "parking": "var",
             "restroom": "var",
             "entryFee": "ucretsiz",
-            "osmUrl": "https://www.openstreetmap.org/#map=17/37.199/36.43"
+            "osmUrl": "https://www.openstreetmap.org/#map=17/37.199/36.43",
+            "googleMapsUrl": "https://www.google.com/maps/search/?api=1&query=37.199,36.43"
           },
           {
             "name": "Ellek ve Yarbaşı Belde Minibüsleri",
@@ -1262,14 +1265,14 @@
             "gallery": [
               "assets/images/harun_resit.jpg"
             ],
-            "videoUrl": "assets/videos/harun_resit_video.mp4",
             "lat": 37.258,
             "lng": 36.48,
             "parking": "sinirli",
             "restroom": "sinirli",
             "entryFee": "ucretsiz",
             "entryFeeNote": "Kalenin giriş noktasına kadar araçla çıkılıp, yol kenarındaki uygun düzlüklere park edilebiliyor. Kale içinde doğrudan tesis yok.",
-            "osmUrl": "https://www.openstreetmap.org/#map=17/37.258/36.48"
+            "osmUrl": "https://www.openstreetmap.org/#map=17/37.258/36.48",
+            "googleMapsUrl": "https://www.google.com/maps/search/?api=1&query=37.258,36.48"
           },
           {
             "name": "Karatepe-Aslantaş Açık Hava Müzesi ve Milli Parkı",
@@ -1281,13 +1284,13 @@
             "gallery": [
               "assets/images/karatepe.jpg"
             ],
-            "videoUrl": "assets/videos/karatepe_video.mp4",
             "lat": 37.294,
             "lng": 36.257,
             "parking": "var",
             "restroom": "var",
             "entryFee": "ucretli",
-            "entryFeeNote": "Müzekart geçerlidir."
+            "entryFeeNote": "Müzekart geçerlidir.",
+            "googleMapsUrl": "https://www.google.com/maps/search/?api=1&query=37.294,36.257"
           },
           {
             "name": "Kastabala (Hierapolis) Antik Kenti",
@@ -1303,7 +1306,8 @@
             "lng": 36.185,
             "parking": "var",
             "restroom": "var",
-            "entryFee": "ucretsiz"
+            "entryFee": "ucretsiz",
+            "googleMapsUrl": "https://www.google.com/maps/search/?api=1&query=37.177,36.185"
           },
           {
             "name": "Toprakkale Kalesi",
@@ -1319,7 +1323,8 @@
             "lng": 36.143,
             "parking": "var",
             "restroom": "sinirli",
-            "entryFee": "ucretsiz"
+            "entryFee": "ucretsiz",
+            "googleMapsUrl": "https://www.google.com/maps/search/?api=1&query=37.065,36.143"
           }
         ]
       },
@@ -1336,16 +1341,17 @@
             "detail": "Düziçi’nin Türkiye eğitim tarihindeki en büyük gururlarından biri, 1940 yılında açılan Haruniye Köy Enstitüsü’dür. Bugün Düziçi Fen Lisesi olan bu tarihi kampüs içerisinde yer alan müze; enstitü döneminden kalan tarihi binaları, öğrencilerin kullandığı tarım aletlerini, müzik aletlerini, eski fotoğrafları, ders kitaplarını ve o dönemin ruhunu yansıtan birçok tarihi objeyi barındırır. İlçemizin köklü eğitim geçmişini ve kültürel kimliğini anlamak için ziyaret edilmesi gereken ilk ve en önemli müzedir. Genellikle okul saatleri ve mesai günlerinde ziyaret edilebilmektedir.\n\n• Tuvalet: Var (Okul/kampüs içerisindeki lavabolar kullanılabiliyor)\n• Otopark: Var (Okul çevresinde ve kampüs girişinde araç bırakılabilecek alanlar mevcut)\n• Giriş Ücreti: Ücretsiz",
             "address": "Düziçi Fen Lisesi Kampüsü İçi, 80600 Düziçi/Osmaniye",
             "tag": "MÜZE",
-            "image": "assets/images/koy_enstitusu.jpg",
+            "image": "/uploads/koy_enstitusu.jpg",
             "gallery": [
-              "assets/images/koy_enstitusu.jpg"
+              "/uploads/koy_enstitusu.jpg"
             ],
-            "lat": 37.2440,
-            "lng": 36.4510,
+            "lat": 37.244,
+            "lng": 36.451,
             "parking": "var",
             "restroom": "var",
             "entryFee": "ucretsiz",
-            "osmUrl": "https://www.openstreetmap.org/#map=17/37.2440/36.4510"
+            "osmUrl": "https://www.openstreetmap.org/#map=17/37.2440/36.4510",
+            "googleMapsUrl": "https://www.google.com/maps/search/?api=1&query=37.244,36.451"
           },
           {
             "name": "Karatepe-Aslantaş Açık Hava Müzesi",
@@ -1363,7 +1369,8 @@
             "restroom": "var",
             "entryFee": "ucretli",
             "entryFeeNote": "Müzekart geçerlidir.",
-            "osmUrl": "https://www.openstreetmap.org/#map=17/37.294/36.257"
+            "osmUrl": "https://www.openstreetmap.org/#map=17/37.294/36.257",
+            "googleMapsUrl": "https://www.google.com/maps/search/?api=1&query=37.294,36.257"
           },
           {
             "name": "Osmaniye Kent Müzesi",
@@ -1377,7 +1384,8 @@
             "parking": "var",
             "restroom": "var",
             "entryFee": "ucretsiz",
-            "osmUrl": "https://www.openstreetmap.org/#map=17/37.074/36.248"
+            "osmUrl": "https://www.openstreetmap.org/#map=17/37.074/36.248",
+            "googleMapsUrl": "https://www.google.com/maps/search/?api=1&query=37.074,36.248"
           }
         ]
       },
@@ -1394,19 +1402,20 @@
             "detail": "Asırlık çınar ve çam ağaçlarının arasından süzülen buz gibi suyuyla, yazın en sıcak günlerinde bile doğal bir klima etkisi yaratan harika bir doğa alanıdır. Şelaleye ulaşmak için Sabun Çayı Mesire Alanı'na aracınızı park edip, suyun sesi eşliğinde kısa ve keyifli bir doğa yürüyüşü yapmanız gerekir. Etrafı sarp kayalıklarla ve yoğun yeşillikle çevrili olduğu için doğa fotoğrafçılığı yapmak isteyenler için efsanevi kareler sunar. Kamp sandalyenizi atıp saatlerce kafa dinleyebileceğiniz, kalabalıktan bir tık daha izole bir huzur noktasıdır.",
             "address": "Sabun Çayı Mesire Alanı bitişiği (Gökçayır Köyü Mevkii), 80600 Düziçi",
             "tag": "ŞELALE",
-            "image": "assets/images/karasu_selalesi.jpg",
+            "image": "/uploads/karasu_selalesi.jpg",
             "gallery": [
-              "assets/images/karasu_selalesi.jpg",
-              "assets/images/karasu_2.jpg",
-              "assets/images/karasu_3.jpg"
+              "/uploads/karasu_selalesi.jpg",
+              "/uploads/karasu_2.jpg",
+              "/uploads/karasu_3.jpg"
             ],
-            "videoUrl": "assets/videos/karasu_video.mp4",
+            "videoUrl": "/uploads/karasu_video.mp4",
             "lat": 37.251,
             "lng": 36.468,
             "parking": "var",
             "restroom": "var",
             "entryFee": "ucretsiz",
-            "entryFeeNote": "Mesire alanına araçla giriş ve otopark kullanımı ücretlidir. Şelaleye yürüyüş ve alanda vakit geçirmek ücretsizdir."
+            "entryFeeNote": "Mesire alanına araçla giriş ve otopark kullanımı ücretlidir. Şelaleye yürüyüş ve alanda vakit geçirmek ücretsizdir.",
+            "googleMapsUrl": "https://www.google.com/maps/search/?api=1&query=37.251,36.468"
           },
           {
             "name": "Yeşil Şelalesi",
@@ -1414,17 +1423,18 @@
             "detail": "Adını, etrafını saran yoğun bitki örtüsünün suya yansıttığı zümrüt yeşili renkten alan bu şelale, Amanos Dağları'nın saklı kalmış eşsiz rotalarından biridir. Suyun döküldüğü noktada yosun tutmuş devasa kayalar ve sarmaşıklar, mekana adeta bir masal diyarı havası katar. Çukurova sıcağından kaçmak isteyen doğa tutkunları için oksijen deposudur. Herhangi bir işletme veya altyapı bulunmadığı için doğanın en saf, en el değmemiş halini deneyimleme fırsatı sunar.",
             "address": "Çerçioğlu Köyü Merkez, 80600 Düziçi",
             "tag": "ŞELALE",
-            "image": "assets/images/yesil_selalesi.jpg",
+            "image": "/uploads/yesil_selalesi.jpg",
             "gallery": [
-              "assets/images/yesil_selalesi.jpg",
-              "assets/images/yesil_2.jpg",
-              "assets/images/yesil_3.jpg"
+              "/uploads/yesil_selalesi.jpg",
+              "/uploads/yesil_2.jpg",
+              "/uploads/yesil_3.jpg"
             ],
             "lat": 37.322,
             "lng": 36.292,
             "parking": "sinirli",
             "restroom": "yok",
-            "entryFee": "ucretsiz"
+            "entryFee": "ucretsiz",
+            "googleMapsUrl": "https://www.google.com/maps/search/?api=1&query=37.322,36.292"
           },
           {
             "name": "Kocakesme Şelalesi",
@@ -1437,7 +1447,8 @@
             "lng": 36.463,
             "parking": "sinirli",
             "restroom": "yok",
-            "entryFee": "ucretsiz"
+            "entryFee": "ucretsiz",
+            "googleMapsUrl": "https://www.google.com/maps/search/?api=1&query=37.228,36.463"
           },
           {
             "name": "Deve Mağarası, Deve Kanyonu ve Adem'in Şelalesi (Kısık Kanyonu Rotası)",
@@ -1455,7 +1466,8 @@
               "assets/images/deve_magarasi.jpg",
               "assets/images/deve_kanyonu.jpg",
               "assets/images/ademin_selalesi.jpg"
-            ]
+            ],
+            "googleMapsUrl": "https://www.google.com/maps/search/?api=1&query=37.302,36.515"
           },
           {
             "name": "Delioğlan Şelalesi",
@@ -1468,7 +1480,8 @@
             "restroom": "yok",
             "entryFee": "ucretsiz",
             "lat": 37.1867,
-            "lng": 36.4256
+            "lng": 36.4256,
+            "googleMapsUrl": "https://www.google.com/maps/search/?api=1&query=37.1867,36.4256"
           },
           {
             "name": "Uyuz Pınarı",
@@ -1481,7 +1494,8 @@
             "lng": 36.504,
             "parking": "sinirli",
             "restroom": "yok",
-            "entryFee": "ucretsiz"
+            "entryFee": "ucretsiz",
+            "googleMapsUrl": "https://www.google.com/maps/search/?api=1&query=37.297,36.504"
           }
         ]
       },
@@ -1505,7 +1519,8 @@
             "restroom": "sinirli",
             "entryFee": "ucretsiz",
             "entryFeeNote": "Yayla işletmelerinde WC ve otopark değişebilir.",
-            "osmUrl": "https://www.openstreetmap.org/#map=17/37.288/36.565"
+            "osmUrl": "https://www.openstreetmap.org/#map=17/37.288/36.565",
+            "googleMapsUrl": "https://www.google.com/maps/search/?api=1&query=37.288,36.565"
           },
           {
             "name": "Düldül Dağı Zirvesi",
@@ -1519,7 +1534,8 @@
             "entryFee": "bilinmiyor",
             "lat": 37.349,
             "lng": 36.561,
-            "osmUrl": "https://www.openstreetmap.org/#map=14/37.349/36.561"
+            "osmUrl": "https://www.openstreetmap.org/#map=14/37.349/36.561",
+            "googleMapsUrl": "https://www.google.com/maps/search/?api=1&query=37.349,36.561"
           },
           {
             "name": "Kuşçu Yaylası",
@@ -1533,7 +1549,8 @@
             "entryFee": "bilinmiyor",
             "lat": 37.382,
             "lng": 36.471,
-            "osmUrl": "https://www.openstreetmap.org/#map=15/37.382/36.471"
+            "osmUrl": "https://www.openstreetmap.org/#map=15/37.382/36.471",
+            "googleMapsUrl": "https://www.google.com/maps/search/?api=1&query=37.382,36.471"
           }
         ]
       },
@@ -1557,77 +1574,8 @@
             "restroom": "var",
             "entryFee": "ucretli",
             "entryFeeNote": "Kaplıca giriş ücreti işletmeye göre değişir; tadilat dönemlerinde kapalı olabilir.",
-            "osmUrl": "https://www.openstreetmap.org/#map=17/37.381/36.492"
-          }
-        ]
-      },
-      {
-        "id": "food",
-        "icon": "restaurant",
-        "title": "Lezzet Durakları",
-        "subtitle": "Düziçi ve Osmaniye yöresinin eşsiz mutfak kültürü",
-        "badge": "Lezzet",
-        "places": [
-          {
-            "name": "Osmaniye Künefeleri",
-            "shortDescription": "Hatay'a rakip künefe geleneği; peynirli ve şerbetli.",
-            "detail": "Osmaniye ili ve Düziçi çevresinde künefe, en sevilen tatlılardan biridir. Özellikle tel kadayıf arasına konulan taze peynir ile hazırlanan künefe, şerbeti ile birlikte servis edilir. Çarşı merkezinde ve ana caddeler üzerinde birçok künefeci bulunmaktadır.",
-            "address": "Düziçi merkez ve Osmaniye geneli",
-            "tag": "TATLI",
-            "image": "https://upload.wikimedia.org/wikipedia/commons/thumb/7/7a/K%C3%BCnefe%2C_Wiesbaden.jpg/960px-K%C3%BCnefe%2C_Wiesbaden.jpg",
-            "lat": 37.234,
-            "lng": 36.442,
-            "parking": "sinirli",
-            "restroom": "var",
-            "entryFee": "ucretsiz",
-            "osmUrl": "https://www.openstreetmap.org/#map=17/37.234/36.442"
-          },
-          {
-            "name": "Esnaf Lokantaları",
-            "shortDescription": "Ev yemeği tadında çorba, kebap ve fırın yemekleri.",
-            "detail": "Düziçi merkez çarşısı ve Atatürk Bulvarı çevresinde onlarca esnaf lokantası yer alır. Günlük taze hazırlanan ev yemekleri, mercimek çorbası, kuru fasulye, et sote ve fırın kebabı en çok tercih edilen menülerdir. Öğle saatlerinde yoğunluk yaşanabilir.",
-            "address": "Düziçi merkez, Atatürk Bulvarı ve çarşı",
-            "tag": "ESNAF",
-            "image": "https://upload.wikimedia.org/wikipedia/commons/thumb/b/b1/Osmaniye_Market_in_2010_1919.jpg/960px-Osmaniye_Market_in_2010_1919.jpg",
-            "lat": 37.234,
-            "lng": 36.442,
-            "parking": "sinirli",
-            "restroom": "var",
-            "entryFee": "ucretsiz",
-            "osmUrl": "https://www.openstreetmap.org/#map=17/37.234/36.442"
-          },
-          {
-            "name": "Yayla ve Köy Kahvaltısı",
-            "shortDescription": "Serpme kahvaltı, taze peynir, yöresel bal ve tereyağı.",
-            "detail": "Dumanlı Yaylası ve çevre köylere giden güzergâhlarda aile işletmeleri serpme kahvaltı sunar. Taze keçi peyniri, süzme yoğurt, köy yumurtası, bal-kaymak ve gözleme menünün vazgeçilmezleridir. Sezon dışında kapalı olabilen mekanlar için önceden telefon ile teyit almanız tavsiye edilir.",
-            "address": "Kuşçu, Olukbaşı ve yayla güzergâhları",
-            "tag": "KÖY",
-            "image": "https://upload.wikimedia.org/wikipedia/commons/thumb/5/5b/D%C3%BCld%C3%BCl_Da%C4%9F%C4%B1_-_Mount_D%C3%BCld%C3%BCl_03.JPG/960px-D%C3%BCld%C3%BCl_Da%C4%9F%C4%B1_-_Mount_D%C3%BCld%C3%BCl_03.JPG",
-            "parking": "bilinmiyor",
-            "restroom": "bilinmiyor",
-            "entryFee": "bilinmiyor"
-          },
-          {
-            "name": "Peynir Helvası",
-            "shortDescription": "Osmaniye'nin meşhur tatlısı; peynir ve un helvası karışımı.",
-            "detail": "Peynir Helvası, Osmaniye ve Düziçi'nin en bilinen yöresel tatlılarından biridir. Taze peynir, un, şeker ve tereyağı ile hazırlanır. Özellikle bayram ve özel günlerde yapılır. Çarşıdaki pastaneler ve şekerci dükkanlarında bulunabilir.",
-            "address": "Düziçi ve Osmaniye çarşıları",
-            "tag": "YÖRE",
-            "image": "https://upload.wikimedia.org/wikipedia/commons/thumb/7/7a/K%C3%BCnefe%2C_Wiesbaden.jpg/960px-K%C3%BCnefe%2C_Wiesbaden.jpg",
-            "parking": "bilinmiyor",
-            "restroom": "bilinmiyor",
-            "entryFee": "bilinmiyor"
-          },
-          {
-            "name": "Yer Fıstığı ve Narenciye Ürünleri",
-            "shortDescription": "Düziçi'nin tarım ürünleri: yer fıstığı, portakal, nar.",
-            "detail": "Düziçi, Osmaniye'nin en verimli tarım alanlarından birine sahiptir. Yer fıstığı üretiminde Türkiye'nin önde gelen ilçelerinden biridir. Ayrıca portakal, mandalina, nar ve zeytin üretimi de yaygındır. Yol kenarlarında köylülerin taze ürün sattığı tezgâhlar bulunur.",
-            "address": "Düziçi Ovası ve çevre köyler",
-            "tag": "YÖRE",
-            "image": "https://upload.wikimedia.org/wikipedia/commons/thumb/5/5b/D%C3%BCld%C3%BCl_Da%C4%9F%C4%B1_-_Mount_D%C3%BCld%C3%BCl_03.JPG/960px-D%C3%BCld%C3%BCl_Da%C4%9F%C4%B1_-_Mount_D%C3%BCld%C3%BCl_03.JPG",
-            "parking": "bilinmiyor",
-            "restroom": "bilinmiyor",
-            "entryFee": "bilinmiyor"
+            "osmUrl": "https://www.openstreetmap.org/#map=17/37.381/36.492",
+            "googleMapsUrl": "https://www.google.com/maps/search/?api=1&query=37.381,36.492"
           }
         ]
       },
@@ -1650,7 +1598,8 @@
             "parking": "sinirli",
             "restroom": "yok",
             "entryFee": "ucretsiz",
-            "osmUrl": "https://www.openstreetmap.org/#map=17/37.288/36.565"
+            "osmUrl": "https://www.openstreetmap.org/#map=17/37.288/36.565",
+            "googleMapsUrl": "https://www.google.com/maps/search/?api=1&query=37.288,36.565"
           },
           {
             "name": "Dumanlı Yaylası Yürüyüş Parkuru",
@@ -1664,7 +1613,8 @@
             "parking": "var",
             "restroom": "var",
             "entryFee": "ucretsiz",
-            "osmUrl": "https://www.openstreetmap.org/#map=17/37.288/36.565"
+            "osmUrl": "https://www.openstreetmap.org/#map=17/37.288/36.565",
+            "googleMapsUrl": "https://www.google.com/maps/search/?api=1&query=37.288,36.565"
           },
           {
             "name": "Düldül Yaylası Doğa Yürüyüşü",
@@ -1678,7 +1628,8 @@
             "parking": "sinirli",
             "restroom": "yok",
             "entryFee": "ucretsiz",
-            "osmUrl": "https://www.openstreetmap.org/#map=14/37.349/36.561"
+            "osmUrl": "https://www.openstreetmap.org/#map=14/37.349/36.561",
+            "googleMapsUrl": "https://www.google.com/maps/search/?api=1&query=37.349,36.561"
           },
           {
             "name": "Mezdağ (Mezdağı) Yaylası Yürüyüş Rotası",
@@ -1687,12 +1638,13 @@
             "address": "Mezdağı Mevkii, Amanos Dağları, Düziçi",
             "tag": "ORTA",
             "image": "https://upload.wikimedia.org/wikipedia/commons/thumb/d/d5/D%C3%BCld%C3%BCl_Da%C4%9F%C4%B1_-_Mount_D%C3%BCld%C3%BCl_02.JPG/960px-D%C3%BCld%C3%BCl_Da%C4%9F%C4%B1_-_Mount_D%C3%BCld%C3%BCl_02.JPG",
-            "lat": 37.320,
-            "lng": 36.540,
+            "lat": 37.32,
+            "lng": 36.54,
             "parking": "sinirli",
             "restroom": "yok",
             "entryFee": "ucretsiz",
-            "osmUrl": "https://www.openstreetmap.org/#map=15/37.320/36.540"
+            "osmUrl": "https://www.openstreetmap.org/#map=15/37.320/36.540",
+            "googleMapsUrl": "https://www.google.com/maps/search/?api=1&query=37.32,36.54"
           },
           {
             "name": "Kurtlar Yaylası Trekking Parkuru",
@@ -1706,7 +1658,8 @@
             "parking": "sinirli",
             "restroom": "yok",
             "entryFee": "ucretsiz",
-            "osmUrl": "https://www.openstreetmap.org/#map=15/37.275/36.435"
+            "osmUrl": "https://www.openstreetmap.org/#map=15/37.275/36.435",
+            "googleMapsUrl": "https://www.google.com/maps/search/?api=1&query=37.275,36.435"
           },
           {
             "name": "Hodu Yaylası Doğa Yürüyüşü",
@@ -1716,11 +1669,12 @@
             "tag": "ORTA",
             "image": "https://upload.wikimedia.org/wikipedia/commons/thumb/b/be/D%C3%BCld%C3%BCl_Da%C4%9F%C4%B1_-_Mount_D%C3%BCld%C3%BCl_04.JPG/960px-D%C3%BCld%C3%BCl_Da%C4%9F%C4%B1_-_Mount_D%C3%BCld%C3%BCl_04.JPG",
             "lat": 37.315,
-            "lng": 36.530,
+            "lng": 36.53,
             "parking": "sinirli",
             "restroom": "yok",
             "entryFee": "ucretsiz",
-            "osmUrl": "https://www.openstreetmap.org/#map=15/37.315/36.530"
+            "osmUrl": "https://www.openstreetmap.org/#map=15/37.315/36.530",
+            "googleMapsUrl": "https://www.google.com/maps/search/?api=1&query=37.315,36.53"
           },
           {
             "name": "Sabun Çayı Vadisi Yürüyüşü",
@@ -1734,7 +1688,8 @@
             "parking": "var",
             "restroom": "yok",
             "entryFee": "ucretsiz",
-            "osmUrl": "https://www.openstreetmap.org/#map=17/37.251/36.468"
+            "osmUrl": "https://www.openstreetmap.org/#map=17/37.251/36.468",
+            "googleMapsUrl": "https://www.google.com/maps/search/?api=1&query=37.251,36.468"
           },
           {
             "name": "Berke Barajı Çevre Yürüyüşü",
@@ -1748,7 +1703,8 @@
             "parking": "var",
             "restroom": "yok",
             "entryFee": "ucretsiz",
-            "osmUrl": "https://www.openstreetmap.org/#map=17/37.2215/36.471"
+            "osmUrl": "https://www.openstreetmap.org/#map=17/37.2215/36.471",
+            "googleMapsUrl": "https://www.google.com/maps/search/?api=1&query=37.2215,36.471"
           },
           {
             "name": "Haruniye-Kuşçu Doğa Yolu",
@@ -1762,7 +1718,8 @@
             "parking": "sinirli",
             "restroom": "yok",
             "entryFee": "ucretsiz",
-            "osmUrl": "https://www.openstreetmap.org/#map=17/37.262/36.495"
+            "osmUrl": "https://www.openstreetmap.org/#map=17/37.262/36.495",
+            "googleMapsUrl": "https://www.google.com/maps/search/?api=1&query=37.262,36.495"
           }
         ]
       },
@@ -1785,7 +1742,8 @@
             "parking": "var",
             "restroom": "yok",
             "entryFee": "ucretsiz",
-            "osmUrl": "https://www.openstreetmap.org/#map=17/37.288/36.565"
+            "osmUrl": "https://www.openstreetmap.org/#map=17/37.288/36.565",
+            "googleMapsUrl": "https://www.google.com/maps/search/?api=1&query=37.288,36.565"
           },
           {
             "name": "Düldül Yaylası Kamp Alanı",
@@ -1799,7 +1757,8 @@
             "parking": "sinirli",
             "restroom": "yok",
             "entryFee": "ucretsiz",
-            "osmUrl": "https://www.openstreetmap.org/#map=14/37.349/36.561"
+            "osmUrl": "https://www.openstreetmap.org/#map=14/37.349/36.561",
+            "googleMapsUrl": "https://www.google.com/maps/search/?api=1&query=37.349,36.561"
           },
           {
             "name": "Mezdağ (Mezdağı) Yaylası Kamp Alanı",
@@ -1808,12 +1767,13 @@
             "address": "Mezdağı Mevkii, Amanos Dağları, Düziçi",
             "tag": "KAMP",
             "image": "https://upload.wikimedia.org/wikipedia/commons/thumb/d/d5/D%C3%BCld%C3%BCl_Da%C4%9F%C4%B1_-_Mount_D%C3%BCld%C3%BCl_02.JPG/960px-D%C3%BCld%C3%BCl_Da%C4%9F%C4%B1_-_Mount_D%C3%BCld%C3%BCl_02.JPG",
-            "lat": 37.320,
-            "lng": 36.540,
+            "lat": 37.32,
+            "lng": 36.54,
             "parking": "sinirli",
             "restroom": "yok",
             "entryFee": "ucretsiz",
-            "osmUrl": "https://www.openstreetmap.org/#map=15/37.320/36.540"
+            "osmUrl": "https://www.openstreetmap.org/#map=15/37.320/36.540",
+            "googleMapsUrl": "https://www.google.com/maps/search/?api=1&query=37.32,36.54"
           },
           {
             "name": "Tozluyurt Yaylası Kamp Alanı",
@@ -1822,12 +1782,13 @@
             "address": "Tozluyurt Mevkii, Düziçi",
             "tag": "KAMP",
             "image": "https://upload.wikimedia.org/wikipedia/commons/thumb/a/a5/D%C3%BCld%C3%BCl_Da%C4%9F%C4%B1_-_Mount_D%C3%BCld%C3%BCl_05.JPG/960px-D%C3%BCld%C3%BCl_Da%C4%9F%C4%B1_-_Mount_D%C3%BCld%C3%BCl_05.JPG",
-            "lat": 37.330,
-            "lng": 36.550,
+            "lat": 37.33,
+            "lng": 36.55,
             "parking": "sinirli",
             "restroom": "var",
             "entryFee": "ucretsiz",
-            "osmUrl": "https://www.openstreetmap.org/#map=15/37.330/36.550"
+            "osmUrl": "https://www.openstreetmap.org/#map=15/37.330/36.550",
+            "googleMapsUrl": "https://www.google.com/maps/search/?api=1&query=37.33,36.55"
           },
           {
             "name": "Kurtlar Yaylası Kamp Alanı",
@@ -1841,7 +1802,8 @@
             "parking": "sinirli",
             "restroom": "yok",
             "entryFee": "ucretsiz",
-            "osmUrl": "https://www.openstreetmap.org/#map=15/37.275/36.435"
+            "osmUrl": "https://www.openstreetmap.org/#map=15/37.275/36.435",
+            "googleMapsUrl": "https://www.google.com/maps/search/?api=1&query=37.275,36.435"
           },
           {
             "name": "Hodu Yaylası Kamp Alanı",
@@ -1851,11 +1813,12 @@
             "tag": "KAMP",
             "image": "https://upload.wikimedia.org/wikipedia/commons/thumb/b/be/D%C3%BCld%C3%BCl_Da%C4%9F%C4%B1_-_Mount_D%C3%BCld%C3%BCl_04.JPG/960px-D%C3%BCld%C3%BCl_Da%C4%9F%C4%B1_-_Mount_D%C3%BCld%C3%BCl_04.JPG",
             "lat": 37.315,
-            "lng": 36.530,
+            "lng": 36.53,
             "parking": "sinirli",
             "restroom": "yok",
             "entryFee": "ucretsiz",
-            "osmUrl": "https://www.openstreetmap.org/#map=15/37.315/36.530"
+            "osmUrl": "https://www.openstreetmap.org/#map=15/37.315/36.530",
+            "googleMapsUrl": "https://www.google.com/maps/search/?api=1&query=37.315,36.53"
           },
           {
             "name": "Berke Barajı Kıyısı Kamp",
@@ -1869,7 +1832,8 @@
             "parking": "var",
             "restroom": "yok",
             "entryFee": "ucretsiz",
-            "osmUrl": "https://www.openstreetmap.org/#map=17/37.2215/36.471"
+            "osmUrl": "https://www.openstreetmap.org/#map=17/37.2215/36.471",
+            "googleMapsUrl": "https://www.google.com/maps/search/?api=1&query=37.2215,36.471"
           },
           {
             "name": "Sabun Çayı Kamp ve Piknik Alanı",
@@ -1883,7 +1847,8 @@
             "parking": "var",
             "restroom": "sinirli",
             "entryFee": "ucretsiz",
-            "osmUrl": "https://www.openstreetmap.org/#map=17/37.255/36.465"
+            "osmUrl": "https://www.openstreetmap.org/#map=17/37.255/36.465",
+            "googleMapsUrl": "https://www.google.com/maps/search/?api=1&query=37.255,36.465"
           }
         ]
       },
@@ -1895,46 +1860,67 @@
         "badge": "Park",
         "places": [
           {
-            "name": "Düziçi Kent Parkı",
-            "shortDescription": "İlçe merkezinde aileler için düzenlenmiş park alanı.",
-            "detail": "Düziçi Kent Parkı, ilçe merkezinde yer alan, yürüyüş yolları, çocuk oyun alanları, spor aletleri ve oturma alanları ile donatılmış bir parktır. Akşam saatlerinde aydınlatmalı yürüyüş parkuru ile ilçe halkının en çok tercih ettiği sosyal alanlardandır.",
-            "address": "Düziçi merkez",
+            "name": "Harun Reşit Çocuk Parkı ve Millet Bahçesi",
+            "shortDescription": "Modern Çocuk Oyun Alanları, Spor Parkurları, Okuma ve İnternet Bölümleri",
+            "detail": "Eski Harun Reşit Çocuk Parkı'nın bütünüyle modernize edilmesi ve genişletilmesiyle ilçeye kazandırılmış çok amaçlı yeni bir sosyal yaşam alanıdır. İçerisinde çocukların güvenle enerjisini atabileceği yeni nesil oyun parkurları, spor alanları, gençler için internet ve okuma bölümleri ile dinlenme alanları yer alır. Merkezi konumuyla ilçe sakinlerinin günlük olarak en sık ziyaret ettiği modern sosyal merkezlerden biridir.\n\n• Çalışma Saatleri: 24 Saat Açık",
+            "address": "Refik Cesur Bulvarı, Merkez / Düziçi",
             "tag": "PARK",
-            "image": "https://upload.wikimedia.org/wikipedia/commons/thumb/0/0c/Osmaniye_Stadt%C3%BCbersicht.png/960px-Osmaniye_Stadt%C3%BCbersicht.png.png",
-            "lat": 37.238,
-            "lng": 36.448,
+            "image": "https://images.unsplash.com/photo-1519331379826-f10be5486c6f?w=960",
+            "lat": 37.2395,
+            "lng": 36.4468,
             "parking": "var",
             "restroom": "var",
             "entryFee": "ucretsiz",
-            "osmUrl": "https://www.openstreetmap.org/#map=17/37.238/36.448"
+            "osmUrl": "https://www.openstreetmap.org/#map=17/37.2395/36.4468",
+            "googleMapsUrl": "https://www.google.com/maps/search/?api=1&query=37.2395,36.4468"
           },
           {
-            "name": "Atatürk Parkı ve Çay Bahçeleri",
-            "shortDescription": "Çarşı merkezinde sosyal buluşma noktası.",
-            "detail": "Düziçi çarşı merkezinde yer alan Atatürk Parkı, çay bahçeleri ve gölgelik alanlarıyla ilçenin sosyal buluşma noktasıdır. Hafta sonları ve akşam saatlerinde hareketli bir atmosfer sunar. Çevresinde çay ocakları, pastaneler ve küçük dükkanlar yer alır.",
-            "address": "Cumhuriyet Mahallesi, Düziçi çarşı merkezi",
+            "name": "Eğitimci Bekir İlyas Kara Çocuk Köyü",
+            "shortDescription": "Geniş Yeşil Alanlar, Özel Tasarım Çocuk Oyun Grupları, Yürüyüş Yolları",
+            "detail": "Düziçi Belediyesi bünyesinde hizmet veren, çocukların fiziksel ve zihinsel gelişimini destekleyen tematik oyun grupları, geniş çim alanları ve düzenli yürüyüş yolları ile ilçenin en vizyoner rekreasyon alanıdır. Klasik park konseptinin ötesinde, akşamları düzenlenen yerel etkinlikler ve sosyal buluşmalarla mahalle kültürünün ve ailelerin bir araya geldiği en canlı odak noktasıdır.\n\n• Çalışma Saatleri: 09:00 - 22:00",
+            "address": "İrfanlı Mahallesi, Düziçi / Osmaniye",
             "tag": "PARK",
-            "image": "https://upload.wikimedia.org/wikipedia/commons/thumb/b/b1/Osmaniye_Market_in_2010_1919.jpg/960px-Osmaniye_Market_in_2010_1919.jpg",
+            "image": "https://images.unsplash.com/photo-1596464716127-f2a82984de30?w=960",
+            "lat": 37.244,
+            "lng": 36.451,
+            "parking": "var",
+            "restroom": "var",
+            "entryFee": "ucretsiz",
+            "entryFeeNote": "Giriş ve oyun alanlarının kullanımı tamamen ücretsizdir. Belediye tarafından park içinde düzenlenen geleneksel çay ve fıstık ikramlı halk buluşmaları da halka açıktır.",
+            "osmUrl": "https://www.openstreetmap.org/#map=17/37.2440/36.4510",
+            "googleMapsUrl": "https://www.google.com/maps/search/?api=1&query=37.244,36.451"
+          },
+          {
+            "name": "Atatürk Parkı (Park Restorant)",
+            "shortDescription": "Park Restorant Sosyal Tesisi, Asırlık Ağaçlık Alanlar, Geniş Aile Masaları",
+            "detail": "Düziçi’nin en köklü ve bilinen yeşil dinlenme duraklarından biridir. İçerisinde yer alan Park Restorant tesisi sayesinde ailelerin hem güvenle yemek yiyip çay içebileceği hem de çocuklarının gölgelik alandaki parkta vakit geçirebileceği karma bir yapı sunar. Yoğun ağaçlık dokusu ve ferah atmosferiyle şehir merkezinde nefes almak isteyenlerin vazgeçilmez uğrak noktasıdır.\n\n• Çalışma Saatleri: 08:00 - 00:00",
+            "address": "Üzümlü Mahallesi / Uzun Banı Mahallesi (Mustafa Yalçın Caddesi güzergahı), Düziçi / Osmaniye",
+            "tag": "PARK",
+            "image": "https://images.unsplash.com/photo-1544816155-12df9643f363?w=960",
             "lat": 37.24,
             "lng": 36.446,
-            "parking": "sinirli",
+            "parking": "var",
             "restroom": "var",
             "entryFee": "ucretsiz",
-            "osmUrl": "https://www.openstreetmap.org/#map=17/37.24/36.446"
+            "entryFeeNote": "Park alanına giriş, çocuk oyun grupları ve yeşil alan kullanımı ücretsizdir. Restoran hizmetleri ücretlidir.",
+            "osmUrl": "https://www.openstreetmap.org/#map=17/37.2400/36.4460",
+            "googleMapsUrl": "https://www.google.com/maps/search/?api=1&query=37.24,36.446"
           },
           {
-            "name": "Düziçi Mesire Alanları",
-            "shortDescription": "Çam ormanı içinde piknik ve barbekü alanları.",
-            "detail": "Düziçi ilçesi çevresindeki çam ormanları içinde belediye tarafından düzenlenmiş mesire alanları mevcuttur. Masalar, çeşmeler ve barbekü alanları ile ailece piknik için idealdir. Hafta sonları ve bayram dönemlerinde yoğunluk yaşanabilir.",
-            "address": "Düziçi çevresi, orman içi mesire alanları",
+            "name": "Sabun Çayı Mesire Alanı",
+            "shortDescription": "Buz Gibi Akan Akarsu, Su Üstü Kamelyalar, Mangal ve Barbekü Alanları",
+            "detail": "Düziçi’nin tüm Çukurova bölgesinde bilinen en popüler, en hareketli piknik ve rekreasyon alanıdır. Düldül Dağı'nın eteklerinden süzülen buz gibi Sabun Çayı'nın kenarına dizilmiş ahşap çardaklar, yaz aylarında muazzam bir serinlik sunar. Ailece mangal yakmak, suya girip serinlemek ve doğanın kalbinde tüm gün vakit geçirmek isteyenlerin vazgeçilmezidir. Hemen bitişiğinden kısa bir yürüyüşle bakir Karasu Şelalesi'ne de geçiş imkanı sunması burayı benzersiz kılar.\n\n• Çalışma Saatleri: 07:00 - 23:00 (Yaz sezonunda esnek)",
+            "address": "Gökçayır Köyü Yolu Üzeri, Sabun Çayı Vadisi, Düziçi / Osmaniye",
             "tag": "MESİRE",
-            "image": "https://upload.wikimedia.org/wikipedia/commons/thumb/d/d5/D%C3%BCld%C3%BCl_Da%C4%9F%C4%B1_-_Mount_D%C3%BCld%C3%BCl_02.JPG/960px-D%C3%BCld%C3%BCl_Da%C4%9F%C4%B1_-_Mount_D%C3%BCld%C3%BCl_02.JPG",
-            "lat": 37.245,
-            "lng": 36.455,
+            "image": "https://images.unsplash.com/photo-1504280390367-361c6d9f38f4?w=960",
+            "lat": 37.255,
+            "lng": 36.465,
             "parking": "var",
-            "restroom": "sinirli",
-            "entryFee": "ucretsiz",
-            "osmUrl": "https://www.openstreetmap.org/#map=17/37.245/36.455"
+            "restroom": "var",
+            "entryFee": "ucretli",
+            "entryFeeNote": "Araçla giriş, otopark kullanımı ve çardakların kiralanması ücrete tabidir. Fiyatlar oldukça makul düzeydedir.",
+            "osmUrl": "https://www.openstreetmap.org/#map=17/37.2550/36.4650",
+            "googleMapsUrl": "https://www.google.com/maps/search/?api=1&query=37.255,36.465"
           }
         ]
       },
@@ -1958,7 +1944,8 @@
             "restroom": "var",
             "entryFee": "ucretli",
             "entryFeeNote": "Müze giriş ücreti güncel tarifeye göre.",
-            "osmUrl": "https://www.openstreetmap.org/#map=17/37.3/36.25"
+            "osmUrl": "https://www.openstreetmap.org/#map=17/37.3/36.25",
+            "googleMapsUrl": "https://www.google.com/maps/search/?api=1&query=37.3,36.25"
           },
           {
             "name": "Aslantaş Barajı",
@@ -1972,7 +1959,8 @@
             "parking": "var",
             "restroom": "sinirli",
             "entryFee": "ucretsiz",
-            "osmUrl": "https://www.openstreetmap.org/#map=17/37.3/36.25"
+            "osmUrl": "https://www.openstreetmap.org/#map=17/37.3/36.25",
+            "googleMapsUrl": "https://www.google.com/maps/search/?api=1&query=37.3,36.25"
           },
           {
             "name": "Kastabala (Hierapolis) Antik Kenti",
@@ -1986,7 +1974,8 @@
             "parking": "var",
             "restroom": "var",
             "entryFee": "ucretli",
-            "osmUrl": "https://www.openstreetmap.org/#map=17/37.07/36.25"
+            "osmUrl": "https://www.openstreetmap.org/#map=17/37.07/36.25",
+            "googleMapsUrl": "https://www.google.com/maps/search/?api=1&query=37.07,36.25"
           },
           {
             "name": "Hemite (Amouda) Kalesi",
@@ -2000,7 +1989,8 @@
             "entryFee": "bilinmiyor",
             "lat": 37.165,
             "lng": 36.657,
-            "osmUrl": "https://www.openstreetmap.org/#map=16/37.165/36.657"
+            "osmUrl": "https://www.openstreetmap.org/#map=16/37.165/36.657",
+            "googleMapsUrl": "https://www.google.com/maps/search/?api=1&query=37.165,36.657"
           },
           {
             "name": "Bahçe Kalesi",
@@ -2028,7 +2018,8 @@
             "entryFee": "bilinmiyor",
             "lat": 37.065,
             "lng": 36.143,
-            "osmUrl": "https://www.openstreetmap.org/#map=16/37.065/36.143"
+            "osmUrl": "https://www.openstreetmap.org/#map=16/37.065/36.143",
+            "googleMapsUrl": "https://www.google.com/maps/search/?api=1&query=37.065,36.143"
           },
           {
             "name": "Zorkun Yaylası",
@@ -2042,7 +2033,8 @@
             "entryFee": "bilinmiyor",
             "lat": 37.422,
             "lng": 36.283,
-            "osmUrl": "https://www.openstreetmap.org/#map=14/37.422/36.283"
+            "osmUrl": "https://www.openstreetmap.org/#map=14/37.422/36.283",
+            "googleMapsUrl": "https://www.google.com/maps/search/?api=1&query=37.422,36.283"
           },
           {
             "name": "Yarpuz Yaylası",

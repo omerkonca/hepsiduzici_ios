@@ -32,6 +32,9 @@ class ServicesScreen extends ConsumerStatefulWidget {
   ConsumerState<ServicesScreen> createState() => _ServicesScreenState();
 }
 
+final _servicesEntryDuration = 320.ms;
+const _servicesEntryCurve = Curves.easeOutCubic;
+
 class _ServicesScreenState extends ConsumerState<ServicesScreen> {
   String _searchQuery = '';
 
@@ -69,8 +72,13 @@ class _ServicesScreenState extends ConsumerState<ServicesScreen> {
                   onSearchChanged: (val) => setState(() => _searchQuery = val),
                 )
                     .animate()
-                    .fadeIn(duration: 400.ms)
-                    .slideY(begin: -0.05, end: 0, curve: Curves.easeOutCubic),
+                    .fadeIn(duration: _servicesEntryDuration, curve: _servicesEntryCurve)
+                    .slideY(
+                      begin: -0.05,
+                      end: 0,
+                      duration: _servicesEntryDuration,
+                      curve: _servicesEntryCurve,
+                    ),
               ),
               if (_searchQuery.isEmpty)
                 SliverToBoxAdapter(
@@ -100,20 +108,36 @@ class _ServicesScreenState extends ConsumerState<ServicesScreen> {
                     onPrayerTap: () => _openServiceTarget(context, 'prayer', content),
                     onWeatherTap: () => _openServiceTarget(context, 'weather', content),
                     onNewsTap: () => _openServiceTarget(context, 'news', content),
-                  ).animate(delay: 150.ms).fadeIn().scale(begin: const Offset(0.98, 0.98)),
+                  ).animate(delay: 150.ms).fadeIn(
+                    duration: _servicesEntryDuration,
+                    curve: _servicesEntryCurve,
+                  ).scale(
+                    begin: const Offset(0.985, 0.985),
+                    duration: _servicesEntryDuration,
+                    curve: _servicesEntryCurve,
+                  ),
                 ),
               
               if (filteredAcil.isNotEmpty) ...[
                 SliverToBoxAdapter(
                   child: const AppSectionHeader(title: 'Acil ve Sağlık')
-                      .animate(delay: 250.ms).fadeIn(),
+                      .animate(delay: 250.ms)
+                      .fadeIn(duration: _servicesEntryDuration, curve: _servicesEntryCurve),
                 ),
                 SliverList(
                   delegate: SliverChildBuilderDelegate(
                     (context, index) => _ServiceTile(
                       tile: filteredAcil[index],
                       onTap: () => _openServiceTarget(context, filteredAcil[index].target, content),
-                    ).animate(delay: (300 + (index * 50)).ms).fadeIn().slideX(begin: 0.05, end: 0),
+                    ).animate(delay: (300 + (index * 50)).ms).fadeIn(
+                      duration: _servicesEntryDuration,
+                      curve: _servicesEntryCurve,
+                    ).slideX(
+                      begin: 0.05,
+                      end: 0,
+                      duration: _servicesEntryDuration,
+                      curve: _servicesEntryCurve,
+                    ),
                     childCount: filteredAcil.length,
                   ),
                 ),
@@ -122,14 +146,23 @@ class _ServicesScreenState extends ConsumerState<ServicesScreen> {
               if (filteredSehir.isNotEmpty) ...[
                 SliverToBoxAdapter(
                   child: const AppSectionHeader(title: 'Şehir Dinamiği')
-                      .animate(delay: 400.ms).fadeIn(),
+                      .animate(delay: 400.ms)
+                      .fadeIn(duration: _servicesEntryDuration, curve: _servicesEntryCurve),
                 ),
                 SliverList(
                   delegate: SliverChildBuilderDelegate(
                     (context, index) => _ServiceTile(
                       tile: filteredSehir[index],
                       onTap: () => _openServiceTarget(context, filteredSehir[index].target, content),
-                    ).animate(delay: (450 + (index * 50)).ms).fadeIn().slideX(begin: 0.05, end: 0),
+                    ).animate(delay: (450 + (index * 50)).ms).fadeIn(
+                      duration: _servicesEntryDuration,
+                      curve: _servicesEntryCurve,
+                    ).slideX(
+                      begin: 0.05,
+                      end: 0,
+                      duration: _servicesEntryDuration,
+                      curve: _servicesEntryCurve,
+                    ),
                     childCount: filteredSehir.length,
                   ),
                 ),
@@ -138,14 +171,23 @@ class _ServicesScreenState extends ConsumerState<ServicesScreen> {
               if (filteredResmi.isNotEmpty) ...[
                 SliverToBoxAdapter(
                   child: const AppSectionHeader(title: 'Resmi İşlemler')
-                      .animate(delay: 550.ms).fadeIn(),
+                      .animate(delay: 550.ms)
+                      .fadeIn(duration: _servicesEntryDuration, curve: _servicesEntryCurve),
                 ),
                 SliverList(
                   delegate: SliverChildBuilderDelegate(
                     (context, index) => _ServiceTile(
                       tile: filteredResmi[index],
                       onTap: () => _openServiceTarget(context, filteredResmi[index].target, content),
-                    ).animate(delay: (600 + (index * 50)).ms).fadeIn().slideX(begin: 0.05, end: 0),
+                    ).animate(delay: (600 + (index * 50)).ms).fadeIn(
+                      duration: _servicesEntryDuration,
+                      curve: _servicesEntryCurve,
+                    ).slideX(
+                      begin: 0.05,
+                      end: 0,
+                      duration: _servicesEntryDuration,
+                      curve: _servicesEntryCurve,
+                    ),
                     childCount: filteredResmi.length,
                   ),
                 ),
@@ -154,7 +196,8 @@ class _ServicesScreenState extends ConsumerState<ServicesScreen> {
               if (_searchQuery.isEmpty) ...[
                 SliverToBoxAdapter(
                   child: const AppSectionHeader(title: 'Hızlı İletişim')
-                      .animate(delay: 700.ms).fadeIn(),
+                      .animate(delay: 700.ms)
+                      .fadeIn(duration: _servicesEntryDuration, curve: _servicesEntryCurve),
                 ),
                 SliverToBoxAdapter(
                   child: Padding(
@@ -180,7 +223,15 @@ class _ServicesScreenState extends ConsumerState<ServicesScreen> {
                         ),
                       ],
                     ),
-                  ).animate(delay: 800.ms).fadeIn().slideY(begin: 0.1, end: 0),
+                  ).animate(delay: 800.ms).fadeIn(
+                    duration: _servicesEntryDuration,
+                    curve: _servicesEntryCurve,
+                  ).slideY(
+                    begin: 0.1,
+                    end: 0,
+                    duration: _servicesEntryDuration,
+                    curve: _servicesEntryCurve,
+                  ),
                 ),
               ],
 
@@ -373,62 +424,102 @@ class _ServiceHeader extends StatelessWidget {
           ),
         ],
       ),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
+      child: Stack(
         children: [
-          Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children: [
-              Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text(
-                    'Şehir Hizmetleri',
-                    style: textTheme.headlineSmall?.copyWith(
-                          fontWeight: FontWeight.w900,
-                          color: Theme.of(context).colorScheme.onSurface,
-                          letterSpacing: -1.2,
-                          fontSize: 28.0,
-                        ),
+          Positioned.fill(
+            child: IgnorePointer(
+              child: DecoratedBox(
+                decoration: BoxDecoration(
+                  borderRadius: const BorderRadius.only(
+                    bottomLeft: Radius.circular(40),
+                    bottomRight: Radius.circular(40),
                   ),
-                  Text(
-                    'İhtiyacın olan her şey burada.',
-                    style: textTheme.bodyMedium?.copyWith(
-                          color: AppColors.textMuted,
-                          fontWeight: FontWeight.w600,
-                        ),
+                  gradient: LinearGradient(
+                    begin: Alignment.topLeft,
+                    end: Alignment.bottomRight,
+                    colors: [
+                      Colors.white.withValues(alpha: 0.20),
+                      Colors.white.withValues(alpha: 0.04),
+                      Colors.transparent,
+                    ],
+                    stops: const [0.0, 0.42, 1.0],
+                  ),
+                ),
+              ),
+            ),
+          ),
+          Positioned(
+            right: -42,
+            top: -46,
+            child: IgnorePointer(
+              child: Container(
+                width: 140,
+                height: 140,
+                decoration: BoxDecoration(
+                  shape: BoxShape.circle,
+                  color: Colors.white.withValues(alpha: 0.10),
+                ),
+              ),
+            ),
+          ),
+          Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        'Şehir Hizmetleri',
+                        style: textTheme.headlineSmall?.copyWith(
+                              fontWeight: FontWeight.w900,
+                              color: Theme.of(context).colorScheme.onSurface,
+                              letterSpacing: -1.2,
+                              fontSize: 28.0,
+                            ),
+                      ),
+                      Text(
+                        'İhtiyacın olan her şey burada.',
+                        style: textTheme.bodyMedium?.copyWith(
+                              color: AppColors.textMuted,
+                              fontWeight: FontWeight.w600,
+                            ),
+                      ),
+                    ],
+                  ),
+                  Container(
+                    padding: const EdgeInsets.all(10),
+                    decoration: BoxDecoration(
+                      color: AppColors.primary.withValues(alpha: 0.1),
+                      shape: BoxShape.circle,
+                    ),
+                    child: const Icon(Icons.auto_awesome_rounded, color: AppColors.primary, size: 24),
                   ),
                 ],
               ),
+              const SizedBox(height: 24),
               Container(
-                padding: const EdgeInsets.all(10),
                 decoration: BoxDecoration(
-                  color: AppColors.primary.withValues(alpha: 0.1),
-                  shape: BoxShape.circle,
+                  color: Theme.of(context).colorScheme.surface,
+                  borderRadius: BorderRadius.circular(UiTokens.radiusControl),
+                  boxShadow: UiTokens.softShadow(opacity: 0.035),
+                  border: Border.all(color: Theme.of(context).dividerColor.withValues(alpha: 0.1)),
                 ),
-                child: const Icon(Icons.auto_awesome_rounded, color: AppColors.primary, size: 24),
+                child: TextField(
+                  onChanged: onSearchChanged,
+                  style: const TextStyle(fontWeight: FontWeight.w600),
+                  decoration: InputDecoration(
+                    hintText: 'Hizmet veya birim ara...',
+                    hintStyle: TextStyle(color: AppColors.textMuted.withValues(alpha: 0.6)),
+                    prefixIcon: const Icon(Icons.search_rounded, color: AppColors.primary),
+                    border: InputBorder.none,
+                    contentPadding: const EdgeInsets.symmetric(vertical: 16),
+                  ),
+                ),
               ),
             ],
-          ),
-          const SizedBox(height: 24),
-          Container(
-            decoration: BoxDecoration(
-              color: Theme.of(context).colorScheme.surface,
-              borderRadius: BorderRadius.circular(UiTokens.radiusControl),
-              boxShadow: UiTokens.softShadow(opacity: 0.035),
-              border: Border.all(color: Theme.of(context).dividerColor.withValues(alpha: 0.1)),
-            ),
-            child: TextField(
-              onChanged: onSearchChanged,
-              style: const TextStyle(fontWeight: FontWeight.w600),
-              decoration: InputDecoration(
-                hintText: 'Hizmet veya birim ara...',
-                hintStyle: TextStyle(color: AppColors.textMuted.withValues(alpha: 0.6)),
-                prefixIcon: const Icon(Icons.search_rounded, color: AppColors.primary),
-                border: InputBorder.none,
-                contentPadding: const EdgeInsets.symmetric(vertical: 16),
-              ),
-            ),
           ),
         ],
       ),
@@ -472,7 +563,7 @@ class _ServiceBentoGrid extends StatelessWidget {
                 color: Theme.of(context).brightness == Brightness.dark 
                     ? Colors.blueGrey.withValues(alpha: 0.2) 
                     : const Color(0xFFE3F2FD),
-                iconColor: Colors.blueAccent,
+                iconColor: AppColors.primaryDark,
                 onTap: onPharmacyTap,
               ),
             ),
@@ -489,7 +580,7 @@ class _ServiceBentoGrid extends StatelessWidget {
                       color: Theme.of(context).brightness == Brightness.dark 
                           ? Colors.blueGrey.withValues(alpha: 0.2) 
                           : const Color(0xFFE8F5E9),
-                      iconColor: Colors.green,
+                      iconColor: const Color(0xFFB07A1E),
                       isHorizontal: true,
                       onTap: onPrayerTap,
                     ),
@@ -503,7 +594,7 @@ class _ServiceBentoGrid extends StatelessWidget {
                       color: Theme.of(context).brightness == Brightness.dark 
                           ? Colors.blueGrey.withValues(alpha: 0.2) 
                           : const Color(0xFFFFF3E0),
-                      iconColor: Colors.orange,
+                      iconColor: const Color(0xFFC7902C),
                       isHorizontal: true,
                       onTap: onWeatherTap,
                     ),
@@ -774,23 +865,23 @@ class _ServiceTile extends StatelessWidget {
   Color _getTileColor(String id) {
     switch (id) {
       case 'pharmacy':
-        return Colors.teal;
+        return AppColors.primaryDark;
       case 'prayer':
-        return Colors.green[700]!;
+        return const Color(0xFFB07A1E);
       case 'weather':
-        return Colors.blue[600]!;
+        return const Color(0xFFC7902C);
       case 'news_center':
-        return Colors.indigoAccent;
+        return const Color(0xFFD4AF37);
       case 'health':
-        return Colors.blueAccent;
+        return const Color(0xFFA96F19);
       case 'emergency':
-        return Colors.redAccent;
+        return const Color(0xFF8B5E13);
       case 'municipality':
-        return Colors.amber[800]!;
+        return const Color(0xFFC29A2E);
       case 'outages':
-        return Colors.orange;
+        return const Color(0xFFAD7D23);
       case 'transport':
-        return Colors.deepPurple;
+        return const Color(0xFFBC8C28);
       default:
         return AppColors.primary;
     }

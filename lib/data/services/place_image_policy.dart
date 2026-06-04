@@ -1,3 +1,4 @@
+import '../../core/utils/media_url_resolver.dart';
 import '../models/city_content.dart';
 
 /// Görsel kalitesi için onaylı görsel ve alan adı politikası.
@@ -16,7 +17,7 @@ class PlaceImagePolicy {
     'düziçi ulu cami':
         'https://upload.wikimedia.org/wikipedia/commons/thumb/9/9a/Sabanc%C4%B1_Merkez_Camii.jpg/960px-Sabanc%C4%B1_Merkez_Camii.jpg',
     'kurtuluş çarşı ve yeraltı camii':
-        'https://upload.wikimedia.org/wikipedia/commons/thumb/b/b1/Osmaniye_Market_in_2010_1919.jpg/960px-Osmaniye_Market_in_2010_1919.jpg',
+        'https://images.unsplash.com/photo-1542810634-71277d95dcbb?w=960',
     'taş köprü (fettahoğluları)':
         'https://upload.wikimedia.org/wikipedia/commons/thumb/c/c2/Stone_Bridge_%28Adana%29.jpg/960px-Stone_Bridge_%28Adana%29.jpg',
     'karasu şelalesi': 'assets/images/karasu_selalesi.jpg',
@@ -42,10 +43,21 @@ class PlaceImagePolicy {
       return raw;
     }
 
+    if (raw == null || raw.isEmpty) {
+      return approvedImageFor(place);
+    }
+
+    // Admin panelinden yüklenen görseller her zaman öncelikli.
+    if (raw.contains('cloudinary.com') ||
+        raw.contains('/uploads/') ||
+        raw.contains('/uploads') ||
+        raw.startsWith('uploads/')) {
+      return MediaUrlResolver.resolve(raw);
+    }
+
     final approved = approvedImageFor(place);
     if (approved != null) return approved;
 
-    if (raw == null || raw.isEmpty) return null;
     if (raw.startsWith('assets/')) return raw;
     return isTrustedNetworkUrl(raw) ? raw : null;
   }

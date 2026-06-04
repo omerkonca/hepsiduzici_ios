@@ -2,6 +2,7 @@ import 'dart:convert';
 import 'package:dio/dio.dart';
 import 'package:flutter/services.dart';
 import '../models/city_content.dart';
+import 'city_content_media.dart';
 
 class CityContentService {
   const CityContentService(this._dio, {this.remoteUrl = ''});
@@ -13,7 +14,9 @@ class CityContentService {
     final bundled = await _loadBundled();
     final remote = await _loadRemote();
     if (remote == null) return bundled;
-    return _reconcile(remote, bundled);
+    return normalizeCityContentMedia(
+      _reconcile(normalizeCityContentMedia(remote), bundled),
+    );
   }
 
   Future<CityContent> loadBundledOnly() => _loadBundled();
@@ -23,7 +26,7 @@ class CityContentService {
   Future<CityContent> _loadBundled() async {
     final jsonString = await rootBundle.loadString('assets/data/city_content.json');
     final decoded = jsonDecode(jsonString) as Map<String, dynamic>;
-    return CityContent.fromJson(decoded);
+    return normalizeCityContentMedia(CityContent.fromJson(decoded));
   }
 
   Future<CityContent?> _loadRemote() async {

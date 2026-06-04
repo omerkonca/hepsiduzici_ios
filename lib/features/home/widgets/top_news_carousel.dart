@@ -192,12 +192,14 @@ class _NewsCard extends StatelessWidget {
                   padding: const EdgeInsets.fromLTRB(18, 18, 18, 16),
                   decoration: BoxDecoration(
                     gradient: LinearGradient(
-                      begin: Alignment.topCenter,
-                      end: Alignment.bottomCenter,
+                      begin: Alignment.topLeft,
+                      end: Alignment.bottomRight,
                       colors: [
-                        Colors.black.withValues(alpha: 0.05),
-                        Colors.black.withValues(alpha: 0.75),
+                        Colors.black.withValues(alpha: 0.08),
+                        Colors.black.withValues(alpha: 0.52),
+                        Colors.black.withValues(alpha: 0.86),
                       ],
+                      stops: const [0.05, 0.55, 1],
                     ),
                   ),
                   child: Column(
@@ -238,12 +240,19 @@ class _NewsCard extends StatelessWidget {
                             item.title,
                             maxLines: 2,
                             overflow: TextOverflow.ellipsis,
-                            style: const TextStyle(
+                            style: TextStyle(
                               color: AppColors.white,
                               fontSize: 18,
                               fontWeight: FontWeight.w900,
                               height: 1.25,
                               letterSpacing: -0.3,
+                              shadows: [
+                                Shadow(
+                                  color: Colors.black.withValues(alpha: 0.45),
+                                  blurRadius: 10,
+                                  offset: const Offset(0, 2),
+                                ),
+                              ],
                             ),
                           ),
                           const SizedBox(height: 6),
@@ -289,6 +298,29 @@ class _NewsCard extends StatelessWidget {
                         ],
                       ),
                     ],
+                  ),
+                ),
+                Positioned.fill(
+                  child: IgnorePointer(
+                    child: DecoratedBox(
+                      decoration: BoxDecoration(
+                        border: Border.all(
+                          color: Colors.white.withValues(alpha: 0.16),
+                          width: 1.2,
+                        ),
+                        borderRadius: BorderRadius.circular(20),
+                        gradient: LinearGradient(
+                          begin: Alignment.centerLeft,
+                          end: Alignment.centerRight,
+                          colors: [
+                            Colors.black.withValues(alpha: 0.18),
+                            Colors.transparent,
+                            Colors.black.withValues(alpha: 0.14),
+                          ],
+                          stops: const [0.0, 0.48, 1.0],
+                        ),
+                      ),
+                    ),
                   ),
                 ),
               ],
