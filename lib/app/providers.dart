@@ -35,7 +35,10 @@ import '../data/models/road_closure.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 final dioProvider = Provider<Dio>((ref) {
-  final dio = Dio(BaseOptions(connectTimeout: const Duration(seconds: 45)));
+  final dio = Dio(BaseOptions(
+    connectTimeout: const Duration(seconds: 5),
+    receiveTimeout: const Duration(seconds: 10),
+  ));
   return dio;
 });
 

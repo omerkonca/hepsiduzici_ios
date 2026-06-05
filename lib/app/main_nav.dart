@@ -14,7 +14,7 @@ import '../features/explore/explore_screen.dart';
 import '../features/home/home_screen.dart';
 import '../features/more/more_screen.dart';
 import '../features/news/news_detail_screen.dart';
-import '../features/services/services_screen.dart';
+import '../features/news/news_screen.dart';
 import 'news_update_banner.dart';
 import 'providers.dart';
 
@@ -89,19 +89,19 @@ class _MainNavState extends ConsumerState<MainNav> with WidgetsBindingObserver {
     return Scaffold(
       appBar: null,
       body: IndexedStack(
-          index: index,
-          children: [
-            const SizedBox.expand(child: HomeScreen()),
-            const SafeArea(child: SizedBox.expand(child: ServicesScreen())),
-            const SafeArea(child: SizedBox.expand(child: ExploreScreen())),
-            const SafeArea(child: SizedBox.expand(child: EventsScreen())),
-            const SafeArea(child: SizedBox.expand(child: MoreScreen())),
-          ],
-        ),
+        index: index,
+        children: [
+          const SizedBox.expand(child: HomeScreen()),
+          const SafeArea(child: SizedBox.expand(child: NewsScreen())),
+          const SafeArea(child: SizedBox.expand(child: ExploreScreen())),
+          const SafeArea(child: SizedBox.expand(child: EventsScreen())),
+          const SafeArea(child: SizedBox.expand(child: MoreScreen())),
+        ],
+      ),
       bottomNavigationBar: SafeArea(
         minimum: EdgeInsets.zero,
         child: Padding(
-          padding: const EdgeInsets.fromLTRB(14, 0, 14, 10),
+          padding: const EdgeInsets.fromLTRB(12, 0, 12, 8),
           child: DecoratedBox(
             decoration: BoxDecoration(
               borderRadius: BorderRadius.circular(22),
@@ -121,19 +121,26 @@ class _MainNavState extends ConsumerState<MainNav> with WidgetsBindingObserver {
                 child: DecoratedBox(
                   decoration: BoxDecoration(
                     borderRadius: BorderRadius.circular(22),
-                    border: Border.all(color: isDark ? Colors.white.withValues(alpha: 0.12) : Colors.white.withValues(alpha: 0.72)),
-                    color: isDark ? const Color(0xE11A1A1A) : const Color(0xEBFFFFFF),
+                    border: Border.all(
+                        color: isDark
+                            ? Colors.white.withValues(alpha: 0.12)
+                            : Colors.white.withValues(alpha: 0.72)),
+                    color: isDark
+                        ? const Color(0xE11A1A1A)
+                        : const Color(0xEBFFFFFF),
                   ),
                   child: SizedBox(
-                    height: 72,
+                    height: 64,
                     child: Padding(
-                      padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 5),
+                      padding: const EdgeInsets.symmetric(
+                          horizontal: 6, vertical: 4),
                       child: Row(
                         children: [
                           Expanded(
                             child: _NavItem(
                               iconAsset: 'assets/icons/nav/home_outline.svg',
-                              selectedIconAsset: 'assets/icons/nav/home_filled.svg',
+                              selectedIconAsset:
+                                  'assets/icons/nav/home_filled.svg',
                               fallbackIcon: Icons.home_outlined,
                               selectedFallbackIcon: Icons.home_rounded,
                               label: 'Ana Sayfa',
@@ -143,19 +150,23 @@ class _MainNavState extends ConsumerState<MainNav> with WidgetsBindingObserver {
                           ),
                           Expanded(
                             child: _NavItem(
-                              iconAsset: 'assets/icons/nav/services_outline.svg',
-                              selectedIconAsset: 'assets/icons/nav/services_filled.svg',
-                              fallbackIcon: Icons.grid_view_rounded,
-                              selectedFallbackIcon: Icons.grid_view_rounded,
-                              label: 'Hizmetler',
+                              iconAsset:
+                                  'assets/icons/nav/services_outline.svg',
+                              selectedIconAsset:
+                                  'assets/icons/nav/services_filled.svg',
+                              fallbackIcon: Icons.article_outlined,
+                              selectedFallbackIcon: Icons.article_rounded,
+                              label: 'Haberler',
                               selected: index == 1,
                               onTap: () => _switchTab(1),
                             ),
                           ),
                           Expanded(
                             child: _NavItem(
-                              iconAsset: 'assets/icons/nav/discover_outline.svg',
-                              selectedIconAsset: 'assets/icons/nav/discover_filled.svg',
+                              iconAsset:
+                                  'assets/icons/nav/discover_outline.svg',
+                              selectedIconAsset:
+                                  'assets/icons/nav/discover_filled.svg',
                               fallbackIcon: Icons.explore_outlined,
                               selectedFallbackIcon: Icons.explore_rounded,
                               label: 'Keşfet',
@@ -166,7 +177,8 @@ class _MainNavState extends ConsumerState<MainNav> with WidgetsBindingObserver {
                           Expanded(
                             child: _NavItem(
                               iconAsset: 'assets/icons/nav/events_outline.svg',
-                              selectedIconAsset: 'assets/icons/nav/events_filled.svg',
+                              selectedIconAsset:
+                                  'assets/icons/nav/events_filled.svg',
                               fallbackIcon: Icons.event_outlined,
                               selectedFallbackIcon: Icons.event_rounded,
                               label: 'Etkinlik',
@@ -177,7 +189,8 @@ class _MainNavState extends ConsumerState<MainNav> with WidgetsBindingObserver {
                           Expanded(
                             child: _NavItem(
                               iconAsset: 'assets/icons/nav/more_outline.svg',
-                              selectedIconAsset: 'assets/icons/nav/more_filled.svg',
+                              selectedIconAsset:
+                                  'assets/icons/nav/more_filled.svg',
                               fallbackIcon: Icons.more_horiz_outlined,
                               selectedFallbackIcon: Icons.more_horiz_rounded,
                               label: 'Daha Fazla',
@@ -204,7 +217,8 @@ class _MainNavState extends ConsumerState<MainNav> with WidgetsBindingObserver {
   }
 
   Future<void> _loadPendingNewsTap() async {
-    final payload = await ref.read(notificationServiceProvider).consumePendingNewsTap();
+    final payload =
+        await ref.read(notificationServiceProvider).consumePendingNewsTap();
     if (!mounted || payload == null || payload.trim().isEmpty) return;
     _pendingNewsTapKey = payload.trim();
     final stamped = ref.read(stampedNewsProvider).valueOrNull;
@@ -216,12 +230,16 @@ class _MainNavState extends ConsumerState<MainNav> with WidgetsBindingObserver {
   }
 
   void _tryOpenPendingNews(List<NewsItem> items) {
-    if (!mounted || _openingFromNotification || _pendingNewsTapKey == null) return;
+    if (!mounted || _openingFromNotification || _pendingNewsTapKey == null) {
+      return;
+    }
     final key = _pendingNewsTapKey!.trim();
     NewsItem? target;
     for (final item in items) {
       final trackingKey = NewsNotificationUtils.headlineTrackingKey(item);
-      if (trackingKey == key || item.id.trim() == key || item.title.trim() == key) {
+      if (trackingKey == key ||
+          item.id.trim() == key ||
+          item.title.trim() == key) {
         target = item;
         break;
       }
@@ -292,9 +310,12 @@ class _NavItem extends StatelessWidget {
           padding: const EdgeInsets.symmetric(horizontal: 4, vertical: 3),
           decoration: BoxDecoration(
             borderRadius: BorderRadius.circular(14),
-            color: selected ? AppColors.primary.withValues(alpha: 0.12) : Colors.transparent,
+            color: selected
+                ? AppColors.primary.withValues(alpha: 0.12)
+                : Colors.transparent,
             border: selected
-                ? Border.all(color: AppColors.primary.withValues(alpha: 0.22), width: 1)
+                ? Border.all(
+                    color: AppColors.primary.withValues(alpha: 0.22), width: 1)
                 : Border.all(color: Colors.transparent),
             boxShadow: selected
                 ? [
@@ -323,7 +344,9 @@ class _NavItem extends StatelessWidget {
                 padding: EdgeInsets.all(selected ? 4.5 : 0),
                 decoration: BoxDecoration(
                   shape: BoxShape.circle,
-                  color: selected ? Colors.white.withValues(alpha: 0.9) : Colors.transparent,
+                  color: selected
+                      ? Colors.white.withValues(alpha: 0.9)
+                      : Colors.transparent,
                   boxShadow: selected
                       ? [
                           BoxShadow(
@@ -348,7 +371,8 @@ class _NavItem extends StatelessWidget {
                       _NavIcon(
                         selected: selected,
                         iconAsset: selected ? selectedIconAsset : iconAsset,
-                        fallbackIcon: selected ? selectedFallbackIcon : fallbackIcon,
+                        fallbackIcon:
+                            selected ? selectedFallbackIcon : fallbackIcon,
                       ),
                       if (selected)
                         Positioned(
@@ -381,9 +405,7 @@ class _NavItem extends StatelessWidget {
                   fontSize: selected ? 10.2 : 9.8,
                   letterSpacing: -0.1,
                   fontWeight: selected ? FontWeight.w800 : FontWeight.w600,
-                  color: selected
-                      ? AppColors.primary
-                      : const Color(0xFF7F8690),
+                  color: selected ? AppColors.primary : const Color(0xFF7F8690),
                 ),
               ),
               if (selected)

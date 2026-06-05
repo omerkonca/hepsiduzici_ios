@@ -11,7 +11,7 @@ import '../../news/news_detail_screen.dart';
 class TopNewsCarousel extends ConsumerStatefulWidget {
   const TopNewsCarousel({
     super.key,
-    this.height = 240,
+    this.height = 188,
     this.maxItems = 5,
     this.category = 'Düziçi',
   });
@@ -56,8 +56,7 @@ class _TopNewsCarouselState extends ConsumerState<TopNewsCarousel> {
     return async.when(
       data: (list) {
         final filtered = list.where((n) {
-          final hasImage = n.imageUrl != null && n.imageUrl!.trim().isNotEmpty;
-          return n.category == widget.category && hasImage;
+          return n.category == widget.category;
         }).toList();
         final items = filtered.take(widget.maxItems).toList();
         
@@ -100,7 +99,7 @@ class _TopNewsCarouselState extends ConsumerState<TopNewsCarousel> {
             },
           ),
         ),
-        const SizedBox(height: 10),
+        const SizedBox(height: 8),
         _Indicators(count: items.length, current: _index),
       ],
     );
@@ -173,23 +172,30 @@ class _NewsCard extends StatelessWidget {
             borderRadius: BorderRadius.circular(20),
             child: Stack(
               children: [
-                if (item.imageUrl != null && item.imageUrl!.isNotEmpty)
-                  Positioned.fill(
-                    child: Image.network(
-                      item.imageUrl!,
-                      fit: BoxFit.cover,
-                      loadingBuilder: (context, child, loadingProgress) {
-                        if (loadingProgress == null) return child;
-                        return Container(
-                          color: Colors.grey[100],
-                          child: const Center(child: CircularProgressIndicator(strokeWidth: 2)),
-                        );
-                      },
-                      errorBuilder: (_, __, ___) => const SizedBox.shrink(),
-                    ),
-                  ),
+                Positioned.fill(
+                  child: item.imageUrl != null && item.imageUrl!.trim().isNotEmpty
+                      ? Image.network(
+                          item.imageUrl!,
+                          fit: BoxFit.cover,
+                          loadingBuilder: (context, child, loadingProgress) {
+                            if (loadingProgress == null) return child;
+                            return Container(
+                              color: Colors.grey[100],
+                              child: const Center(child: CircularProgressIndicator(strokeWidth: 2)),
+                            );
+                          },
+                          errorBuilder: (_, __, ___) => Image.asset(
+                            'assets/images/duzici_castle_header.png',
+                            fit: BoxFit.cover,
+                          ),
+                        )
+                      : Image.asset(
+                          'assets/images/duzici_castle_header.png',
+                          fit: BoxFit.cover,
+                        ),
+                ),
                 Container(
-                  padding: const EdgeInsets.fromLTRB(18, 18, 18, 16),
+                  padding: const EdgeInsets.fromLTRB(14, 14, 14, 12),
                   decoration: BoxDecoration(
                     gradient: LinearGradient(
                       begin: Alignment.topLeft,
@@ -242,9 +248,9 @@ class _NewsCard extends StatelessWidget {
                             overflow: TextOverflow.ellipsis,
                             style: TextStyle(
                               color: AppColors.white,
-                              fontSize: 18,
+                              fontSize: 15.5,
                               fontWeight: FontWeight.w900,
-                              height: 1.25,
+                              height: 1.2,
                               letterSpacing: -0.3,
                               shadows: [
                                 Shadow(

@@ -35,33 +35,60 @@ class NewsService {
       (await getStampedNews(limit: limit)).data;
 
   Future<Stamped<List<NewsItem>>> getStampedNews({int limit = 10}) async {
+    // 1. Try local/configured remoteUrl first with short timeout
     if (remoteUrl.trim().isNotEmpty) {
-      for (int attempt = 0; attempt < 2; attempt++) {
-        try {
-          final response = await _dio.get(
-            remoteUrl,
-            queryParameters: {'max': limit},
-            options: Options(
-              connectTimeout: const Duration(seconds: 12),
-              receiveTimeout: const Duration(seconds: 15),
-              sendTimeout: const Duration(seconds: 12),
-            ),
-          );
-          final data = response.data;
-          if (data is Map<String, dynamic>) {
-            final list = data['items'] as List<dynamic>? ?? [];
-            if (list.isNotEmpty) {
-              final items = list
-                  .map((e) => NewsItem.fromJson(Map<String, dynamic>.from(e as Map)))
-                  .toList();
-              final fetchedAt = _parseDate(data['fetchedAt']) ?? DateTime.now();
-              return Stamped(data: items, fetchedAt: fetchedAt, source: 'backend');
-            }
+      try {
+        final response = await _dio.get(
+          remoteUrl,
+          queryParameters: {'max': limit},
+          options: Options(
+            connectTimeout: const Duration(seconds: 3),
+            receiveTimeout: const Duration(seconds: 4),
+            sendTimeout: const Duration(seconds: 3),
+          ),
+        );
+        final data = response.data;
+        if (data is Map<String, dynamic>) {
+          final list = data['items'] as List<dynamic>? ?? [];
+          if (list.isNotEmpty) {
+            final items = list
+                .map((e) => NewsItem.fromJson(Map<String, dynamic>.from(e as Map)))
+                .toList();
+            final fetchedAt = _parseDate(data['fetchedAt']) ?? DateTime.now();
+            return Stamped(data: items, fetchedAt: fetchedAt, source: 'backend');
           }
-        } catch (_) {}
-      }
+        }
+      } catch (_) {}
     }
 
+    // 2. Fallback: If configured url is not the Render URL, try Render directly
+    const productionNewsUrl = 'https://hdbackend-vo99.onrender.com/api/news';
+    if (remoteUrl != productionNewsUrl) {
+      try {
+        final response = await _dio.get(
+          productionNewsUrl,
+          queryParameters: {'max': limit},
+          options: Options(
+            connectTimeout: const Duration(seconds: 6),
+            receiveTimeout: const Duration(seconds: 8),
+            sendTimeout: const Duration(seconds: 6),
+          ),
+        );
+        final data = response.data;
+        if (data is Map<String, dynamic>) {
+          final list = data['items'] as List<dynamic>? ?? [];
+          if (list.isNotEmpty) {
+            final items = list
+                .map((e) => NewsItem.fromJson(Map<String, dynamic>.from(e as Map)))
+                .toList();
+            final fetchedAt = _parseDate(data['fetchedAt']) ?? DateTime.now();
+            return Stamped(data: items, fetchedAt: fetchedAt, source: 'render-backend');
+          }
+        }
+      } catch (_) {}
+    }
+
+    // 3. Last fallback: Return mock news
     await Future<void>.delayed(const Duration(milliseconds: 300));
     return Stamped(data: _mockNews(), fetchedAt: DateTime.now(), source: 'mock');
   }

@@ -31,7 +31,6 @@ class NewsItem {
     
     final matchesOsmaniyeOrDistrict = 
         lowerTitle.contains('osmaniye') || lowerSource.contains('osmaniye') ||
-        lowerSource.contains('hasret') ||
         lowerTitle.contains('kadirli') || lowerSource.contains('kadirli') ||
         lowerTitle.contains('bahçe') || lowerTitle.contains('bahce') || lowerSource.contains('bahçe') || lowerSource.contains('bahce') ||
         lowerTitle.contains('sumbas') || lowerSource.contains('sumbas') ||
@@ -39,7 +38,10 @@ class NewsItem {
         lowerTitle.contains('toprakkale') || lowerSource.contains('toprakkale');
 
     final matchesDuzici = lowerTitle.contains('düziçi') || lowerTitle.contains('düzici') || lowerTitle.contains('duzici') ||
-                         lowerSource.contains('düziçi') || lowerSource.contains('düzici') || lowerSource.contains('duzici');
+                         lowerSource.contains('düziçi') || lowerSource.contains('düzici') || lowerSource.contains('duzici') ||
+                         lowerSource.contains('hasret') || lowerSource.contains('sabir') || lowerSource.contains('sabır') ||
+                         lowerTitle.contains('yarbaşı') || lowerTitle.contains('yarbasi') ||
+                         lowerTitle.contains('ellek') || lowerTitle.contains('atalan');
 
     if (matchesOsmaniyeOrDistrict && !matchesDuzici) {
       category = 'Osmaniye';

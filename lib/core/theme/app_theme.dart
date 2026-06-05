@@ -55,11 +55,11 @@ class AppTheme {
         elevation: 0,
         centerTitle: false,
         scrolledUnderElevation: 0,
-        toolbarHeight: 62,
-        iconTheme: IconThemeData(color: textColor, size: 22),
+        toolbarHeight: 56,
+        iconTheme: IconThemeData(color: textColor, size: 20),
         titleTextStyle: TextStyle(
           color: textColor,
-          fontSize: 21,
+          fontSize: 19,
           fontWeight: FontWeight.w900,
           letterSpacing: -0.6,
         ),
@@ -68,9 +68,9 @@ class AppTheme {
         color: surfaceColor,
         elevation: 0,
         shadowColor: Colors.black.withValues(alpha: isDark ? 0.2 : 0.07),
-        margin: const EdgeInsets.symmetric(vertical: 8, horizontal: 16),
+        margin: const EdgeInsets.symmetric(vertical: 6, horizontal: 14),
         shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(24),
+          borderRadius: BorderRadius.circular(20),
           side: BorderSide(
             color: isDark 
                 ? AppColors.darkCardBorder 
@@ -87,7 +87,7 @@ class AppTheme {
           color: textColor.withValues(alpha: 0.45),
           fontWeight: FontWeight.w600,
         ),
-        contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
+        contentPadding: const EdgeInsets.symmetric(horizontal: 14, vertical: 12),
         border: OutlineInputBorder(
           borderRadius: BorderRadius.circular(18),
           borderSide: BorderSide(
@@ -113,7 +113,7 @@ class AppTheme {
         thickness: 1,
       ),
       listTileTheme: ListTileThemeData(
-        contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 6),
+        contentPadding: const EdgeInsets.symmetric(horizontal: 14, vertical: 4),
         iconColor: primaryDark,
       ),
       elevatedButtonTheme: ElevatedButtonThemeData(
@@ -121,8 +121,8 @@ class AppTheme {
           backgroundColor: primaryDark,
           foregroundColor: AppColors.white,
           elevation: 0,
-          minimumSize: const Size(0, 44),
-          padding: const EdgeInsets.symmetric(horizontal: 18, vertical: 11),
+          minimumSize: const Size(0, 40),
+          padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
           shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.circular(999),
           ),
@@ -136,7 +136,7 @@ class AppTheme {
       outlinedButtonTheme: OutlinedButtonThemeData(
         style: OutlinedButton.styleFrom(
           foregroundColor: isDark ? primary : primaryDark,
-          minimumSize: const Size(0, 44),
+          minimumSize: const Size(0, 40),
           side: BorderSide(
             color: (isDark ? AppColors.darkText : AppColors.textDark).withValues(alpha: 0.45), 
             width: 1.2,
@@ -176,13 +176,13 @@ class AppTheme {
           final selected = states.contains(WidgetState.selected);
           return IconThemeData(
             color: selected ? primaryDark : textColor.withValues(alpha: 0.55),
-            size: 22,
+            size: 20,
           );
         }),
         labelTextStyle: WidgetStateProperty.resolveWith((states) {
           final selected = states.contains(WidgetState.selected);
           return TextStyle(
-            fontSize: 11.5,
+            fontSize: 10.5,
             fontWeight: selected ? FontWeight.w800 : FontWeight.w600,
             color: selected ? primaryDark : textColor.withValues(alpha: 0.6),
           );
@@ -194,49 +194,49 @@ class AppTheme {
   static TextTheme _buildTextTheme(Color textColor) => TextTheme(
     displaySmall: TextStyle(
       color: textColor,
-      fontSize: 34,
+      fontSize: 30,
       fontWeight: FontWeight.w900,
-      letterSpacing: -1.2,
+      letterSpacing: -1.0,
     ),
     headlineMedium: TextStyle(
       color: textColor,
-      fontSize: 24,
+      fontSize: 22,
       fontWeight: FontWeight.w900,
-      letterSpacing: -0.9,
+      letterSpacing: -0.8,
     ),
     headlineSmall: TextStyle(
       color: textColor,
-      fontSize: 30,
+      fontSize: 26,
       fontWeight: FontWeight.w900,
-      letterSpacing: -1.2,
+      letterSpacing: -1.0,
     ),
     titleLarge: TextStyle(
       color: textColor,
-      fontSize: 20,
+      fontSize: 18,
       fontWeight: FontWeight.w800,
-      letterSpacing: -0.5,
+      letterSpacing: -0.4,
     ),
     titleMedium: TextStyle(
       color: textColor,
-      fontSize: 17,
+      fontSize: 16,
       fontWeight: FontWeight.w800,
-      letterSpacing: -0.3,
+      letterSpacing: -0.25,
     ),
     bodyLarge: TextStyle(
       color: textColor,
-      fontSize: 16,
+      fontSize: 15,
       fontWeight: FontWeight.w500,
-      height: 1.35,
+      height: 1.32,
     ),
     bodyMedium: TextStyle(
       color: textColor,
-      fontSize: 14.5,
+      fontSize: 13.5,
       fontWeight: FontWeight.w500,
-      height: 1.35,
+      height: 1.32,
     ),
     labelLarge: TextStyle(
       color: textColor,
-      fontSize: 14,
+      fontSize: 13,
       fontWeight: FontWeight.w700,
     ),
   );

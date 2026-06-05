@@ -3,11 +3,11 @@ import 'package:flutter/material.dart';
 class UiTokens {
   UiTokens._();
 
-  static const double radiusCard = 24;
-  static const double radiusControl = 18;
+  static const double radiusCard = 20;
+  static const double radiusControl = 16;
   static const double radiusPill = 999;
 
-  static const EdgeInsets pageHorizontal = EdgeInsets.symmetric(horizontal: 20);
+  static const EdgeInsets pageHorizontal = EdgeInsets.symmetric(horizontal: 16);
 
   static List<BoxShadow> softShadow({double opacity = 0.05}) => [
         BoxShadow(

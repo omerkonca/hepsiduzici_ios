@@ -52,15 +52,15 @@ class ExploreListTheme {
 
   static TextStyle sectionTitleStyle() => const TextStyle(
         fontWeight: FontWeight.w900,
-        fontSize: 18,
+        fontSize: 16,
         color: textPrimary,
-        letterSpacing: -0.4,
+        letterSpacing: -0.3,
       );
 
   static TextStyle sectionSubtitleStyle() => const TextStyle(
         fontWeight: FontWeight.w500,
-        fontSize: 13,
+        fontSize: 12,
         color: textSecondary,
-        height: 1.4,
+        height: 1.32,
       );
 }

@@ -8,7 +8,7 @@ class AppSectionHeader extends StatelessWidget {
     required this.title,
     this.actionLabel,
     this.onAction,
-    this.padding = const EdgeInsets.fromLTRB(20, 24, 20, 12),
+    this.padding = const EdgeInsets.fromLTRB(16, 18, 16, 10),
     this.compact = false,
   });
 
@@ -39,7 +39,7 @@ class AppSectionHeader extends StatelessWidget {
               style: Theme.of(context).textTheme.titleMedium?.copyWith(
                     fontWeight: FontWeight.w900,
                     letterSpacing: -0.35,
-                    fontSize: compact ? 16.5 : 17.5,
+                    fontSize: compact ? 15 : 16,
                   ),
             ),
           ),
