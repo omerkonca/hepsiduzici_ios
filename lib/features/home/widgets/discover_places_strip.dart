@@ -24,12 +24,12 @@ class DiscoverPlacesStrip extends StatelessWidget {
         ),
         const SizedBox(height: PremiumCityTheme.sectionHeaderGap),
         SizedBox(
-          height: 112,
+          height: 115,
           child: ListView.separated(
             scrollDirection: Axis.horizontal,
             physics: const BouncingScrollPhysics(),
             itemCount: places.length,
-            separatorBuilder: (_, __) => const SizedBox(width: 8),
+            separatorBuilder: (_, __) => const SizedBox(width: 14),
             itemBuilder: (context, index) => _PlaceCard(place: places[index]),
           ),
         ),
@@ -47,52 +47,43 @@ class _PlaceCard extends StatelessWidget {
   Widget build(BuildContext context) {
     return InkWell(
       onTap: () => TargetRouter.handle(context, 'screen:explore'),
-      borderRadius: BorderRadius.circular(17),
-      child: ClipRRect(
-        borderRadius: BorderRadius.circular(17),
-        child: SizedBox(
-          width: 108,
-          child: Stack(
-            fit: StackFit.expand,
-            children: [
-              Image.asset(place.image, fit: BoxFit.cover),
-              const DecoratedBox(
-                decoration: BoxDecoration(
-                  gradient: LinearGradient(
-                    begin: Alignment.topCenter,
-                    end: Alignment.bottomCenter,
-                    colors: [Colors.transparent, Color(0xD9000000)],
-                  ),
+      borderRadius: BorderRadius.circular(12),
+      child: SizedBox(
+        width: 76,
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Container(
+              width: 64,
+              height: 64,
+              decoration: BoxDecoration(
+                shape: BoxShape.circle,
+                border: Border.all(
+                  color: Theme.of(context).primaryColor.withValues(alpha: 0.15),
+                  width: 2,
                 ),
               ),
-              Positioned(
-                left: 10,
-                right: 10,
-                bottom: 10,
-                child: DecoratedBox(
-                  decoration: BoxDecoration(
-                    color: Colors.black.withValues(alpha: 0.12),
-                    borderRadius: BorderRadius.circular(12),
-                  ),
-                  child: Padding(
-                    padding:
-                        const EdgeInsets.symmetric(horizontal: 8, vertical: 7),
-                    child: Text(
-                      place.title,
-                      maxLines: 2,
-                      overflow: TextOverflow.ellipsis,
-                      style: const TextStyle(
-                        color: Colors.white,
-                        fontSize: 11,
-                        height: 1.05,
-                        fontWeight: FontWeight.w900,
-                      ),
-                    ),
-                  ),
+              child: ClipOval(
+                child: Image.asset(
+                  place.image,
+                  fit: BoxFit.cover,
                 ),
               ),
-            ],
-          ),
+            ),
+            const SizedBox(height: 6),
+            Text(
+              place.title.replaceAll('\n', ' '),
+              maxLines: 2,
+              overflow: TextOverflow.ellipsis,
+              textAlign: TextAlign.center,
+              style: TextStyle(
+                fontSize: 11,
+                fontWeight: FontWeight.w700,
+                color: Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.85),
+                height: 1.15,
+              ),
+            ),
+          ],
         ),
       ),
     );

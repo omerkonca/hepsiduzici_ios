@@ -2,13 +2,27 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:intl/date_symbol_data_local.dart';
+import 'package:supabase_flutter/supabase_flutter.dart';
 import 'app/providers.dart';
+import 'core/config/app_config.dart';
 import 'data/services/background_fetch_service.dart';
 import 'features/splash/splash_screen.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await initializeDateFormatting('tr_TR', null);
+  
+  try {
+    await Supabase.initialize(
+      url: AppConfig.supabaseUrl,
+      publishableKey: AppConfig.supabaseAnonKey,
+    );
+    // ignore: avoid_print
+    print('✅ Supabase initialized successfully');
+  } catch (e) {
+    // ignore: avoid_print
+    print('❌ Supabase initialization failed: $e');
+  }
   
   SystemChrome.setSystemUIOverlayStyle(
     const SystemUiOverlayStyle(

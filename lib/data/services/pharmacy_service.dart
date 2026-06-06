@@ -1,4 +1,5 @@
 import 'package:dio/dio.dart';
+import 'package:supabase_flutter/supabase_flutter.dart';
 import '../models/pharmacy.dart';
 import '../models/stamped_data.dart';
 
@@ -52,7 +53,28 @@ class PharmacyService {
       print('Direct scrape failed, trying backend: $e');
     }
 
-    // 2. İkincil Yol: Kendi Backend Servisimizden Çekim (Yedek)
+    // 2. İkincil Yol: Supabase Cache (Serverless & Ultra Hızlı)
+    try {
+      final supabase = Supabase.instance.client;
+      final res = await supabase.from('pharmacies').select();
+      if (res.isNotEmpty) {
+        final items = res.map((row) => Pharmacy.fromJson({
+          'name': row['name'],
+          'address': row['address'],
+          'phone': row['phone'],
+        })).toList();
+        return Stamped(
+          data: items,
+          fetchedAt: DateTime.tryParse(res.first['fetched_at'] as String) ?? DateTime.now(),
+          source: 'supabase',
+        );
+      }
+    } catch (e) {
+      // ignore: avoid_print
+      print('Supabase direct pharmacy read failed: $e. Falling back to HTTP...');
+    }
+
+    // 3. Üçüncül Yol: Kendi Backend Servisimizden Çekim (Yedek HTTP)
     if (remoteUrl.trim().isNotEmpty) {
       try {
         final response = await _dio.get(

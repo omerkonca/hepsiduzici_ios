@@ -1,4 +1,5 @@
 import 'package:dio/dio.dart';
+import 'package:supabase_flutter/supabase_flutter.dart';
 import '../../core/config/app_config.dart';
 import '../models/news_item.dart';
 import '../models/stamped_data.dart';
@@ -12,14 +13,37 @@ class NewsService {
   /// Haber sayfasi URL'inden tam metin ceker (backend full-text endpoint).
   Future<String?> getFullText(String articleUrl) async {
     if (articleUrl.trim().isEmpty) return null;
+
+    // 1. Try Supabase direct read first (Serverless & Instant)
+    try {
+      final supabase = Supabase.instance.client;
+      final res = await supabase
+          .from('news_items')
+          .select('full_text')
+          .eq('source_url', articleUrl)
+          .order('created_at', ascending: false)
+          .limit(1);
+      
+      if (res.isNotEmpty && res.first['full_text'] != null) {
+        final text = res.first['full_text'] as String?;
+        if (text != null && text.trim().isNotEmpty) {
+          return text.trim();
+        }
+      }
+    } catch (e) {
+      // ignore: avoid_print
+      print('Supabase direct full-text read failed: $e. Falling back to HTTP...');
+    }
+
+    // 2. Fallback to HTTP Backend (Render or local backend with fast timeout)
     try {
       final base = AppConfig.backendBaseUrl;
       final res = await _dio.get<Map<String, dynamic>>(
         '$base/api/news/full-text',
         queryParameters: {'url': articleUrl},
         options: Options(
-          connectTimeout: const Duration(seconds: 15),
-          receiveTimeout: const Duration(seconds: 20),
+          connectTimeout: const Duration(seconds: 4),
+          receiveTimeout: const Duration(seconds: 6),
         ),
       );
       final data = res.data;
@@ -27,7 +51,27 @@ class NewsService {
         final text = data['fullText'] as String?;
         return (text != null && text.trim().isNotEmpty) ? text.trim() : null;
       }
-    } catch (_) {}
+    } catch (_) {
+      // If local backend fails (e.g. offline during debug), try production Render directly
+      const productionFullTextUrl = 'https://hdbackend-vo99.onrender.com/api/news/full-text';
+      if (AppConfig.backendBaseUrl != 'https://hdbackend-vo99.onrender.com') {
+        try {
+          final res = await _dio.get<Map<String, dynamic>>(
+            productionFullTextUrl,
+            queryParameters: {'url': articleUrl},
+            options: Options(
+              connectTimeout: const Duration(seconds: 6),
+              receiveTimeout: const Duration(seconds: 8),
+            ),
+          );
+          final data = res.data;
+          if (data != null && data['ok'] == true && data['fullText'] != null) {
+            final text = data['fullText'] as String?;
+            return (text != null && text.trim().isNotEmpty) ? text.trim() : null;
+          }
+        } catch (_) {}
+      }
+    }
     return null;
   }
 
@@ -35,6 +79,45 @@ class NewsService {
       (await getStampedNews(limit: limit)).data;
 
   Future<Stamped<List<NewsItem>>> getStampedNews({int limit = 10}) async {
+    // 1. Try Supabase direct read first (Serverless & Ultra Fast)
+    try {
+      final supabase = Supabase.instance.client;
+      final res = await supabase
+          .from('news_items')
+          .select()
+          .order('created_at', ascending: false)
+          .limit(limit * 2); // Fetch extra to account for any duplicates
+      
+      if (res.isNotEmpty) {
+        final seenUrls = <String>{};
+        final items = <NewsItem>[];
+        for (final row in res) {
+          final url = row['source_url'] as String?;
+          if (url != null && url.isNotEmpty) {
+            if (seenUrls.contains(url)) continue;
+            seenUrls.add(url);
+          }
+          items.add(NewsItem.fromJson({
+            'id': row['id'],
+            'title': row['title'],
+            'summary': row['summary'],
+            'imageUrl': row['image_url'],
+            'createdAt': row['created_at'],
+            'sourceUrl': row['source_url'],
+            'sourceName': row['source_name'],
+          }));
+          if (items.length >= limit) break;
+        }
+        return Stamped(
+          data: items,
+          fetchedAt: DateTime.now(),
+          source: 'supabase',
+        );
+      }
+    } catch (e) {
+      // ignore: avoid_print
+      print('Supabase direct news read failed: $e. Falling back to HTTP backend...');
+    }
     // 1. Try local/configured remoteUrl first with short timeout
     if (remoteUrl.trim().isNotEmpty) {
       try {

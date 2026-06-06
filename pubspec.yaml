@@ -49,6 +49,7 @@ dependencies:
   flutter_map: ^8.3.0
   latlong2: ^0.9.1
   workmanager: ^0.5.2
+  supabase_flutter: ^2.14.1
 
 dev_dependencies:
   flutter_test:

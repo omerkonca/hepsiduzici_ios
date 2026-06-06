@@ -4,6 +4,9 @@ import 'dart:io';
 class AppConfig {
   AppConfig._();
 
+  static const String supabaseUrl = 'https://duehxbdlpwvbpqfjyjai.supabase.co';
+  static const String supabaseAnonKey = 'sb_publishable_k-EcjTqZe_4kmwWLIEJX3Q_3cHt_szO';
+
   static const String _envBaseUrl = String.fromEnvironment('BACKEND_BASE_URL');
 
   /// Canlı backend (Render) veya geliştirme ortamı için yerel sunucu.
