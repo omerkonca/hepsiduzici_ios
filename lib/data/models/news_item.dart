@@ -32,27 +32,17 @@ class NewsItem {
         .replaceAll('î', 'i');
   }
 
+  static bool isDuziciRelated({required String title, String? summary}) {
+    final text = _normalize('$title ${summary ?? ''}');
+    return RegExp(r'duzici|yarbasi|ellek|atalan|duldul').hasMatch(text);
+  }
+
   static String inferCategory({
     required String title,
     String? summary,
     String? sourceName,
   }) {
-    final text = _normalize('$title ${summary ?? ''}');
-    final source = _normalize(sourceName ?? '');
-
-    final hasDuzici = RegExp(r'\b(duzici|yarbasi|ellek|atalan|duldul)\b').hasMatch(text);
-    final hasOtherDistrict = RegExp(
-      r'\b(osmaniye|kadirli|bahce|sumbas|hasanbeyli|toprakkale|karacay|ceylan|duzgun|duzgunbel|duzkoy)\b',
-    ).hasMatch(text);
-    final hasOku = RegExp(r'\b(oku|korkut ata|osmaniye korkut)\b').hasMatch(text);
-
-    if (hasDuzici) return 'Düziçi';
-    if (hasOtherDistrict || hasOku) return 'Osmaniye';
-
-    if (source.contains('google news osmaniye')) return 'Osmaniye';
-    if (source.contains('hasret') || source.contains('sabir')) return 'Düziçi';
-    if (source.contains('google news')) return 'Osmaniye';
-
+    if (isDuziciRelated(title: title, summary: summary)) return 'Düziçi';
     return 'Osmaniye';
   }
 
