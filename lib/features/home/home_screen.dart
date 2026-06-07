@@ -10,7 +10,6 @@ import 'widgets/discover_places_strip.dart';
 import 'widgets/top_news_carousel.dart';
 import 'widgets/premium_home_hero_card.dart';
 import 'widgets/quick_access_section.dart';
-import 'widgets/home_stories_strip.dart';
 
 class HomeScreen extends ConsumerWidget {
   const HomeScreen({super.key});
@@ -52,12 +51,6 @@ class HomeScreen extends ConsumerWidget {
             const SliverSafeArea(
               bottom: false,
               sliver: SliverToBoxAdapter(child: SizedBox(height: 4)),
-            ),
-            const SliverToBoxAdapter(
-              child: Padding(
-                padding: EdgeInsets.only(bottom: 12),
-                child: HomeStoriesStrip(),
-              ),
             ),
             _PremiumSliver(
               child: const PremiumHomeHeroCard()

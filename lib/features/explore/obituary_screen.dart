@@ -36,6 +36,7 @@ class _ObituaryScreenState extends ConsumerState<ObituaryScreen> {
         isEmpty: true,
         emptyMessage: 'Vefat listesi yüklenemedi.\n$e',
         onRefresh: () async {
+          ref.read(obituaryRefreshTickProvider.notifier).state++;
           ref.invalidate(obituaryListProvider);
           await ref.read(obituaryListProvider.future);
         },

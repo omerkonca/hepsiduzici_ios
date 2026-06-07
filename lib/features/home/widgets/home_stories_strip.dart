@@ -109,7 +109,7 @@ class _HomeStoriesStripState extends ConsumerState<HomeStoriesStrip> {
           height: 96,
           child: ListView.separated(
             scrollDirection: Axis.horizontal,
-            padding: const EdgeInsets.symmetric(horizontal: 16),
+            padding: EdgeInsets.zero,
             itemCount: groups.length,
             separatorBuilder: (_, __) => const SizedBox(width: 14),
             itemBuilder: (context, index) {

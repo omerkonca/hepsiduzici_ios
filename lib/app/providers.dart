@@ -423,8 +423,17 @@ final eventListProvider = FutureProvider<List<EventItem>>((ref) async {
   return s.data;
 });
 
+final obituaryRefreshTickProvider = StateProvider<int>((ref) => 0);
+
 final obituaryListProvider = FutureProvider<List<ObituaryItem>>((ref) async {
-  return ref.watch(obituaryServiceProvider).getObituaries();
+  final forceRefresh = ref.watch(obituaryRefreshTickProvider) > 0;
+  final items = await ref
+      .watch(obituaryServiceProvider)
+      .getObituaries(forceRefresh: forceRefresh);
+  if (forceRefresh) {
+    ref.read(obituaryRefreshTickProvider.notifier).state = 0;
+  }
+  return items;
 });
 
 // =====================================================================
