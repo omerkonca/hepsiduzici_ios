@@ -1,7 +1,6 @@
 import 'dart:convert';
 import 'package:dio/dio.dart';
 import 'package:flutter/services.dart';
-import 'package:supabase_flutter/supabase_flutter.dart';
 import '../models/city_content.dart';
 import 'city_content_media.dart';
 
@@ -31,24 +30,6 @@ class CityContentService {
   }
 
   Future<CityContent?> _loadRemote() async {
-    // 1. Try direct serverless read from Supabase
-    try {
-      final supabase = Supabase.instance.client;
-      final res = await supabase
-          .from('city_contents')
-          .select('data')
-          .eq('id', 1)
-          .maybeSingle();
-      if (res != null && res['data'] != null) {
-        final data = res['data'] as Map<String, dynamic>;
-        return CityContent.fromJson(data);
-      }
-    } catch (e) {
-      // ignore: avoid_print
-      print('Supabase direct city content read failed: $e. Falling back to HTTP...');
-    }
-
-    // 2. HTTP Backend Fallback
     if (remoteUrl.trim().isEmpty) return null;
     try {
       final response = await _dio.get(

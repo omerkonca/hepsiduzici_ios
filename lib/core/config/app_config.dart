@@ -48,4 +48,5 @@ class AppConfig {
   static String get outagesUrl => '$baseUrl/outages';
   static String get roadClosuresUrl => '$baseUrl/road-closures';
   static String get weatherUrl => '$baseUrl/weather';
+  static String get prayersUrl => '$baseUrl/prayers';
 }

@@ -54,7 +54,10 @@ final weatherServiceProvider = Provider<WeatherService>((ref) {
 });
 
 final prayerServiceProvider = Provider<PrayerService>((ref) {
-  return PrayerService(ref.watch(dioProvider));
+  return PrayerService(
+    ref.watch(dioProvider),
+    remoteUrl: AppConfig.prayersUrl,
+  );
 });
 
 final newsServiceProvider = Provider<NewsService>((ref) {

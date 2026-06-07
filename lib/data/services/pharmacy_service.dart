@@ -1,5 +1,4 @@
 import 'package:dio/dio.dart';
-import 'package:supabase_flutter/supabase_flutter.dart';
 import '../models/pharmacy.dart';
 import '../models/stamped_data.dart';
 
@@ -19,62 +18,7 @@ class PharmacyService {
     String city = 'Osmaniye',
     String district = 'Duzici',
   }) async {
-    // 1. Birincil Yol: Cihazdan doğrudan resmi web sitesini kazıma (Ultra Hızlı ve Canlı)
-    final String slugCity = _slugify(city);
-    final String slugDistrict = _slugify(district);
-    final String sourceUrl = 'https://www.eczaneler.gen.tr/nobetci-$slugCity-$slugDistrict';
-
-    try {
-      final response = await _dio.get(
-        sourceUrl,
-        options: Options(
-          headers: {
-            'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36',
-            'Accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,image/apng,*/*;q=0.8',
-            'Accept-Language': 'tr-TR,tr;q=0.9,en-US;q=0.8,en;q=0.7',
-          },
-          receiveTimeout: const Duration(seconds: 8),
-          sendTimeout: const Duration(seconds: 8),
-        ),
-      );
-
-      if (response.statusCode == 200 && response.data is String) {
-        final List<Pharmacy> scraped = parsePharmaciesFromHtml(response.data as String);
-        if (scraped.isNotEmpty) {
-          return Stamped(
-            data: scraped,
-            fetchedAt: DateTime.now(),
-            source: 'web_scrape',
-          );
-        }
-      }
-    } catch (e) {
-      // ignore: avoid_print
-      print('Direct scrape failed, trying backend: $e');
-    }
-
-    // 2. İkincil Yol: Supabase Cache (Serverless & Ultra Hızlı)
-    try {
-      final supabase = Supabase.instance.client;
-      final res = await supabase.from('pharmacies').select();
-      if (res.isNotEmpty) {
-        final items = res.map((row) => Pharmacy.fromJson({
-          'name': row['name'],
-          'address': row['address'],
-          'phone': row['phone'],
-        })).toList();
-        return Stamped(
-          data: items,
-          fetchedAt: DateTime.tryParse(res.first['fetched_at'] as String) ?? DateTime.now(),
-          source: 'supabase',
-        );
-      }
-    } catch (e) {
-      // ignore: avoid_print
-      print('Supabase direct pharmacy read failed: $e. Falling back to HTTP...');
-    }
-
-    // 3. Üçüncül Yol: Kendi Backend Servisimizden Çekim (Yedek HTTP)
+    // 1. Try our backend first
     if (remoteUrl.trim().isNotEmpty) {
       try {
         final response = await _dio.get(
@@ -84,8 +28,8 @@ class PharmacyService {
             'district': district,
           },
           options: Options(
-            receiveTimeout: const Duration(seconds: 15),
-            sendTimeout: const Duration(seconds: 15),
+            receiveTimeout: const Duration(seconds: 8),
+            sendTimeout: const Duration(seconds: 8),
           ),
         );
         final data = response.data;
@@ -102,22 +46,36 @@ class PharmacyService {
       } catch (_) {}
     }
 
-    // 3. Üçüncül Yol: NosyAPI (Eğer varsa)
-    try {
-      final response = await _dio.get(
-        'https://api.nosyapi.com/pharmacies-on-duty',
-        queryParameters: {'city': city, 'county': district},
-      );
-      final list = response.data as List<dynamic>?;
-      if (list != null && list.isNotEmpty) {
-        final items = list
-            .map((e) => Pharmacy.fromJson(Map<String, dynamic>.from(e as Map)))
-            .toList();
-        return Stamped(data: items, fetchedAt: DateTime.now(), source: 'nosyapi');
-      }
-    } catch (_) {}
+    // 2. Fallback: If configured url is not the Render URL, try Render directly
+    const productionPharmacyUrl = 'https://hdbackend-vo99.onrender.com/api/pharmacies/duty';
+    if (remoteUrl != productionPharmacyUrl) {
+      try {
+        final response = await _dio.get(
+          productionPharmacyUrl,
+          queryParameters: {
+            'city': city,
+            'district': district,
+          },
+          options: Options(
+            receiveTimeout: const Duration(seconds: 10),
+            sendTimeout: const Duration(seconds: 10),
+          ),
+        );
+        final data = response.data;
+        if (data is Map<String, dynamic>) {
+          final list = data['pharmacies'] as List<dynamic>? ?? [];
+          if (list.isNotEmpty) {
+            final items = list
+                .map((e) => Pharmacy.fromJson(Map<String, dynamic>.from(e as Map)))
+                .toList();
+            final fetchedAt = _parseDate(data['fetchedAt']) ?? DateTime.now();
+            return Stamped(data: items, fetchedAt: fetchedAt, source: 'render-backend');
+          }
+        }
+      } catch (_) {}
+    }
 
-    // Güvenlik ve dürüstlük açısından, nöbetçi olmayan hiçbir eczane listelenmemelidir.
+    // Safety and integrity fallback: do not show non-duty pharmacies if offline
     return Stamped(data: [], fetchedAt: DateTime.now(), source: 'offline');
   }
 
