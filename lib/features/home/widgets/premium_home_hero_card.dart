@@ -1,5 +1,3 @@
-import 'dart:ui' as ui;
-
 import 'package:flutter/material.dart';
 import 'package:flutter_animate/flutter_animate.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -33,7 +31,7 @@ class PremiumHomeHeroCard extends ConsumerWidget {
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         _CityHeader(unread: unread),
-        const SizedBox(height: 10),
+        const SizedBox(height: 12),
         _LiveCityCard(
           weather: weather,
           prayerTitle: _prayerDisplayName(nextPrayer?.name ?? 'Akşam'),
@@ -87,52 +85,89 @@ class _CityHeader extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Row(
+      crossAxisAlignment: CrossAxisAlignment.center,
       children: [
         Container(
-          width: 28,
-          height: 28,
+          width: 40,
+          height: 40,
           decoration: BoxDecoration(
             gradient: PremiumCityTheme.navyGradient,
-            borderRadius: BorderRadius.circular(12),
+            borderRadius: BorderRadius.circular(16),
             boxShadow: PremiumCityTheme.softShadow(
               color: PremiumCityTheme.navy,
               alpha: 0.18,
             ),
           ),
-          child: const Icon(Icons.location_on_rounded,
-              color: Colors.white, size: 17),
+          child: const Icon(
+            Icons.location_on_rounded,
+            color: Colors.white,
+            size: 22,
+          ),
         ),
-        const SizedBox(width: 8),
-        const Expanded(
+        const SizedBox(width: 10),
+        Expanded(
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Text(
-                'DÜZİÇİ',
-                maxLines: 1,
-                overflow: TextOverflow.ellipsis,
-                style: TextStyle(
-                  color: PremiumCityTheme.navy,
-                  fontSize: 28,
-                  fontWeight: FontWeight.w900,
-                  letterSpacing: -0.9,
-                  height: 0.95,
-                ),
+              Row(
+                children: [
+                  Flexible(
+                    child: ShaderMask(
+                      shaderCallback: (rect) {
+                        return const LinearGradient(
+                          colors: [
+                            PremiumCityTheme.navy,
+                            Color(0xFF173B64),
+                          ],
+                        ).createShader(rect);
+                      },
+                      child: const Text(
+                        'HEPSİ DÜZİÇİ',
+                        maxLines: 1,
+                        overflow: TextOverflow.ellipsis,
+                        style: TextStyle(
+                          color: Colors.white,
+                          fontSize: 26,
+                          fontWeight: FontWeight.w900,
+                          letterSpacing: 0,
+                          height: 0.96,
+                        ),
+                      ),
+                    ),
+                  ),
+                  const SizedBox(width: 7),
+                  Container(
+                    width: 7,
+                    height: 7,
+                    decoration: BoxDecoration(
+                      color: PremiumCityTheme.gold,
+                      shape: BoxShape.circle,
+                      boxShadow: [
+                        BoxShadow(
+                          color: PremiumCityTheme.gold.withValues(alpha: 0.55),
+                          blurRadius: 10,
+                        ),
+                      ],
+                    ),
+                  ),
+                ],
               ),
-              SizedBox(height: 3),
-              Text(
-                'Doğasıyla, tarihiyle, insanıyla güzel ilçemiz',
+              const SizedBox(height: 5),
+              const Text(
+                'Akdeniz’in incisi Düziçi',
                 maxLines: 1,
                 overflow: TextOverflow.ellipsis,
                 style: TextStyle(
                   color: PremiumCityTheme.ink,
-                  fontSize: 10,
-                  fontWeight: FontWeight.w600,
+                  fontSize: 11.2,
+                  fontWeight: FontWeight.w800,
+                  height: 1,
                 ),
               ),
             ],
           ),
         ),
+        const SizedBox(width: 10),
         _HeaderIconButton(
           icon: Icons.notifications_none_rounded,
           badge: unread,
@@ -177,36 +212,23 @@ class _LiveCityCard extends StatelessWidget {
     );
 
     return Container(
-      height: 178,
+      height: 184,
       decoration: BoxDecoration(
-        borderRadius: BorderRadius.circular(24),
+        borderRadius: BorderRadius.circular(28),
         boxShadow: PremiumCityTheme.softShadow(
           color: PremiumCityTheme.navy,
-          alpha: 0.22,
+          alpha: 0.23,
         ),
       ),
       child: ClipRRect(
-        borderRadius: BorderRadius.circular(24),
+        borderRadius: BorderRadius.circular(28),
         child: Stack(
           fit: StackFit.expand,
           children: [
             Image.asset(
-              'assets/images/karasu_selalesi.jpg',
+              'assets/images/duzici_castle_header.png',
               fit: BoxFit.cover,
-              alignment: const Alignment(0.16, -0.08),
-            ),
-            DecoratedBox(
-              decoration: BoxDecoration(
-                gradient: RadialGradient(
-                  center: const Alignment(-0.35, -0.45),
-                  radius: 1.20,
-                  colors: [
-                    Colors.black.withValues(alpha: 0.10),
-                    PremiumCityTheme.navy.withValues(alpha: 0.28),
-                    Colors.black.withValues(alpha: 0.66),
-                  ],
-                ),
-              ),
+              alignment: const Alignment(0.05, -0.10),
             ),
             DecoratedBox(
               decoration: BoxDecoration(
@@ -214,52 +236,74 @@ class _LiveCityCard extends StatelessWidget {
                   begin: Alignment.topCenter,
                   end: Alignment.bottomCenter,
                   colors: [
-                    Colors.black.withValues(alpha: 0.12),
-                    Colors.black.withValues(alpha: 0.30),
-                    Colors.black.withValues(alpha: 0.62),
+                    Colors.black.withValues(alpha: 0.06),
+                    Colors.black.withValues(alpha: 0.18),
+                    Colors.black.withValues(alpha: 0.48),
+                  ],
+                ),
+              ),
+            ),
+            DecoratedBox(
+              decoration: BoxDecoration(
+                gradient: LinearGradient(
+                  begin: Alignment.centerLeft,
+                  end: Alignment.centerRight,
+                  colors: [
+                    PremiumCityTheme.navy.withValues(alpha: 0.56),
+                    Colors.transparent,
+                    PremiumCityTheme.navy.withValues(alpha: 0.48),
                   ],
                 ),
               ),
             ),
             Padding(
-              padding: const EdgeInsets.fromLTRB(14, 16, 14, 12),
+              padding: const EdgeInsets.fromLTRB(16, 16, 16, 12),
               child: Column(
                 children: [
-                  Row(
-                    children: [
-                      const SizedBox.shrink(),
-                      const Spacer(),
-                      _HeroPhotoBadge(
-                        icon: Icons.castle_rounded,
-                        label: 'Düziçi Kalesi',
-                      ),
-                    ],
-                  ),
-                  const SizedBox(height: 8),
                   Expanded(
                     child: Row(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         Expanded(
-                          child: _WeatherBlock(
-                            temperature: temperature,
-                            condition: condition,
-                            wind: wind,
-                            icon: weatherIcon,
+                          child: Material(
+                            color: Colors.transparent,
+                            child: InkWell(
+                              borderRadius: BorderRadius.circular(16),
+                              onTap: () => TargetRouter.handle(context, 'screen:weather'),
+                              child: Padding(
+                                padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 4),
+                                child: _WeatherBlock(
+                                  temperature: temperature,
+                                  condition: condition,
+                                  wind: wind,
+                                  icon: weatherIcon,
+                                ),
+                              ),
+                            ),
                           ),
                         ),
-                        const SizedBox(width: 12),
+                        const SizedBox(width: 14),
                         Expanded(
-                          child: _PrayerBlock(
-                            title: prayerTitle,
-                            time: prayerTime,
-                            countdown: prayerCountdown,
+                          child: Material(
+                            color: Colors.transparent,
+                            child: InkWell(
+                              borderRadius: BorderRadius.circular(16),
+                              onTap: () => TargetRouter.handle(context, 'screen:prayer'),
+                              child: Padding(
+                                padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 4),
+                                child: _PrayerBlock(
+                                  title: prayerTitle,
+                                  time: prayerTime,
+                                  countdown: prayerCountdown,
+                                ),
+                              ),
+                            ),
                           ),
                         ),
                       ],
                     ),
                   ),
-                  const SizedBox(height: 7),
+                  const SizedBox(height: 8),
                   _PharmacyBar(pharmacyName: pharmacyName),
                 ],
               ),
@@ -273,154 +317,6 @@ class _LiveCityCard extends StatelessWidget {
           duration: 420.ms,
           curve: Curves.easeOutCubic,
         );
-  }
-}
-
-// ignore: unused_element
-class _HeroLiveBadge extends StatelessWidget {
-  const _HeroLiveBadge();
-
-  @override
-  Widget build(BuildContext context) {
-    return const SizedBox.shrink();
-  }
-}
-
-// ignore: unused_element
-class _UnusedHeroPhotoBadgeView extends StatelessWidget {
-  const _UnusedHeroPhotoBadgeView({
-    required this.icon,
-    required this.label,
-  });
-
-  final IconData icon;
-  final String label;
-
-  @override
-  Widget build(BuildContext context) {
-    return ClipRRect(
-      borderRadius: BorderRadius.circular(999),
-      child: BackdropFilter(
-        filter: ui.ImageFilter.blur(sigmaX: 16, sigmaY: 16),
-        child: Container(
-          padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 7),
-          decoration: BoxDecoration(
-            color: Colors.black.withValues(alpha: 0.24),
-            borderRadius: BorderRadius.circular(999),
-            border: Border.all(color: Colors.white.withValues(alpha: 0.18)),
-          ),
-          child: Row(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              Container(
-                width: 8,
-                height: 8,
-                decoration: BoxDecoration(
-                  color: const Color(0xFF22C55E),
-                  shape: BoxShape.circle,
-                  boxShadow: [
-                    BoxShadow(
-                      color: const Color(0xFF22C55E).withValues(alpha: 0.55),
-                      blurRadius: 10,
-                    ),
-                  ],
-                ),
-              ),
-              const SizedBox(width: 7),
-              const Text(
-                'CANLI ŞEHİR',
-                style: TextStyle(
-                  color: Colors.white,
-                  fontSize: 10.5,
-                  fontWeight: FontWeight.w900,
-                  letterSpacing: 0.4,
-                ),
-              ),
-            ],
-          ),
-        ),
-      ),
-    );
-  }
-}
-
-class _HeroPhotoBadge extends StatelessWidget {
-  const _HeroPhotoBadge({required this.icon, required this.label});
-
-  final IconData icon;
-  final String label;
-
-  @override
-  Widget build(BuildContext context) {
-    return const SizedBox.shrink();
-  }
-}
-
-// ignore: unused_element
-class _HeroPhotoBadgeView extends StatelessWidget {
-  const _HeroPhotoBadgeView({required this.icon, required this.label});
-
-  final IconData icon;
-  final String label;
-
-  @override
-  Widget build(BuildContext context) {
-    return ClipRRect(
-      borderRadius: BorderRadius.circular(999),
-      child: BackdropFilter(
-        filter: ui.ImageFilter.blur(sigmaX: 16, sigmaY: 16),
-        child: Container(
-          padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 7),
-          decoration: BoxDecoration(
-            color: Colors.white.withValues(alpha: 0.16),
-            borderRadius: BorderRadius.circular(999),
-            border: Border.all(color: Colors.white.withValues(alpha: 0.18)),
-          ),
-          child: Row(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              Icon(icon, color: const Color(0xFFFFD56A), size: 14),
-              const SizedBox(width: 6),
-              Text(
-                label,
-                style: const TextStyle(
-                  color: Colors.white,
-                  fontSize: 10.5,
-                  fontWeight: FontWeight.w800,
-                ),
-              ),
-            ],
-          ),
-        ),
-      ),
-    );
-  }
-}
-
-// ignore: unused_element
-class _GlassInfoPanel extends StatelessWidget {
-  const _GlassInfoPanel({required this.child});
-
-  final Widget child;
-
-  @override
-  Widget build(BuildContext context) {
-    return ClipRRect(
-      borderRadius: BorderRadius.circular(20),
-      child: BackdropFilter(
-        filter: ui.ImageFilter.blur(sigmaX: 14, sigmaY: 14),
-        child: Container(
-          width: double.infinity,
-          padding: const EdgeInsets.symmetric(horizontal: 9, vertical: 7),
-          decoration: BoxDecoration(
-            color: Colors.white.withValues(alpha: 0.12),
-            borderRadius: BorderRadius.circular(20),
-            border: Border.all(color: Colors.white.withValues(alpha: 0.16)),
-          ),
-          child: child,
-        ),
-      ),
-    );
   }
 }
 
@@ -439,55 +335,73 @@ class _WeatherBlock extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Column(
-      mainAxisSize: MainAxisSize.min,
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        Row(
-          mainAxisSize: MainAxisSize.min,
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Text(
-              temperature,
-              maxLines: 1,
-              overflow: TextOverflow.ellipsis,
-              style: const TextStyle(
-                color: Colors.white,
-                fontWeight: FontWeight.w900,
-                fontSize: 26,
-                height: 1,
-                letterSpacing: -0.7,
+    return FittedBox(
+      fit: BoxFit.scaleDown,
+      alignment: Alignment.topLeft,
+      child: Column(
+        mainAxisSize: MainAxisSize.min,
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Row(
+            mainAxisSize: MainAxisSize.min,
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text(
+                temperature,
+                maxLines: 1,
+                overflow: TextOverflow.ellipsis,
+                style: const TextStyle(
+                  color: Colors.white,
+                  fontWeight: FontWeight.w900,
+                  fontSize: 27,
+                  height: 1,
+                  letterSpacing: 0,
+                  shadows: [
+                    Shadow(
+                      color: Color(0xAA000000),
+                      blurRadius: 12,
+                      offset: Offset(0, 3),
+                    ),
+                  ],
+                ),
               ),
+              const SizedBox(width: 5),
+              Icon(icon, color: const Color(0xFFFFD56A), size: 23),
+            ],
+          ),
+          const SizedBox(height: 5),
+          Text(
+            condition,
+            maxLines: 1,
+            overflow: TextOverflow.ellipsis,
+            style: const TextStyle(
+              color: Colors.white,
+              fontWeight: FontWeight.w800,
+              fontSize: 11.5,
+              height: 1.1,
+              shadows: [
+                Shadow(
+                  color: Color(0x99000000),
+                  blurRadius: 10,
+                  offset: Offset(0, 2),
+                ),
+              ],
             ),
-            const SizedBox(width: 4),
-            Icon(icon, color: const Color(0xFFFFD56A), size: 22),
-          ],
-        ),
-        const SizedBox(height: 3),
-        Text(
-          condition,
-          maxLines: 1,
-          overflow: TextOverflow.ellipsis,
-          style: const TextStyle(
-            color: Colors.white,
-            fontWeight: FontWeight.w700,
-            fontSize: 11,
-            height: 1.1,
           ),
-        ),
-        const SizedBox(height: 2),
-        Text(
-          wind,
-          maxLines: 1,
-          overflow: TextOverflow.ellipsis,
-          style: TextStyle(
-            color: Colors.white.withValues(alpha: 0.88),
-            fontWeight: FontWeight.w600,
-            fontSize: 9.5,
-            height: 1.1,
+          const SizedBox(height: 3),
+          Text(
+            wind,
+            maxLines: 1,
+            overflow: TextOverflow.ellipsis,
+            style: TextStyle(
+              color: Colors.white.withValues(alpha: 0.90),
+              fontWeight: FontWeight.w700,
+              fontSize: 10,
+              height: 1.1,
+            ),
           ),
-        ),
-      ],
+        ],
+      ),
     );
   }
 }
@@ -505,61 +419,79 @@ class _PrayerBlock extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Column(
-      mainAxisSize: MainAxisSize.min,
-      crossAxisAlignment: CrossAxisAlignment.end,
-      children: [
-        Text(
-          title,
-          maxLines: 1,
-          overflow: TextOverflow.ellipsis,
-          textAlign: TextAlign.right,
-          style: const TextStyle(
-            color: Colors.white,
-            fontWeight: FontWeight.w700,
-            fontSize: 10.5,
-            height: 1.1,
-          ),
-        ),
-        const SizedBox(height: 3),
-        Row(
-          mainAxisSize: MainAxisSize.min,
-          mainAxisAlignment: MainAxisAlignment.end,
-          children: [
-            const Icon(
-              Icons.mosque_rounded,
-              color: Color(0xFFFFD56A),
-              size: 16,
+    return FittedBox(
+      fit: BoxFit.scaleDown,
+      alignment: Alignment.topRight,
+      child: Column(
+        mainAxisSize: MainAxisSize.min,
+        crossAxisAlignment: CrossAxisAlignment.end,
+        children: [
+          Text(
+            title,
+            maxLines: 1,
+            overflow: TextOverflow.ellipsis,
+            textAlign: TextAlign.right,
+            style: const TextStyle(
+              color: Colors.white,
+              fontWeight: FontWeight.w800,
+              fontSize: 10.8,
+              height: 1.1,
+              shadows: [
+                Shadow(
+                  color: Color(0x99000000),
+                  blurRadius: 10,
+                  offset: Offset(0, 2),
+                ),
+              ],
             ),
-            const SizedBox(width: 4),
-            Text(
-              time,
-              maxLines: 1,
-              overflow: TextOverflow.ellipsis,
-              style: const TextStyle(
-                color: Colors.white,
-                fontWeight: FontWeight.w900,
-                fontSize: 24,
-                height: 1,
-                letterSpacing: -0.6,
+          ),
+          const SizedBox(height: 5),
+          Row(
+            mainAxisSize: MainAxisSize.min,
+            mainAxisAlignment: MainAxisAlignment.end,
+            children: [
+              const Icon(
+                Icons.mosque_rounded,
+                color: Color(0xFFFFD56A),
+                size: 16,
               ),
-            ),
-          ],
-        ),
-        const SizedBox(height: 3),
-        Text(
-          countdown,
-          maxLines: 1,
-          overflow: TextOverflow.ellipsis,
-          textAlign: TextAlign.right,
-          style: TextStyle(
-            color: Colors.white.withValues(alpha: 0.88),
-            fontWeight: FontWeight.w600,
-            fontSize: 9.5,
-            height: 1.1,
+              const SizedBox(width: 5),
+              Text(
+                time,
+                maxLines: 1,
+                overflow: TextOverflow.ellipsis,
+                style: const TextStyle(
+                  color: Colors.white,
+                  fontWeight: FontWeight.w900,
+                  fontSize: 25,
+                  height: 1,
+                  letterSpacing: 0,
+                  shadows: [
+                    Shadow(
+                      color: Color(0xAA000000),
+                      blurRadius: 12,
+                      offset: Offset(0, 3),
+                    ),
+                  ],
+                ),
+              ),
+            ],
           ),
-        ),
-      ],
+          const SizedBox(height: 4),
+          Text(
+            countdown,
+            maxLines: 1,
+            overflow: TextOverflow.ellipsis,
+            textAlign: TextAlign.right,
+            style: TextStyle(
+              color: Colors.white.withValues(alpha: 0.90),
+              fontWeight: FontWeight.w700,
+              fontSize: 10,
+              height: 1.1,
+            ),
+          ),
+        ],
+      ),
     );
   }
 }
@@ -571,82 +503,87 @@ class _PharmacyBar extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return ClipRRect(
-      borderRadius: BorderRadius.circular(999),
-      child: BackdropFilter(
-        filter: ui.ImageFilter.blur(sigmaX: 16, sigmaY: 16),
-        child: Material(
-          color: Colors.black.withValues(alpha: 0.32),
-          child: InkWell(
-            onTap: () => TargetRouter.handle(context, 'screen:pharmacy'),
-            child: Container(
-              height: 42,
-              padding: const EdgeInsets.symmetric(horizontal: 10),
-              decoration: BoxDecoration(
-                borderRadius: BorderRadius.circular(999),
-                border: Border.all(color: Colors.white.withValues(alpha: 0.14)),
+    return Material(
+      color: Colors.transparent,
+      child: InkWell(
+        onTap: () => TargetRouter.handle(context, 'screen:pharmacy'),
+        borderRadius: BorderRadius.circular(999),
+        child: Container(
+          height: 42,
+          padding: const EdgeInsets.symmetric(horizontal: 10),
+          decoration: BoxDecoration(
+            color: PremiumCityTheme.navy.withValues(alpha: 0.74),
+            borderRadius: BorderRadius.circular(999),
+            border: Border.all(color: Colors.white.withValues(alpha: 0.16)),
+          ),
+          child: Row(
+            children: [
+              Container(
+                width: 30,
+                height: 30,
+                decoration: const BoxDecoration(
+                  color: Colors.white,
+                  shape: BoxShape.circle,
+                ),
+                child: const Icon(
+                  Icons.local_pharmacy_rounded,
+                  color: Color(0xFF22C55E),
+                  size: 17,
+                ),
               ),
-              child: Row(
-                children: [
-                  Container(
-                    width: 30,
-                    height: 30,
-                    decoration: const BoxDecoration(
-                      color: Colors.white,
-                      shape: BoxShape.circle,
+              const SizedBox(width: 8),
+              Expanded(
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    const Text(
+                      'Nöbetçi Eczane',
+                      maxLines: 1,
+                      overflow: TextOverflow.ellipsis,
+                      style: TextStyle(
+                        color: Color(0xFFFFD56A),
+                        fontWeight: FontWeight.w900,
+                        fontSize: 10.4,
+                        height: 1,
+                      ),
                     ),
-                    child: const Icon(
-                      Icons.local_pharmacy_rounded,
-                      color: Color(0xFF22C55E),
-                      size: 17,
+                    const SizedBox(height: 3),
+                    Text(
+                      pharmacyName,
+                      maxLines: 1,
+                      overflow: TextOverflow.ellipsis,
+                      style: const TextStyle(
+                        color: Colors.white,
+                        fontWeight: FontWeight.w800,
+                        fontSize: 11.3,
+                        height: 1,
+                      ),
                     ),
-                  ),
-                  const SizedBox(width: 8),
-                  Expanded(
-                    child: Column(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        const Text(
-                          'Nöbetçi Eczane',
-                          maxLines: 1,
-                          overflow: TextOverflow.ellipsis,
-                          style: TextStyle(
-                            color: Color(0xFFFFD56A),
-                            fontWeight: FontWeight.w800,
-                            fontSize: 10.5,
-                          ),
-                        ),
-                        const SizedBox(height: 1),
-                        Text(
-                          pharmacyName,
-                          maxLines: 1,
-                          overflow: TextOverflow.ellipsis,
-                          style: const TextStyle(
-                            color: Colors.white,
-                            fontWeight: FontWeight.w700,
-                            fontSize: 11.5,
-                          ),
-                        ),
-                      ],
-                    ),
-                  ),
-                  Container(
-                    width: 26,
-                    height: 26,
-                    decoration: const BoxDecoration(
-                      color: Color(0xFFFFD56A),
-                      shape: BoxShape.circle,
-                    ),
-                    child: Icon(
-                      Icons.chevron_right_rounded,
-                      color: PremiumCityTheme.navy.withValues(alpha: 0.9),
-                      size: 20,
-                    ),
-                  ),
-                ],
+                  ],
+                ),
               ),
-            ),
+              Container(
+                width: 27,
+                height: 27,
+                decoration: BoxDecoration(
+                  gradient: PremiumCityTheme.goldGradient,
+                  shape: BoxShape.circle,
+                  boxShadow: [
+                    BoxShadow(
+                      color: PremiumCityTheme.gold.withValues(alpha: 0.32),
+                      blurRadius: 12,
+                      offset: const Offset(0, 5),
+                    ),
+                  ],
+                ),
+                child: Icon(
+                  Icons.chevron_right_rounded,
+                  color: PremiumCityTheme.navy.withValues(alpha: 0.9),
+                  size: 20,
+                ),
+              ),
+            ],
           ),
         ),
       ),
@@ -671,18 +608,18 @@ class _HeaderIconButton extends StatelessWidget {
       clipBehavior: Clip.none,
       children: [
         Material(
-          color: Colors.white.withValues(alpha: 0.9),
+          color: Colors.white.withValues(alpha: 0.86),
           borderRadius: BorderRadius.circular(21),
           child: InkWell(
             onTap: onTap,
             borderRadius: BorderRadius.circular(21),
             child: Container(
-              width: 36,
-              height: 36,
+              width: 38,
+              height: 38,
               decoration: BoxDecoration(
-                borderRadius: BorderRadius.circular(18),
-                border: Border.all(color: const Color(0xFFE7ECF2)),
-                boxShadow: PremiumCityTheme.softShadow(alpha: 0.06),
+                borderRadius: BorderRadius.circular(19),
+                border: Border.all(color: const Color(0xFFE2E8F0)),
+                boxShadow: PremiumCityTheme.softShadow(alpha: 0.065),
               ),
               child: Icon(icon, color: PremiumCityTheme.navy, size: 19),
             ),
@@ -690,8 +627,8 @@ class _HeaderIconButton extends StatelessWidget {
         ),
         if (badge > 0)
           Positioned(
-            right: -1,
-            top: -4,
+            right: -2,
+            top: -5,
             child: Container(
               padding: const EdgeInsets.symmetric(horizontal: 5.5, vertical: 3),
               decoration: const BoxDecoration(

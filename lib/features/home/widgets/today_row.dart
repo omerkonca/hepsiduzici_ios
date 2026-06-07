@@ -6,6 +6,7 @@ import '../../../core/theme/app_colors.dart';
 import '../../../core/utils/weather_wmo_tr.dart';
 import '../../../data/models/prayer_times.dart';
 import '../../../data/models/weather_info.dart';
+import '../../../core/utils/target_router.dart';
 
 /// Hava durumu ve namaz vakti yan yana premium kartlar.
 class TodayRow extends ConsumerWidget {
@@ -56,6 +57,7 @@ class TodayRow extends ConsumerWidget {
                     label: 'Hava',
                     value: '${w.temperature.round()}°C',
                     sub: '${w.conditionText}\n${windSummaryTr(w.windSpeed, w.windGust)}',
+                    onTap: () => TargetRouter.handle(context, 'screen:weather'),
                   )
                       .animate(delay: 80.ms)
                       .fadeIn(duration: 380.ms, curve: Curves.easeOut)
@@ -84,6 +86,7 @@ class TodayRow extends ConsumerWidget {
                       label: 'Sıradaki vakit',
                       value: next.time,
                       sub: next.name,
+                      onTap: () => TargetRouter.handle(context, 'screen:prayer'),
                     )
                         .animate(delay: 180.ms)
                         .fadeIn(duration: 380.ms, curve: Curves.easeOut)
@@ -114,6 +117,7 @@ class _TodayCard extends StatelessWidget {
     required this.label,
     required this.value,
     required this.sub,
+    this.onTap,
   });
 
   final IconData icon;
@@ -121,11 +125,11 @@ class _TodayCard extends StatelessWidget {
   final String label;
   final String value;
   final String sub;
+  final VoidCallback? onTap;
 
   @override
   Widget build(BuildContext context) {
     return Container(
-      padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
         color: AppColors.surface,
         borderRadius: BorderRadius.circular(20),
@@ -137,43 +141,53 @@ class _TodayCard extends StatelessWidget {
           ),
         ],
       ),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          Container(
-            padding: const EdgeInsets.all(8),
-            decoration: BoxDecoration(
-              color: iconColor.withValues(alpha: 0.12),
-              borderRadius: BorderRadius.circular(12),
+      child: Material(
+        color: Colors.transparent,
+        child: InkWell(
+          borderRadius: BorderRadius.circular(20),
+          onTap: onTap,
+          child: Padding(
+            padding: const EdgeInsets.all(16),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                Container(
+                  padding: const EdgeInsets.all(8),
+                  decoration: BoxDecoration(
+                    color: iconColor.withValues(alpha: 0.12),
+                    borderRadius: BorderRadius.circular(12),
+                  ),
+                  child: Icon(icon, size: TodayRow._iconSize, color: iconColor),
+                ),
+                const SizedBox(height: 12),
+                Text(
+                  label,
+                  style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                        color: AppColors.textMuted,
+                        fontWeight: FontWeight.w600,
+                      ),
+                ),
+                const SizedBox(height: 2),
+                Text(
+                  value,
+                  style: Theme.of(context).textTheme.titleLarge?.copyWith(
+                        fontWeight: FontWeight.w800,
+                        letterSpacing: -0.3,
+                      ),
+                ),
+                Text(
+                  sub,
+                  style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                        color: AppColors.textMuted,
+                      ),
+                  maxLines: 3,
+                  overflow: TextOverflow.ellipsis,
+                ),
+              ],
             ),
-            child: Icon(icon, size: TodayRow._iconSize, color: iconColor),
           ),
-          const SizedBox(height: 12),
-          Text(
-            label,
-            style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                  color: AppColors.textMuted,
-                  fontWeight: FontWeight.w600,
-                ),
-          ),
-          const SizedBox(height: 2),
-          Text(
-            value,
-            style: Theme.of(context).textTheme.titleLarge?.copyWith(
-                  fontWeight: FontWeight.w800,
-                  letterSpacing: -0.3,
-                ),
-          ),
-          Text(
-            sub,
-            style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                  color: AppColors.textMuted,
-                ),
-            maxLines: 3,
-            overflow: TextOverflow.ellipsis,
-          ),
-        ],
+        ),
       ),
     );
   }
