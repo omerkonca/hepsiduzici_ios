@@ -31,7 +31,9 @@ import '../data/services/app_notifications_builder.dart';
 import '../data/services/discover_service.dart';
 import '../data/services/outage_service.dart';
 import '../data/services/road_closure_service.dart';
+import '../data/services/obituary_service.dart';
 import '../data/models/road_closure.dart';
+import '../data/models/obituary_item.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 final dioProvider = Provider<Dio>((ref) {
@@ -93,6 +95,10 @@ final eventServiceProvider = Provider<EventService>((ref) {
     ref.watch(dioProvider),
     remoteUrl: AppConfig.eventsUrl,
   );
+});
+
+final obituaryServiceProvider = Provider<ObituaryService>((ref) {
+  return ObituaryService(ref.watch(dioProvider));
 });
 
 final favoritesServiceProvider = Provider<FavoritesService>((ref) {
@@ -415,6 +421,10 @@ final newsListProvider = FutureProvider<List<NewsItem>>((ref) async {
 final eventListProvider = FutureProvider<List<EventItem>>((ref) async {
   final s = await ref.watch(stampedEventsProvider.future);
   return s.data;
+});
+
+final obituaryListProvider = FutureProvider<List<ObituaryItem>>((ref) async {
+  return ref.watch(obituaryServiceProvider).getObituaries();
 });
 
 // =====================================================================

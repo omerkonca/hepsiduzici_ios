@@ -777,12 +777,16 @@ class HeaderMediaItem {
     required this.type, // 'image' or 'video'
     this.title,
     this.isActive = true,
+    this.id,
+    this.bubbleId,
   });
 
   final String url;
   final String type;
   final String? title;
   final bool isActive;
+  final String? id;
+  final String? bubbleId;
 
   factory HeaderMediaItem.fromJson(Map<String, dynamic> json) {
     return HeaderMediaItem(
@@ -790,6 +794,19 @@ class HeaderMediaItem {
       type: json['type'] as String? ?? 'image',
       title: json['title'] as String?,
       isActive: json['isActive'] as bool? ?? true,
+      id: json['id'] as String?,
+      bubbleId: json['bubbleId'] as String?,
     );
+  }
+
+  Map<String, dynamic> toJson() {
+    return {
+      'url': url,
+      'type': type,
+      if (title != null) 'title': title,
+      'isActive': isActive,
+      if (id != null) 'id': id,
+      if (bubbleId != null) 'bubbleId': bubbleId,
+    };
   }
 }

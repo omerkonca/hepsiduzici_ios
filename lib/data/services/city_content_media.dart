@@ -36,6 +36,8 @@ CityContent normalizeCityContentMedia(CityContent content) {
             url: MediaUrlResolver.resolve(m.url),
             title: m.title,
             isActive: m.isActive,
+            id: m.id,
+            bubbleId: m.bubbleId,
           ),
         )
         .toList(),

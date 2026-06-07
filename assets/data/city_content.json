@@ -1054,9 +1054,9 @@
         "id": "obituary",
         "icon": "sentiment_very_dissatisfied",
         "title": "Vefat Listesi",
-        "subtitle": "Taziye duyuruları",
+        "subtitle": "Düziçi ve Osmaniye vefat duyuruları",
         "color": "#546E7A",
-        "target": "screen:directory",
+        "target": "screen:obituary",
         "directoryData": [
           {
             "name": "Belediye Cenaze Hizmetleri",

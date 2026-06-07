@@ -10,6 +10,7 @@ import '../../data/models/city_content.dart';
 import 'directory_screen.dart';
 import 'explore_category_screen.dart';
 import 'auto_gallery_screen.dart';
+import 'obituary_screen.dart';
 import '../veterinary/veterinary_screen.dart';
 import '../../core/widgets/place_network_image.dart';
 import 'widgets/explore_list_theme.dart';
@@ -246,6 +247,12 @@ class ExploreScreen extends ConsumerWidget {
     if (svc.id == 'veterinary') {
       Navigator.of(context).push(
         MaterialPageRoute(builder: (_) => const VeterinaryScreen()),
+      );
+      return;
+    }
+    if (svc.id == 'obituary') {
+      Navigator.of(context).push(
+        MaterialPageRoute(builder: (_) => const ObituaryScreen()),
       );
       return;
     }

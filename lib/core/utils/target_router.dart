@@ -24,6 +24,7 @@ import '../../features/services/transportation_screen.dart';
 import '../../features/settings/notification_preferences_screen.dart';
 import '../../features/veterinary/veterinary_screen.dart';
 import '../../features/weather/weather_screen.dart';
+import '../../features/explore/obituary_screen.dart';
 import 'app_navigation.dart';
 import 'launcher_utils.dart';
 
@@ -126,6 +127,9 @@ class TargetRouter {
         return;
       case 'veterinary':
         await _pushPage(context, const VeterinaryScreen());
+        return;
+      case 'obituary':
+        await _pushPage(context, const ObituaryScreen());
         return;
       case 'fuel':
         await _pushPage(context, const FuelPricesScreen());

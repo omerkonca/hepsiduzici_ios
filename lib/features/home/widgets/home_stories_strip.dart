@@ -57,25 +57,29 @@ class _HomeStoriesStripState extends ConsumerState<HomeStoriesStrip> {
     final list = active.isNotEmpty ? active : content.headerMedia;
     if (list.isEmpty) return const [];
     
-    final allItems = list.asMap().entries.map((entry) {
-      final i = entry.key;
-      final m = entry.value;
-      return HomeStoryMedia(
-        id: 'story_$i',
+    final Map<String, List<HomeStoryMedia>> groupsMap = {};
+    final Map<String, String> groupTitles = {};
+
+    for (final m in list) {
+      final title = (m.title ?? '').trim().isNotEmpty ? m.title!.trim() : 'Düziçi Hikaye';
+      final bubbleId = m.bubbleId ?? title;
+      final itemId = m.id ?? 'story_${m.url.hashCode}';
+      
+      final mediaItem = HomeStoryMedia(
+        id: itemId,
         url: m.url,
         type: m.type,
-        title: (m.title ?? '').trim().isNotEmpty ? m.title!.trim() : 'Düziçi Hikaye ${i + 1}',
+        title: title,
       );
-    }).toList();
-
-    final Map<String, List<HomeStoryMedia>> groupsMap = {};
-    for (final item in allItems) {
-      groupsMap.putIfAbsent(item.title, () => []).add(item);
+      
+      groupsMap.putIfAbsent(bubbleId, () => []).add(mediaItem);
+      groupTitles.putIfAbsent(bubbleId, () => title);
     }
 
     return groupsMap.entries.map((e) {
       return HomeStoryGroup(
-        title: e.key,
+        id: e.key,
+        title: groupTitles[e.key] ?? 'Düziçi Hikaye',
         items: e.value,
       );
     }).toList();
@@ -135,14 +139,14 @@ class _HomeStoriesStripState extends ConsumerState<HomeStoriesStrip> {
 
 class HomeStoryGroup {
   HomeStoryGroup({
+    required this.id,
     required this.title,
     required this.items,
   });
 
+  final String id;
   final String title;
   final List<HomeStoryMedia> items;
-
-  String get id => 'group_${title.hashCode}';
 }
 
 class _StoryBubble extends StatelessWidget {

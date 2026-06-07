@@ -84,19 +84,7 @@ class PharmacyService {
     return null;
   }
 
-  /// Eczaneler sitesinin URL formatı için Türkçe karakterleri temizleme yardımı
-  static String _slugify(String input) {
-    return input
-        .toLowerCase()
-        .replaceAll('ı', 'i')
-        .replaceAll('ğ', 'g')
-        .replaceAll('ü', 'u')
-        .replaceAll('ş', 's')
-        .replaceAll('ö', 'o')
-        .replaceAll('ç', 'c')
-        .replaceAll(' ', '-')
-        .replaceAll(RegExp(r'[^a-z0-9\-]'), '');
-  }
+
 
   /// Resmi sayfanın HTML içeriğinden nöbetçi eczaneleri ayıklayan robust algoritma
   static List<Pharmacy> parsePharmaciesFromHtml(String html) {
