@@ -1,6 +1,3 @@
-import 'package:flutter/foundation.dart';
-import 'dart:io';
-
 class AppConfig {
   AppConfig._();
 
@@ -9,31 +6,11 @@ class AppConfig {
 
   static const String _envBaseUrl = String.fromEnvironment('BACKEND_BASE_URL');
 
-  /// Canlı backend (Render) veya geliştirme ortamı için yerel sunucu.
+  /// Canlı backend (Render). Yerel geliştirme için --dart-define=BACKEND_BASE_URL=...
   static String get backendBaseUrl {
     if (_envBaseUrl.isNotEmpty) {
       return _envBaseUrl;
     }
-    
-    // Geliştirme (debug) modunda yerel backend'e otomatik yönlendir
-    if (kDebugMode) {
-      if (kIsWeb) {
-        return 'http://localhost:5050';
-      }
-      try {
-        if (Platform.isAndroid) {
-          return 'http://10.0.2.2:5050'; // Android Emulator için local IP
-        }
-        if (Platform.isIOS || Platform.isMacOS) {
-          return 'http://localhost:5050'; // iOS Simulator için local IP
-        }
-      } catch (_) {
-        // Platform tespit hatası (örn. web üzerinde Platform kullanımı)
-      }
-      return 'http://localhost:5050';
-    }
-
-    // Canlı (Production) Render sunucusu adresi
     return 'https://hdbackend-vo99.onrender.com';
   }
 
