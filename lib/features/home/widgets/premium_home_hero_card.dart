@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_animate/flutter_animate.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:cached_network_image/cached_network_image.dart';
 
 import '../../../app/providers.dart';
 import '../../../core/theme/premium_city_theme.dart';
@@ -18,6 +19,8 @@ class PremiumHomeHeroCard extends ConsumerWidget {
     final prayer = ref.watch(prayerTimesProvider).asData?.value;
     final pharmacy = ref.watch(pharmacyListProvider).asData?.value;
     final unread = ref.watch(unreadNotificationsCountProvider);
+    final cityContent = ref.watch(cityContentProvider).asData?.value;
+    final heroCardBg = cityContent?.branding?.heroCardBg;
 
     final now = DateTime.now();
     final currentTime =
@@ -40,6 +43,7 @@ class PremiumHomeHeroCard extends ConsumerWidget {
               ? '1s 12dk kaldı'
               : _prayerCountdownTr(prayer, nextPrayer?.time ?? '20:15', now),
           pharmacyName: pharmacyName,
+          heroCardBg: heroCardBg,
         ),
       ],
     );
@@ -190,6 +194,7 @@ class _LiveCityCard extends StatelessWidget {
     required this.prayerTime,
     required this.prayerCountdown,
     required this.pharmacyName,
+    this.heroCardBg,
   });
 
   final WeatherInfo? weather;
@@ -197,6 +202,7 @@ class _LiveCityCard extends StatelessWidget {
   final String prayerTime;
   final String prayerCountdown;
   final String pharmacyName;
+  final String? heroCardBg;
 
   @override
   Widget build(BuildContext context) {
@@ -225,11 +231,7 @@ class _LiveCityCard extends StatelessWidget {
         child: Stack(
           fit: StackFit.expand,
           children: [
-            Image.asset(
-              'assets/images/duzici_castle_header.png',
-              fit: BoxFit.cover,
-              alignment: const Alignment(0.05, -0.10),
-            ),
+            _buildBackgroundImage(),
             DecoratedBox(
               decoration: BoxDecoration(
                 gradient: LinearGradient(
@@ -315,8 +317,39 @@ class _LiveCityCard extends StatelessWidget {
           begin: const Offset(0.98, 0.98),
           end: const Offset(1, 1),
           duration: 420.ms,
-          curve: Curves.easeOutCubic,
         );
+  }
+
+  Widget _buildBackgroundImage() {
+    final bg = heroCardBg;
+    if (bg == null || bg.trim().isEmpty) {
+      return Image.asset(
+        'assets/images/duzici_castle_header.png',
+        fit: BoxFit.cover,
+        alignment: const Alignment(0.05, -0.10),
+      );
+    }
+
+    if (bg.startsWith('http://') || bg.startsWith('https://')) {
+      return CachedNetworkImage(
+        imageUrl: bg,
+        fit: BoxFit.cover,
+        alignment: const Alignment(0.05, -0.10),
+        placeholder: (context, url) => Container(color: PremiumCityTheme.navy),
+        errorWidget: (context, url, error) => Image.asset(
+          'assets/images/duzici_castle_header.png',
+          fit: BoxFit.cover,
+          alignment: const Alignment(0.05, -0.10),
+        ),
+      );
+    }
+
+    final assetPath = bg.startsWith('asset:') ? bg.substring(6) : bg;
+    return Image.asset(
+      assetPath,
+      fit: BoxFit.cover,
+      alignment: const Alignment(0.05, -0.10),
+    );
   }
 }
 

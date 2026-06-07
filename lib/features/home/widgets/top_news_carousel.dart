@@ -25,7 +25,8 @@ class TopNewsCarousel extends ConsumerStatefulWidget {
 }
 
 class _TopNewsCarouselState extends ConsumerState<TopNewsCarousel> {
-  late final PageController _controller = PageController(viewportFraction: 0.92);
+  late final PageController _controller =
+      PageController(viewportFraction: 0.92);
   Timer? _timer;
   int _index = 0;
 
@@ -59,9 +60,9 @@ class _TopNewsCarouselState extends ConsumerState<TopNewsCarousel> {
           return n.category == widget.category;
         }).toList();
         final items = filtered.take(widget.maxItems).toList();
-        
+
         if (items.isEmpty) return _empty(context);
-        
+
         // Reset index and timer if category changes
         WidgetsBinding.instance.addPostFrameCallback((_) {
           if (mounted) _startAutoSwipe(items.length);
@@ -79,7 +80,63 @@ class _TopNewsCarouselState extends ConsumerState<TopNewsCarousel> {
 
   Widget _content(BuildContext context, List<NewsItem> items) {
     return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
       children: [
+        Padding(
+          padding: const EdgeInsets.fromLTRB(4, 0, 4, 10),
+          child: Row(
+            children: [
+              Container(
+                width: 5,
+                height: 22,
+                decoration: BoxDecoration(
+                  color: AppColors.primary,
+                  borderRadius: BorderRadius.circular(999),
+                ),
+              ),
+              const SizedBox(width: 9),
+              const Expanded(
+                child: Text(
+                  'Düziçi Haberleri',
+                  maxLines: 1,
+                  overflow: TextOverflow.ellipsis,
+                  style: TextStyle(
+                    color: Color(0xFF111827),
+                    fontSize: 18,
+                    fontWeight: FontWeight.w900,
+                    letterSpacing: 0,
+                  ),
+                ),
+              ),
+              InkWell(
+                onTap: () => ref.read(currentIndexProvider.notifier).state = 1,
+                borderRadius: BorderRadius.circular(999),
+                child: Padding(
+                  padding:
+                      const EdgeInsets.symmetric(horizontal: 8, vertical: 6),
+                  child: Row(
+                    children: const [
+                      Text(
+                        'Tümü',
+                        style: TextStyle(
+                          color: Color(0xFF6B7280),
+                          fontSize: 13,
+                          fontWeight: FontWeight.w800,
+                        ),
+                      ),
+                      SizedBox(width: 3),
+                      Icon(
+                        Icons.chevron_right_rounded,
+                        color: AppColors.primary,
+                        size: 18,
+                      ),
+                    ],
+                  ),
+                ),
+              ),
+            ],
+          ),
+        ),
         SizedBox(
           height: widget.height,
           child: PageView.builder(
@@ -119,11 +176,15 @@ class _TopNewsCarouselState extends ConsumerState<TopNewsCarousel> {
         child: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
-            Icon(Icons.article_outlined, size: 38, color: AppColors.textMuted.withValues(alpha: 0.3)),
+            Icon(Icons.article_outlined,
+                size: 38, color: AppColors.textMuted.withValues(alpha: 0.3)),
             const SizedBox(height: 8),
             Text(
               "${widget.category} haberleri yakında burada",
-              style: Theme.of(context).textTheme.bodyMedium?.copyWith(color: AppColors.textMuted),
+              style: Theme.of(context)
+                  .textTheme
+                  .bodyMedium
+                  ?.copyWith(color: AppColors.textMuted),
             ),
           ],
         ),
@@ -150,7 +211,8 @@ class _NewsCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final badgeColor = badgeLabel == 'Osmaniye' ? AppColors.accentBlue : AppColors.primary;
+    final badgeColor =
+        badgeLabel == 'Osmaniye' ? AppColors.accentBlue : AppColors.primary;
     return Material(
       color: Colors.transparent,
       child: InkWell(
@@ -173,7 +235,8 @@ class _NewsCard extends StatelessWidget {
             child: Stack(
               children: [
                 Positioned.fill(
-                  child: item.imageUrl != null && item.imageUrl!.trim().isNotEmpty
+                  child: item.imageUrl != null &&
+                          item.imageUrl!.trim().isNotEmpty
                       ? Image.network(
                           item.imageUrl!,
                           fit: BoxFit.cover,
@@ -181,7 +244,9 @@ class _NewsCard extends StatelessWidget {
                             if (loadingProgress == null) return child;
                             return Container(
                               color: Colors.grey[100],
-                              child: const Center(child: CircularProgressIndicator(strokeWidth: 2)),
+                              child: const Center(
+                                  child: CircularProgressIndicator(
+                                      strokeWidth: 2)),
                             );
                           },
                           errorBuilder: (_, __, ___) => Image.asset(
@@ -215,7 +280,8 @@ class _NewsCard extends StatelessWidget {
                       Row(
                         children: [
                           Container(
-                            padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 5),
+                            padding: const EdgeInsets.symmetric(
+                                horizontal: 12, vertical: 5),
                             decoration: BoxDecoration(
                               color: badgeColor,
                               borderRadius: BorderRadius.circular(20),
@@ -264,24 +330,30 @@ class _NewsCard extends StatelessWidget {
                           const SizedBox(height: 6),
                           Row(
                             children: [
-                              Icon(Icons.access_time_rounded, color: Colors.white.withValues(alpha: 0.7), size: 12),
+                              Icon(Icons.access_time_rounded,
+                                  color: Colors.white.withValues(alpha: 0.7),
+                                  size: 12),
                               const SizedBox(width: 4),
                               Text(
                                 _relativeTime(item.createdAt),
                                 style: TextStyle(
-                                  color: AppColors.white.withValues(alpha: 0.85),
+                                  color:
+                                      AppColors.white.withValues(alpha: 0.85),
                                   fontSize: 11,
                                   fontWeight: FontWeight.w600,
                                 ),
                               ),
-                              if (item.sourceName != null && item.sourceName!.isNotEmpty) ...[
+                              if (item.sourceName != null &&
+                                  item.sourceName!.isNotEmpty) ...[
                                 Padding(
-                                  padding: const EdgeInsets.symmetric(horizontal: 6),
+                                  padding:
+                                      const EdgeInsets.symmetric(horizontal: 6),
                                   child: Container(
                                     width: 3,
                                     height: 3,
                                     decoration: BoxDecoration(
-                                      color: Colors.white.withValues(alpha: 0.5),
+                                      color:
+                                          Colors.white.withValues(alpha: 0.5),
                                       shape: BoxShape.circle,
                                     ),
                                   ),
@@ -292,7 +364,8 @@ class _NewsCard extends StatelessWidget {
                                     maxLines: 1,
                                     overflow: TextOverflow.ellipsis,
                                     style: TextStyle(
-                                      color: AppColors.white.withValues(alpha: 0.7),
+                                      color: AppColors.white
+                                          .withValues(alpha: 0.7),
                                       fontSize: 10,
                                       fontWeight: FontWeight.w600,
                                     ),
@@ -364,7 +437,9 @@ class _Indicators extends StatelessWidget {
           width: isActive ? 20 : 6,
           height: 5,
           decoration: BoxDecoration(
-            color: isActive ? AppColors.primary : AppColors.softGrey.withValues(alpha: 0.6),
+            color: isActive
+                ? AppColors.primary
+                : AppColors.softGrey.withValues(alpha: 0.6),
             borderRadius: BorderRadius.circular(3),
           ),
         );

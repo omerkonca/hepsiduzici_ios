@@ -2,6 +2,7 @@ import 'dart:math' as math;
 import 'package:flutter/material.dart';
 import 'package:flutter_animate/flutter_animate.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import '../../app/main_nav.dart';
 import '../../core/theme/app_colors.dart';
 import 'onboarding_controller.dart';
 
@@ -89,9 +90,24 @@ class _OnboardingScreenState extends ConsumerState<OnboardingScreen>
     super.dispose();
   }
 
+  Future<void> _finishOnboarding() async {
+    await ref.read(onboardingCompletedProvider.notifier).completeOnboarding();
+    if (!mounted) return;
+    Navigator.of(context).pushReplacement(
+      PageRouteBuilder(
+        pageBuilder: (_, __, ___) => const MainNav(),
+        transitionDuration: const Duration(milliseconds: 450),
+        transitionsBuilder: (_, animation, __, child) => FadeTransition(
+          opacity: CurvedAnimation(parent: animation, curve: Curves.easeOut),
+          child: child,
+        ),
+      ),
+    );
+  }
+
   void _next() {
     if (_currentPage == _pages.length - 1) {
-      ref.read(onboardingCompletedProvider.notifier).completeOnboarding();
+      _finishOnboarding();
     } else {
       _pageController.nextPage(
         duration: const Duration(milliseconds: 700),
@@ -101,7 +117,7 @@ class _OnboardingScreenState extends ConsumerState<OnboardingScreen>
   }
 
   void _skip() {
-    ref.read(onboardingCompletedProvider.notifier).completeOnboarding();
+    _finishOnboarding();
   }
 
   @override
@@ -305,8 +321,9 @@ class _GradientButtonState extends State<_GradientButton> {
   @override
   Widget build(BuildContext context) {
     return GestureDetector(
+      behavior: HitTestBehavior.opaque,
       onTapDown: (_) => setState(() => _pressed = true),
-      onTapUp: (_) {
+      onTap: () {
         setState(() => _pressed = false);
         widget.onTap();
       },

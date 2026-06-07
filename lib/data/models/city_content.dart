@@ -132,6 +132,7 @@ class BrandingInfo {
     this.primaryDarkColor,
     this.accentBlueColor,
     this.splashBackgroundColor,
+    this.heroCardBg,
   });
 
   final String? appName;
@@ -141,6 +142,7 @@ class BrandingInfo {
   final String? primaryDarkColor;
   final String? accentBlueColor;
   final String? splashBackgroundColor;
+  final String? heroCardBg;
 
   factory BrandingInfo.fromJson(Map<String, dynamic> json) {
     String? str(String key) {
@@ -157,6 +159,7 @@ class BrandingInfo {
       primaryDarkColor: str('primaryDarkColor'),
       accentBlueColor: str('accentBlueColor'),
       splashBackgroundColor: str('splashBackgroundColor'),
+      heroCardBg: str('heroCardBg'),
     );
   }
 }

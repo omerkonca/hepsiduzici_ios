@@ -1,0 +1,4 @@
+storePassword=STORE_SIFREN
+keyPassword=KEY_SIFREN
+keyAlias=upload
+storeFile=../upload-keystore.jks
