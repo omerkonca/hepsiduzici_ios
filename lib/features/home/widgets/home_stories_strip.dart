@@ -81,13 +81,14 @@ class _HomeStoriesStripState extends ConsumerState<HomeStoriesStrip> {
     }).toList();
   }
 
-  Future<void> _openViewer(List<HomeStoryMedia> stories, int startIndex) async {
+  Future<void> _openViewer(List<HomeStoryMedia> stories, int startIndex, String groupTag) async {
     if (!mounted) return;
     await AppNavigation.push<void>(
       context,
       HomeStoryViewer(
         items: stories,
         startIndex: startIndex,
+        groupTag: groupTag,
         onViewed: _markSeen,
       ),
     );
@@ -120,7 +121,7 @@ class _HomeStoriesStripState extends ConsumerState<HomeStoriesStrip> {
                 imageUrl: group.items.first.url,
                 isVideo: group.items.first.isVideo,
                 hasNew: hasNew,
-                onTap: () => _openViewer(group.items, firstUnseenIndex),
+                onTap: () => _openViewer(group.items, firstUnseenIndex, 'home_story_${group.id}'),
               );
             },
           ),

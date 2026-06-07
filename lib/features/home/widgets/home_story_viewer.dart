@@ -28,11 +28,13 @@ class HomeStoryViewer extends StatefulWidget {
     required this.items,
     required this.startIndex,
     required this.onViewed,
+    this.groupTag,
   });
 
   final List<HomeStoryMedia> items;
   final int startIndex;
   final ValueChanged<String> onViewed;
+  final String? groupTag;
 
   @override
   State<HomeStoryViewer> createState() => _HomeStoryViewerState();
@@ -100,6 +102,7 @@ class _HomeStoryViewerState extends State<HomeStoryViewer> {
                   key: ValueKey('${item.id}_$i'),
                   item: item,
                   isActive: i == _index,
+                  heroTag: i == widget.startIndex ? widget.groupTag : null,
                   onProgress: (p) {
                     if (!mounted || i != _index) return;
                     setState(() {
@@ -213,12 +216,14 @@ class _StoryPageMedia extends StatefulWidget {
     required this.isActive,
     required this.onProgress,
     required this.onComplete,
+    this.heroTag,
   });
 
   final HomeStoryMedia item;
   final bool isActive;
   final ValueChanged<double> onProgress;
   final VoidCallback onComplete;
+  final String? heroTag;
 
   @override
   State<_StoryPageMedia> createState() => _StoryPageMediaState();
@@ -331,8 +336,9 @@ class _StoryPageMediaState extends State<_StoryPageMedia> with SingleTickerProvi
   @override
   Widget build(BuildContext context) {
     Widget withHero(Widget child) {
+      final tag = widget.heroTag ?? 'home_story_${widget.item.id}';
       return Hero(
-        tag: 'home_story_${widget.item.id}',
+        tag: tag,
         child: Material(
           color: Colors.transparent,
           child: child,

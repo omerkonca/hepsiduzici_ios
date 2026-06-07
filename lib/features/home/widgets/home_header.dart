@@ -468,24 +468,24 @@ class _FloatingSearchBar extends ConsumerWidget {
       right: 24,
       child: Hero(
         tag: 'main_search',
-        child: Material(
-          color: Colors.transparent,
-          child: Container(
-            height: 64,
-            padding: const EdgeInsets.symmetric(horizontal: 20),
-            decoration: BoxDecoration(
-              color: Theme.of(context).colorScheme.surface,
-              borderRadius: BorderRadius.circular(24),
-              boxShadow: [
-                BoxShadow(
-                  color: Theme.of(context).brightness == Brightness.dark 
-                      ? Colors.black.withValues(alpha: 0.3) 
-                      : Colors.black.withValues(alpha: 0.15),
-                  blurRadius: 30,
-                  offset: const Offset(0, 15),
-                ),
-              ],
-            ),
+        child: Container(
+          height: 64,
+          padding: const EdgeInsets.symmetric(horizontal: 20),
+          decoration: BoxDecoration(
+            color: Theme.of(context).colorScheme.surface,
+            borderRadius: BorderRadius.circular(24),
+            boxShadow: [
+              BoxShadow(
+                color: Theme.of(context).brightness == Brightness.dark 
+                    ? Colors.black.withValues(alpha: 0.3) 
+                    : Colors.black.withValues(alpha: 0.15),
+                blurRadius: 30,
+                offset: const Offset(0, 15),
+              ),
+            ],
+          ),
+          child: Material(
+            type: MaterialType.transparency,
             child: Row(
               children: [
                 const Icon(Icons.search_rounded, color: AppColors.primary, size: 28),
