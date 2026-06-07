@@ -35,7 +35,10 @@ class _ObituaryScreenState extends ConsumerState<ObituaryScreen> {
         color: const Color(0xFF546E7A),
         isEmpty: true,
         emptyMessage: 'Vefat listesi yüklenemedi.\n$e',
-        onRefresh: () async => ref.invalidate(obituaryListProvider),
+        onRefresh: () async {
+          ref.invalidate(obituaryListProvider);
+          await ref.read(obituaryListProvider.future);
+        },
         child: const SliverToBoxAdapter(child: SizedBox.shrink()),
       ),
       data: (items) {
@@ -50,7 +53,10 @@ class _ObituaryScreenState extends ConsumerState<ObituaryScreen> {
               'Son 45 gün içinde güncel vefat kaydı bulunamadı.\n'
               'Belediye siteleri güncellenmemiş olabilir; '
               'cenaze hattını arayarak güncel bilgi alabilirsiniz.',
-          onRefresh: () async => ref.invalidate(obituaryListProvider),
+          onRefresh: () async {
+            ref.invalidate(obituaryListProvider);
+            await ref.read(obituaryListProvider.future);
+          },
           child: SliverList(
             delegate: SliverChildListDelegate([
               _ScopeFilterBar(
