@@ -7,7 +7,7 @@ class NewsItem {
     required this.createdAt,
     this.sourceUrl,
     this.sourceName,
-    this.category = 'Düziçi',
+    this.category = 'Osmaniye',
   });
 
   final String id;
@@ -19,38 +19,57 @@ class NewsItem {
   final String? sourceName;
   final String category;
 
+  static String _normalize(String input) {
+    return input
+        .toLowerCase()
+        .replaceAll('ü', 'u')
+        .replaceAll('ö', 'o')
+        .replaceAll('ç', 'c')
+        .replaceAll('ğ', 'g')
+        .replaceAll('ş', 's')
+        .replaceAll('ı', 'i')
+        .replaceAll('â', 'a')
+        .replaceAll('î', 'i');
+  }
+
+  static String inferCategory({
+    required String title,
+    String? summary,
+    String? sourceName,
+  }) {
+    final text = _normalize('$title ${summary ?? ''}');
+    final source = _normalize(sourceName ?? '');
+
+    final hasDuzici = RegExp(r'\b(duzici|yarbasi|ellek|atalan|duldul)\b').hasMatch(text);
+    final hasOtherDistrict = RegExp(
+      r'\b(osmaniye|kadirli|bahce|sumbas|hasanbeyli|toprakkale|karacay|ceylan|duzgun|duzgunbel|duzkoy)\b',
+    ).hasMatch(text);
+    final hasOku = RegExp(r'\b(oku|korkut ata|osmaniye korkut)\b').hasMatch(text);
+
+    if (hasDuzici) return 'Düziçi';
+    if (hasOtherDistrict || hasOku) return 'Osmaniye';
+
+    if (source.contains('google news osmaniye')) return 'Osmaniye';
+    if (source.contains('hasret') || source.contains('sabir')) return 'Düziçi';
+    if (source.contains('google news')) return 'Osmaniye';
+
+    return 'Osmaniye';
+  }
+
   factory NewsItem.fromJson(Map<String, dynamic> json) {
     final title = json['title'] as String? ?? '';
+    final summary = json['summary'] as String?;
     final source = json['sourceName'] as String? ?? '';
-    
-    // Basit bir kategorizasyon mantığı (Backend'den gelmiyorsa)
-    String category = json['category'] as String? ?? 'Düziçi';
-    
-    final lowerTitle = title.toLowerCase();
-    final lowerSource = source.toLowerCase();
-    
-    final matchesOsmaniyeOrDistrict = 
-        lowerTitle.contains('osmaniye') || lowerSource.contains('osmaniye') ||
-        lowerTitle.contains('kadirli') || lowerSource.contains('kadirli') ||
-        lowerTitle.contains('bahçe') || lowerTitle.contains('bahce') || lowerSource.contains('bahçe') || lowerSource.contains('bahce') ||
-        lowerTitle.contains('sumbas') || lowerSource.contains('sumbas') ||
-        lowerTitle.contains('hasanbeyli') || lowerSource.contains('hasanbeyli') ||
-        lowerTitle.contains('toprakkale') || lowerSource.contains('toprakkale');
+    final backendCategory = json['category'] as String?;
 
-    final matchesDuzici = lowerTitle.contains('düziçi') || lowerTitle.contains('düzici') || lowerTitle.contains('duzici') ||
-                         lowerSource.contains('düziçi') || lowerSource.contains('düzici') || lowerSource.contains('duzici') ||
-                         lowerSource.contains('hasret') || lowerSource.contains('sabir') || lowerSource.contains('sabır') ||
-                         lowerTitle.contains('yarbaşı') || lowerTitle.contains('yarbasi') ||
-                         lowerTitle.contains('ellek') || lowerTitle.contains('atalan');
-
-    if (matchesOsmaniyeOrDistrict && !matchesDuzici) {
-      category = 'Osmaniye';
-    }
+    final category = (backendCategory != null && backendCategory.isNotEmpty)
+        ? backendCategory
+        : inferCategory(title: title, summary: summary, sourceName: source);
 
     return NewsItem(
       id: json['id'] as String? ?? '',
       title: title,
-      summary: json['summary'] as String?,
+      summary: summary,
       imageUrl: json['imageUrl'] as String?,
       createdAt: json['createdAt'] != null
           ? DateTime.tryParse(json['createdAt'] as String) ?? DateTime.now()

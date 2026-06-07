@@ -494,11 +494,18 @@ final autoRefreshProvider = Provider<void>((ref) {
   });
 });
 
-/// Haber detay sayfasinda tam metin icin (kaynak URL'den cekilir).
-final newsFullTextProvider = FutureProvider.family<String?, String?>((ref, url) async {
-  if (url == null || url.isEmpty) return null;
+/// Haber detay sayfasinda tam metin ve gorsel icin (kaynak URL'den cekilir).
+final newsArticleDetailsProvider =
+    FutureProvider.family<NewsArticleDetails, String?>((ref, url) async {
+  if (url == null || url.isEmpty) return const NewsArticleDetails();
   final service = ref.read(newsServiceProvider);
-  return service.getFullText(url);
+  return service.getArticleDetails(url);
+});
+
+/// Geriye donuk uyumluluk.
+final newsFullTextProvider = FutureProvider.family<String?, String?>((ref, url) async {
+  final details = await ref.watch(newsArticleDetailsProvider(url).future);
+  return details.fullText;
 });
 
 /// Haber listesinde secili kategori (kaynak adi). null = Tumu.

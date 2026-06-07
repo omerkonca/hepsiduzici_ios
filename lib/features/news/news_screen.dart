@@ -373,7 +373,7 @@ class _HeadlineCard extends StatelessWidget {
               child: Stack(
                 fit: StackFit.expand,
                 children: [
-                  _NewsImage(url: item.imageUrl),
+                  _NewsImage(url: item.imageUrl, category: item.category),
                   const DecoratedBox(
                     decoration: BoxDecoration(
                       gradient: LinearGradient(
@@ -481,7 +481,7 @@ class _PremiumNewsCard extends StatelessWidget {
                 child: SizedBox(
                   width: 88,
                   height: 76,
-                  child: _NewsImage(url: item.imageUrl),
+                  child: _NewsImage(url: item.imageUrl, category: item.category),
                 ),
               ),
               const SizedBox(width: 10),
@@ -603,21 +603,28 @@ class _SourceChip extends StatelessWidget {
 }
 
 class _NewsImage extends StatelessWidget {
-  const _NewsImage({this.url});
+  const _NewsImage({this.url, this.category = 'Düziçi'});
 
   final String? url;
+  final String category;
+
+  String get _placeholderAsset {
+    if (category == 'Osmaniye') {
+      return 'assets/images/duzici_scenic_header.png';
+    }
+    return 'assets/images/duzici_castle_header.png';
+  }
 
   @override
   Widget build(BuildContext context) {
     if (url == null || url!.isEmpty) {
-      return Image.asset('assets/images/duzici_castle_header.png',
-          fit: BoxFit.cover);
+      return Image.asset(_placeholderAsset, fit: BoxFit.cover);
     }
     return Image.network(
       url!,
       fit: BoxFit.cover,
       errorBuilder: (_, __, ___) => Image.asset(
-        'assets/images/duzici_castle_header.png',
+        _placeholderAsset,
         fit: BoxFit.cover,
       ),
     );

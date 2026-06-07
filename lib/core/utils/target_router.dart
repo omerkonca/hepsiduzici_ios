@@ -87,7 +87,13 @@ class TargetRouter {
         await _pushPage(context, const EmergencyNumbersScreen());
         return;
       case 'news':
-        await _pushPage(context, const NewsScreen());
+        try {
+          ProviderScope.containerOf(context, listen: false)
+              .read(currentIndexProvider.notifier)
+              .state = 1;
+        } catch (_) {
+          await _pushPage(context, const NewsScreen());
+        }
         return;
       case 'pharmacy':
         await _pushPage(context, const PharmacyScreen());
@@ -99,10 +105,22 @@ class TargetRouter {
         await _pushPage(context, const WeatherScreen());
         return;
       case 'explore':
-        await _pushPage(context, const ExploreScreen());
+        try {
+          ProviderScope.containerOf(context, listen: false)
+              .read(currentIndexProvider.notifier)
+              .state = 2;
+        } catch (_) {
+          await _pushPage(context, const ExploreScreen());
+        }
         return;
       case 'calendar':
-        await _pushPage(context, const MyCalendarScreen());
+        try {
+          ProviderScope.containerOf(context, listen: false)
+              .read(currentIndexProvider.notifier)
+              .state = 3;
+        } catch (_) {
+          await _pushPage(context, const MyCalendarScreen());
+        }
         return;
       case 'favorites':
         await _pushPage(context, const FavoritesScreen());

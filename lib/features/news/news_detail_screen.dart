@@ -22,8 +22,8 @@ class NewsDetailScreen extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final fullTextAsync = item.sourceUrl != null && item.sourceUrl!.isNotEmpty
-        ? ref.watch(newsFullTextProvider(item.sourceUrl))
+    final detailsAsync = item.sourceUrl != null && item.sourceUrl!.isNotEmpty
+        ? ref.watch(newsArticleDetailsProvider(item.sourceUrl))
         : null;
 
     return Scaffold(
@@ -37,9 +37,13 @@ class NewsDetailScreen extends ConsumerWidget {
         elevation: 0,
         scrolledUnderElevation: 1,
       ),
-      body: fullTextAsync != null
-          ? fullTextAsync.when(
-              data: (fullText) => _buildBody(context, bodyText: fullText ?? item.summary),
+      body: detailsAsync != null
+          ? detailsAsync.when(
+              data: (details) => _buildBody(
+                context,
+                bodyText: details.fullText ?? item.summary,
+                imageUrl: item.imageUrl ?? details.imageUrl,
+              ),
               loading: () => _buildBody(context, bodyText: item.summary, showLoading: true),
               error: (_, __) => _buildBody(context, bodyText: item.summary),
             )
@@ -47,17 +51,22 @@ class NewsDetailScreen extends ConsumerWidget {
     );
   }
 
-  Widget _buildBody(BuildContext context, {String? bodyText, bool showLoading = false}) {
+  Widget _buildBody(
+    BuildContext context, {
+    String? bodyText,
+    String? imageUrl,
+    bool showLoading = false,
+  }) {
     return SingleChildScrollView(
       padding: const EdgeInsets.fromLTRB(20, 8, 20, 32),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          if (item.imageUrl != null && item.imageUrl!.isNotEmpty) ...[
+          if (imageUrl != null && imageUrl.isNotEmpty) ...[
             ClipRRect(
               borderRadius: BorderRadius.circular(16),
               child: Image.network(
-                item.imageUrl!,
+                imageUrl,
                 width: double.infinity,
                 height: 220,
                 fit: BoxFit.cover,

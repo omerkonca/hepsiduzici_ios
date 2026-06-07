@@ -3,54 +3,59 @@ import '../../core/config/app_config.dart';
 import '../models/news_item.dart';
 import '../models/stamped_data.dart';
 
+class NewsArticleDetails {
+  const NewsArticleDetails({this.fullText, this.imageUrl});
+
+  final String? fullText;
+  final String? imageUrl;
+}
+
 class NewsService {
   const NewsService(this._dio, {this.remoteUrl = ''});
 
   final Dio _dio;
   final String remoteUrl;
 
-  /// Haber sayfasi URL'inden tam metin ceker (backend full-text endpoint).
-  Future<String?> getFullText(String articleUrl) async {
-    if (articleUrl.trim().isEmpty) return null;
-
-    // HTTP Backend (Render or local backend with fast timeout)
-    try {
-      final base = AppConfig.backendBaseUrl;
-      final res = await _dio.get<Map<String, dynamic>>(
-        '$base/api/news/full-text',
-        queryParameters: {'url': articleUrl},
-        options: Options(
-          connectTimeout: const Duration(seconds: 5),
-          receiveTimeout: const Duration(seconds: 8),
-        ),
-      );
-      final data = res.data;
-      if (data != null && data['ok'] == true && data['fullText'] != null) {
-        final text = data['fullText'] as String?;
-        return (text != null && text.trim().isNotEmpty) ? text.trim() : null;
-      }
-    } catch (_) {
-      // If local backend fails (e.g. offline during debug), try production Render directly
-      const productionFullTextUrl = 'https://hdbackend-vo99.onrender.com/api/news/full-text';
-      if (AppConfig.backendBaseUrl != 'https://hdbackend-vo99.onrender.com') {
-        try {
-          final res = await _dio.get<Map<String, dynamic>>(
-            productionFullTextUrl,
-            queryParameters: {'url': articleUrl},
-            options: Options(
-              connectTimeout: const Duration(seconds: 6),
-              receiveTimeout: const Duration(seconds: 8),
-            ),
-          );
-          final data = res.data;
-          if (data != null && data['ok'] == true && data['fullText'] != null) {
-            final text = data['fullText'] as String?;
-            return (text != null && text.trim().isNotEmpty) ? text.trim() : null;
-          }
-        } catch (_) {}
-      }
+  /// Haber sayfasi URL'inden tam metin ve gorsel ceker (backend full-text endpoint).
+  Future<NewsArticleDetails> getArticleDetails(String articleUrl) async {
+    if (articleUrl.trim().isEmpty) {
+      return const NewsArticleDetails();
     }
-    return null;
+
+    final endpoints = <String>[
+      '${AppConfig.backendBaseUrl}/api/news/full-text',
+      if (AppConfig.backendBaseUrl != 'https://hdbackend-vo99.onrender.com')
+        'https://hdbackend-vo99.onrender.com/api/news/full-text',
+    ];
+
+    for (final endpoint in endpoints) {
+      try {
+        final res = await _dio.get<Map<String, dynamic>>(
+          endpoint,
+          queryParameters: {'url': articleUrl},
+          options: Options(
+            connectTimeout: const Duration(seconds: 6),
+            receiveTimeout: const Duration(seconds: 12),
+          ),
+        );
+        final data = res.data;
+        if (data != null && data['ok'] == true) {
+          final text = data['fullText'] as String?;
+          final image = data['imageUrl'] as String?;
+          return NewsArticleDetails(
+            fullText: (text != null && text.trim().isNotEmpty) ? text.trim() : null,
+            imageUrl: (image != null && image.trim().isNotEmpty) ? image.trim() : null,
+          );
+        }
+      } catch (_) {}
+    }
+
+    return const NewsArticleDetails();
+  }
+
+  Future<String?> getFullText(String articleUrl) async {
+    final details = await getArticleDetails(articleUrl);
+    return details.fullText;
   }
 
   Future<List<NewsItem>> getNews({int limit = 10}) async =>
