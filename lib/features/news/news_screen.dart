@@ -119,18 +119,22 @@ class _NewsScreenState extends ConsumerState<NewsScreen> {
                 else
                   const SliverToBoxAdapter(child: _EmptyNewsState()),
                 const SliverToBoxAdapter(child: SizedBox(height: 18)),
-                const SliverToBoxAdapter(
-                  child: _SectionTitle(title: 'Düziçi’den Son Haberler'),
+                SliverToBoxAdapter(
+                  child: _SectionTitle(
+                    title: _selectedScope == 'Düziçi'
+                        ? 'Düziçi’den Son Haberler'
+                        : 'Osmaniye Genelinden Haberler',
+                  ),
                 ),
                 const SliverToBoxAdapter(child: SizedBox(height: 12)),
-                if (latestDuzici.isNotEmpty)
+                if (latest.isNotEmpty)
                   SliverPadding(
-                    padding: const EdgeInsets.fromLTRB(14, 0, 14, 18),
+                    padding: const EdgeInsets.fromLTRB(14, 0, 14, 96),
                     sliver: SliverList.separated(
-                      itemCount: latestDuzici.length,
+                      itemCount: latest.length,
                       separatorBuilder: (_, __) => const SizedBox(height: 14),
                       itemBuilder: (context, index) {
-                        final item = latestDuzici[index];
+                        final item = latest[index];
                         return _LatestNewsTile(
                           item: item,
                           onTap: () => _openDetail(context, item),
@@ -143,7 +147,7 @@ class _NewsScreenState extends ConsumerState<NewsScreen> {
                   )
                 else
                   const SliverToBoxAdapter(child: SizedBox(height: 18)),
-                if (osmaniyeNews.isNotEmpty) ...[
+                if (_selectedScope == 'Tümü' && osmaniyeNews.isNotEmpty) ...[
                   const SliverToBoxAdapter(
                     child: _SectionTitle(title: 'Osmaniye Genelinden Haberler'),
                   ),
@@ -217,6 +221,128 @@ class _NewsScreenState extends ConsumerState<NewsScreen> {
   void _openDetail(BuildContext context, NewsItem item) {
     Navigator.of(context).push(
       MaterialPageRoute(builder: (context) => NewsDetailScreen(item: item)),
+    );
+  }
+}
+
+class _NewsScopeTabs extends StatelessWidget {
+  const _NewsScopeTabs({
+    required this.selected,
+    required this.duziciCount,
+    required this.osmaniyeCount,
+    required this.onChanged,
+  });
+
+  final String selected;
+  final int duziciCount;
+  final int osmaniyeCount;
+  final ValueChanged<String> onChanged;
+
+  @override
+  Widget build(BuildContext context) {
+    return Padding(
+      padding: const EdgeInsets.symmetric(horizontal: 14),
+      child: Container(
+        height: 44,
+        padding: const EdgeInsets.all(4),
+        decoration: BoxDecoration(
+          color: const Color(0xFFF2F4F7),
+          borderRadius: BorderRadius.circular(999),
+          border: Border.all(color: const Color(0xFFE5E7EB)),
+        ),
+        child: Row(
+          children: [
+            _ScopeTabButton(
+              label: 'Düziçi',
+              count: duziciCount,
+              selected: selected == 'Düziçi',
+              onTap: () => onChanged('Düziçi'),
+            ),
+            const SizedBox(width: 6),
+            _ScopeTabButton(
+              label: 'Osmaniye',
+              count: osmaniyeCount,
+              selected: selected == 'Osmaniye',
+              onTap: () => onChanged('Osmaniye'),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+}
+
+class _ScopeTabButton extends StatelessWidget {
+  const _ScopeTabButton({
+    required this.label,
+    required this.count,
+    required this.selected,
+    required this.onTap,
+  });
+
+  final String label;
+  final int count;
+  final bool selected;
+  final VoidCallback onTap;
+
+  @override
+  Widget build(BuildContext context) {
+    return Expanded(
+      child: InkWell(
+        onTap: onTap,
+        borderRadius: BorderRadius.circular(999),
+        child: AnimatedContainer(
+          duration: const Duration(milliseconds: 220),
+          alignment: Alignment.center,
+          decoration: BoxDecoration(
+            color: selected ? Colors.white : Colors.transparent,
+            borderRadius: BorderRadius.circular(999),
+            boxShadow: selected
+                ? [
+                    BoxShadow(
+                      color: Colors.black.withValues(alpha: 0.08),
+                      blurRadius: 14,
+                      offset: const Offset(0, 5),
+                    ),
+                  ]
+                : null,
+          ),
+          child: Row(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              Text(
+                label,
+                style: TextStyle(
+                  color: selected
+                      ? const Color(0xFF111827)
+                      : const Color(0xFF6B7280),
+                  fontSize: 13,
+                  fontWeight: FontWeight.w900,
+                ),
+              ),
+              const SizedBox(width: 6),
+              Container(
+                padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
+                decoration: BoxDecoration(
+                  color: selected
+                      ? AppColors.primary.withValues(alpha: 0.13)
+                      : Colors.white.withValues(alpha: 0.72),
+                  borderRadius: BorderRadius.circular(999),
+                ),
+                child: Text(
+                  '$count',
+                  style: TextStyle(
+                    color:
+                        selected ? AppColors.primary : const Color(0xFF6B7280),
+                    fontSize: 10,
+                    fontWeight: FontWeight.w900,
+                  ),
+                ),
+              ),
+            ],
+          ),
+        ),
+      ),
     );
   }
 }
