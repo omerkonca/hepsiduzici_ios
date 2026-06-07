@@ -32,7 +32,8 @@ class _HomeStoriesStripState extends ConsumerState<HomeStoriesStrip> {
     final ids = <String>{};
     for (final key in prefs.getKeys()) {
       if (!key.startsWith(_seenPrefix)) continue;
-      final seen = prefs.getBool(key) ?? false;
+      final val = prefs.get(key);
+      final seen = val == true || val == 'true';
       if (seen) ids.add(key.substring(_seenPrefix.length));
     }
     if (!mounted) return;
