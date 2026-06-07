@@ -257,27 +257,16 @@ class _PremiumLogoMark extends StatelessWidget {
                       ),
                     ],
                   ),
-                  child: Stack(
-                    alignment: Alignment.center,
-                    children: [
-                      Positioned(
-                        right: 13,
-                        top: 13,
-                        child: Container(
-                          width: 28,
-                          height: 28,
-                          decoration: BoxDecoration(
-                            shape: BoxShape.circle,
-                            color: AppColors.primary.withValues(alpha: 0.14),
-                          ),
-                        ),
+                  child: Center(
+                    child: ClipRRect(
+                      borderRadius: BorderRadius.circular(16),
+                      child: Image.asset(
+                        'assets/images/app_icon.png',
+                        width: 74,
+                        height: 74,
+                        fit: BoxFit.contain,
                       ),
-                      const Icon(
-                        Icons.travel_explore_rounded,
-                        size: 58,
-                        color: AppColors.primary,
-                      ),
-                    ],
+                    ),
                   ),
                 ),
               ),

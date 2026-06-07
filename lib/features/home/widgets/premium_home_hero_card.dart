@@ -326,7 +326,7 @@ class _LiveCityCard extends StatelessWidget {
       return Image.asset(
         'assets/images/duzici_castle_header.png',
         fit: BoxFit.cover,
-        alignment: const Alignment(0.05, -0.10),
+        alignment: const Alignment(0.05, 0.25),
       );
     }
 
@@ -334,12 +334,12 @@ class _LiveCityCard extends StatelessWidget {
       return CachedNetworkImage(
         imageUrl: bg,
         fit: BoxFit.cover,
-        alignment: const Alignment(0.05, -0.10),
+        alignment: const Alignment(0.05, 0.25),
         placeholder: (context, url) => Container(color: PremiumCityTheme.navy),
         errorWidget: (context, url, error) => Image.asset(
           'assets/images/duzici_castle_header.png',
           fit: BoxFit.cover,
-          alignment: const Alignment(0.05, -0.10),
+          alignment: const Alignment(0.05, 0.25),
         ),
       );
     }
@@ -348,7 +348,7 @@ class _LiveCityCard extends StatelessWidget {
     return Image.asset(
       assetPath,
       fit: BoxFit.cover,
-      alignment: const Alignment(0.05, -0.10),
+      alignment: const Alignment(0.05, 0.25),
     );
   }
 }

@@ -1,4 +1,4 @@
-import 'dart:ui' as ui;
+import 'dart:async';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_animate/flutter_animate.dart';
@@ -8,43 +8,65 @@ import '../../app/providers.dart';
 import '../../core/theme/app_colors.dart';
 import '../../core/theme/premium_city_theme.dart';
 import '../../core/utils/relative_time.dart';
-import '../../core/widgets/favorite_button.dart';
 import '../../data/models/news_item.dart';
-import '../../data/services/favorites_service.dart';
 import 'news_detail_screen.dart';
 
-final _newsCategoryProvider = StateProvider<String>((ref) => 'Düziçi');
-
-class NewsScreen extends ConsumerWidget {
+class NewsScreen extends ConsumerStatefulWidget {
   const NewsScreen({super.key});
 
   @override
-  Widget build(BuildContext context, WidgetRef ref) {
+  ConsumerState<NewsScreen> createState() => _NewsScreenState();
+}
+
+class _NewsScreenState extends ConsumerState<NewsScreen> {
+  late final PageController _pageController =
+      PageController(viewportFraction: 1);
+  Timer? _autoTimer;
+  int _current = 0;
+  String _selectedScope = 'Düziçi';
+
+  @override
+  void dispose() {
+    _autoTimer?.cancel();
+    _pageController.dispose();
+    super.dispose();
+  }
+
+  void _startAutoSlide(int count) {
+    _autoTimer?.cancel();
+    if (count <= 1) return;
+    _autoTimer = Timer.periodic(const Duration(seconds: 5), (_) {
+      if (!mounted || !_pageController.hasClients) return;
+      final next = (_current + 1) % count;
+      _pageController.animateToPage(
+        next,
+        duration: const Duration(milliseconds: 420),
+        curve: Curves.easeOutCubic,
+      );
+    });
+  }
+
+  @override
+  Widget build(BuildContext context) {
     final async = ref.watch(newsListProvider);
-    final selectedCategory = ref.watch(_newsCategoryProvider);
 
     return DecoratedBox(
-      decoration: const BoxDecoration(
-        color: PremiumCityTheme.canvas,
-        gradient: LinearGradient(
-          begin: Alignment.topCenter,
-          end: Alignment.bottomCenter,
-          colors: [
-            Color(0xFFFDFBF4),
-            Color(0xFFF6F7FB),
-            Color(0xFFEFF3F8),
-          ],
-        ),
-      ),
+      decoration: const BoxDecoration(color: Colors.white),
       child: async.when(
         data: (allNews) {
-          final categories = _categoriesFor(allNews);
-          final filteredNews =
-              allNews.where((n) => n.category == selectedCategory).toList();
-          final headline = filteredNews.isNotEmpty ? filteredNews.first : null;
-          final rest = filteredNews.length > 1
-              ? filteredNews.sublist(1)
-              : const <NewsItem>[];
+          final duziciNews = allNews.where(_isDuziciNews).toList();
+          final osmaniyeNews =
+              allNews.where((item) => !_isDuziciNews(item)).toList();
+          final selectedNews =
+              _selectedScope == 'Düziçi' ? duziciNews : osmaniyeNews;
+          final visibleNews = selectedNews.isNotEmpty ? selectedNews : allNews;
+          final headlines = visibleNews.take(16).toList();
+          final latest =
+              visibleNews.length > 1 ? visibleNews.sublist(1) : visibleNews;
+
+          WidgetsBinding.instance.addPostFrameCallback((_) {
+            if (mounted) _startAutoSlide(headlines.length);
+          });
 
           return RefreshIndicator(
             color: AppColors.primary,
@@ -59,69 +81,102 @@ class NewsScreen extends ConsumerWidget {
                 parent: AlwaysScrollableScrollPhysics(),
               ),
               slivers: [
-                const SliverToBoxAdapter(child: SizedBox(height: 4)),
+                const SliverToBoxAdapter(child: SizedBox(height: 6)),
                 SliverToBoxAdapter(
-                  child: _NewsHeader(
-                    category: selectedCategory,
-                    totalCount: filteredNews.length,
+                  child: _LatestTicker(
+                    items: allNews.take(10).toList(),
+                    onTap: (item) => _openDetail(context, item),
                   ),
                 ),
                 const SliverToBoxAdapter(child: SizedBox(height: 10)),
                 SliverToBoxAdapter(
-                  child: _CategoryRail(
-                    categories: categories,
-                    selected: selectedCategory,
-                    onChanged: (cat) =>
-                        ref.read(_newsCategoryProvider.notifier).state = cat,
+                  child: _NewsScopeTabs(
+                    selected: _selectedScope,
+                    duziciCount: duziciNews.length,
+                    osmaniyeCount: osmaniyeNews.length,
+                    onChanged: (scope) {
+                      setState(() {
+                        _selectedScope = scope;
+                        _current = 0;
+                      });
+                      if (_pageController.hasClients) {
+                        _pageController.jumpToPage(0);
+                      }
+                    },
                   ),
                 ),
-                const SliverToBoxAdapter(child: SizedBox(height: 12)),
-                if (headline != null)
+                const SliverToBoxAdapter(child: SizedBox(height: 10)),
+                if (headlines.isNotEmpty)
                   SliverToBoxAdapter(
-                    child: _HeadlineCard(
-                      item: headline,
-                      onTap: () => _openDetail(context, headline),
-                    ).animate().fadeIn(duration: 360.ms).slideY(
-                          begin: 0.04,
-                          end: 0,
-                          duration: 360.ms,
-                          curve: Curves.easeOutCubic,
-                        ),
+                    child: _HeadlineSlider(
+                      controller: _pageController,
+                      items: headlines,
+                      current: _current,
+                      onChanged: (value) => setState(() => _current = value),
+                      onTap: (item) => _openDetail(context, item),
+                    ).animate().fadeIn(duration: 360.ms),
                   )
                 else
                   const SliverToBoxAdapter(child: _EmptyNewsState()),
+                const SliverToBoxAdapter(child: SizedBox(height: 18)),
+                const SliverToBoxAdapter(
+                  child: _SectionTitle(title: 'Düziçi’den Son Haberler'),
+                ),
                 const SliverToBoxAdapter(child: SizedBox(height: 12)),
-                if (rest.isNotEmpty)
+                if (latestDuzici.isNotEmpty)
                   SliverPadding(
-                    padding: const EdgeInsets.fromLTRB(
-                        PremiumCityTheme.pagePadding, 0, PremiumCityTheme.pagePadding, 88),
+                    padding: const EdgeInsets.fromLTRB(14, 0, 14, 18),
                     sliver: SliverList.separated(
-                      itemCount: rest.length,
-                      separatorBuilder: (_, __) => const SizedBox(height: 8),
+                      itemCount: latestDuzici.length,
+                      separatorBuilder: (_, __) => const SizedBox(height: 14),
                       itemBuilder: (context, index) {
-                        final item = rest[index];
-                        return _PremiumNewsCard(
+                        final item = latestDuzici[index];
+                        return _LatestNewsTile(
                           item: item,
                           onTap: () => _openDetail(context, item),
-                        ).animate(delay: (index * 35).ms).fadeIn(
-                              duration: 300.ms,
-                              curve: Curves.easeOutCubic,
-                            );
+                        )
+                            .animate(delay: (index * 24).ms)
+                            .fadeIn(duration: 280.ms)
+                            .slideY(begin: 0.04, end: 0);
                       },
                     ),
                   )
                 else
-                  const SliverToBoxAdapter(child: SizedBox(height: 88)),
+                  const SliverToBoxAdapter(child: SizedBox(height: 18)),
+                if (osmaniyeNews.isNotEmpty) ...[
+                  const SliverToBoxAdapter(
+                    child: _SectionTitle(title: 'Osmaniye Genelinden Haberler'),
+                  ),
+                  const SliverToBoxAdapter(child: SizedBox(height: 12)),
+                  SliverPadding(
+                    padding: const EdgeInsets.fromLTRB(14, 0, 14, 96),
+                    sliver: SliverList.separated(
+                      itemCount: osmaniyeNews.length,
+                      separatorBuilder: (_, __) => const SizedBox(height: 14),
+                      itemBuilder: (context, index) {
+                        final item = osmaniyeNews[index];
+                        return _LatestNewsTile(
+                          item: item,
+                          onTap: () => _openDetail(context, item),
+                        )
+                            .animate(delay: (index * 18).ms)
+                            .fadeIn(duration: 260.ms)
+                            .slideY(begin: 0.035, end: 0);
+                      },
+                    ),
+                  ),
+                ] else
+                  const SliverToBoxAdapter(child: SizedBox(height: 96)),
               ],
             ),
           );
         },
         loading: () => const Center(child: CircularProgressIndicator()),
-        error: (e, _) => Center(
+        error: (error, _) => Center(
           child: Padding(
             padding: const EdgeInsets.all(24),
             child: Text(
-              'Haberler yüklenemedi: $e',
+              'Haberler yüklenemedi: $error',
               textAlign: TextAlign.center,
               style: const TextStyle(fontWeight: FontWeight.w800),
             ),
@@ -131,12 +186,32 @@ class NewsScreen extends ConsumerWidget {
     );
   }
 
-  static List<String> _categoriesFor(List<NewsItem> news) {
-    final values = <String>{'Düziçi', 'Osmaniye'};
-    for (final item in news) {
-      if (item.category.trim().isNotEmpty) values.add(item.category);
-    }
-    return values.toList();
+  bool _isDuziciNews(NewsItem item) {
+    final category = _normalize(item.category);
+    final title = _normalize(item.title);
+    final summary = _normalize(item.summary ?? '');
+    return category.contains('duzici') ||
+        title.contains('duzici') ||
+        summary.contains('duzici') ||
+        title.contains('duldul') ||
+        summary.contains('duldul');
+  }
+
+  String _normalize(String value) {
+    return value
+        .toLowerCase()
+        .replaceAll('ü', 'u')
+        .replaceAll('Ã¼', 'u')
+        .replaceAll('ö', 'o')
+        .replaceAll('Ã¶', 'o')
+        .replaceAll('ç', 'c')
+        .replaceAll('Ã§', 'c')
+        .replaceAll('ğ', 'g')
+        .replaceAll('ÄŸ', 'g')
+        .replaceAll('ş', 's')
+        .replaceAll('ÅŸ', 's')
+        .replaceAll('ı', 'i')
+        .replaceAll('Ä±', 'i');
   }
 
   void _openDetail(BuildContext context, NewsItem item) {
@@ -146,203 +221,160 @@ class NewsScreen extends ConsumerWidget {
   }
 }
 
-class _NewsHeader extends StatelessWidget {
-  const _NewsHeader({required this.category, required this.totalCount});
+class _LatestTicker extends StatelessWidget {
+  const _LatestTicker({required this.items, required this.onTap});
 
-  final String category;
-  final int totalCount;
+  final List<NewsItem> items;
+  final ValueChanged<NewsItem> onTap;
 
   @override
   Widget build(BuildContext context) {
-    return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: PremiumCityTheme.pagePadding),
-      child: Container(
-        padding: const EdgeInsets.fromLTRB(12, 12, 12, 11),
-        decoration: BoxDecoration(
-          borderRadius: BorderRadius.circular(24),
-          gradient: PremiumCityTheme.navyGradient,
-          boxShadow: PremiumCityTheme.softShadow(
-            color: PremiumCityTheme.navy,
-            alpha: 0.18,
+    final text = items.isEmpty
+        ? 'Düziçi’den son gelişmeler hazırlanıyor'
+        : items.map((item) => item.title).join('   •   ');
+
+    return Container(
+      height: 44,
+      decoration: const BoxDecoration(
+        color: Colors.white,
+        border: Border(
+          bottom: BorderSide(color: Color(0xFFE9EDF3)),
+        ),
+      ),
+      child: Row(
+        children: [
+          const SizedBox(width: 14),
+          const Text(
+            'En Yeniler:',
+            style: TextStyle(
+              color: Color(0xFFE31B23),
+              fontSize: 13,
+              fontWeight: FontWeight.w900,
+            ),
           ),
-        ),
-        child: Stack(
-          children: [
-            Positioned(
-              right: -26,
-              top: -34,
-              child: Container(
-                width: 112,
-                height: 112,
-                decoration: BoxDecoration(
-                  shape: BoxShape.circle,
-                  color: Colors.white.withValues(alpha: 0.10),
-                ),
-              ),
+          const SizedBox(width: 9),
+          Expanded(
+            child: GestureDetector(
+              onTap: items.isEmpty ? null : () => onTap(items.first),
+              child: _MarqueeText(text: text),
             ),
-            Row(
-              children: [
-                Container(
-                  width: 40,
-                  height: 40,
-                  decoration: BoxDecoration(
-                    color: Colors.white.withValues(alpha: 0.13),
-                    borderRadius: BorderRadius.circular(16),
-                    border: Border.all(
-                      color: Colors.white.withValues(alpha: 0.16),
-                    ),
-                  ),
-                  child: const Icon(
-                    Icons.article_rounded,
-                    color: PremiumCityTheme.gold,
-                    size: 21,
-                  ),
-                ),
-                const SizedBox(width: 10),
-                Expanded(
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      const Text(
-                        'Haberler',
-                        maxLines: 1,
-                        overflow: TextOverflow.ellipsis,
-                        style: TextStyle(
-                          color: Colors.white,
-                          fontSize: 22,
-                          fontWeight: FontWeight.w900,
-                          letterSpacing: -0.65,
-                          height: 1,
-                        ),
-                      ),
-                      const SizedBox(height: 4),
-                      Text(
-                        '$category gündemi, son dakika ve yerel gelişmeler',
-                        maxLines: 1,
-                        overflow: TextOverflow.ellipsis,
-                        style: TextStyle(
-                          color: Colors.white.withValues(alpha: 0.76),
-                          fontSize: 10.5,
-                          fontWeight: FontWeight.w600,
-                        ),
-                      ),
-                    ],
-                  ),
-                ),
-                _LiveBadge(count: totalCount),
-              ],
-            ),
-          ],
-        ),
+          ),
+        ],
       ),
     );
   }
 }
 
-class _LiveBadge extends StatelessWidget {
-  const _LiveBadge({required this.count});
+class _MarqueeText extends StatefulWidget {
+  const _MarqueeText({required this.text});
 
-  final int count;
+  final String text;
 
   @override
-  Widget build(BuildContext context) {
-    return ClipRRect(
-      borderRadius: BorderRadius.circular(999),
-      child: BackdropFilter(
-        filter: ui.ImageFilter.blur(sigmaX: 12, sigmaY: 12),
-        child: Container(
-          padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 6),
-          decoration: BoxDecoration(
-            color: Colors.white.withValues(alpha: 0.13),
-            borderRadius: BorderRadius.circular(999),
-            border: Border.all(color: Colors.white.withValues(alpha: 0.15)),
-          ),
-          child: Row(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              Container(
-                width: 7,
-                height: 7,
-                decoration: const BoxDecoration(
-                  color: Color(0xFF22C55E),
-                  shape: BoxShape.circle,
-                ),
-              ).animate(onPlay: (c) => c.repeat()).fadeOut(
-                    begin: 1,
-                    duration: 900.ms,
-                  ),
-              const SizedBox(width: 6),
-              Text(
-                '$count',
-                style: const TextStyle(
-                  color: Colors.white,
-                  fontWeight: FontWeight.w900,
-                  fontSize: 11,
-                ),
-              ),
-            ],
-          ),
-        ),
-      ),
-    );
-  }
+  State<_MarqueeText> createState() => _MarqueeTextState();
 }
 
-class _CategoryRail extends StatelessWidget {
-  const _CategoryRail({
-    required this.categories,
-    required this.selected,
-    required this.onChanged,
-  });
+class _MarqueeTextState extends State<_MarqueeText>
+    with SingleTickerProviderStateMixin {
+  late final AnimationController _controller;
 
-  final List<String> categories;
-  final String selected;
-  final ValueChanged<String> onChanged;
+  @override
+  void initState() {
+    super.initState();
+    _controller = AnimationController(
+      vsync: this,
+      duration: const Duration(seconds: 22),
+    )..repeat();
+  }
+
+  @override
+  void didUpdateWidget(covariant _MarqueeText oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    if (oldWidget.text != widget.text) {
+      _controller
+        ..reset()
+        ..repeat();
+    }
+  }
+
+  @override
+  void dispose() {
+    _controller.dispose();
+    super.dispose();
+  }
 
   @override
   Widget build(BuildContext context) {
-    return SizedBox(
-      height: 36,
-      child: ListView.separated(
-        padding: const EdgeInsets.symmetric(horizontal: PremiumCityTheme.pagePadding),
-        scrollDirection: Axis.horizontal,
-        physics: const BouncingScrollPhysics(),
-        itemCount: categories.length,
-        separatorBuilder: (_, __) => const SizedBox(width: 8),
-        itemBuilder: (context, index) {
-          final category = categories[index];
-          final isSelected = category == selected;
-          return GestureDetector(
-            onTap: () => onChanged(category),
-            child: AnimatedContainer(
-              duration: const Duration(milliseconds: 220),
-              curve: Curves.easeOutCubic,
-              padding: const EdgeInsets.symmetric(horizontal: 14),
-              alignment: Alignment.center,
-              decoration: BoxDecoration(
-                color: isSelected ? PremiumCityTheme.gold : Colors.white,
-                borderRadius: BorderRadius.circular(999),
-                border: Border.all(
-                  color: isSelected
-                      ? PremiumCityTheme.gold
-                      : const Color(0xFFE5EAF1),
+    const style = TextStyle(
+      color: Color(0xFF111827),
+      fontSize: 12.5,
+      fontWeight: FontWeight.w600,
+    );
+
+    return ClipRect(
+      child: LayoutBuilder(
+        builder: (context, constraints) {
+          return AnimatedBuilder(
+            animation: _controller,
+            builder: (context, _) {
+              final distance = constraints.maxWidth + 900;
+              final x = constraints.maxWidth - (_controller.value * distance);
+              return Transform.translate(
+                offset: Offset(x, 0),
+                child: Text(
+                  '${widget.text}   •   ${widget.text}',
+                  maxLines: 1,
+                  softWrap: false,
+                  overflow: TextOverflow.visible,
+                  style: style,
                 ),
-                boxShadow: isSelected
-                    ? PremiumCityTheme.softShadow(alpha: 0.10)
-                    : null,
-              ),
-              child: Text(
-                category,
-                style: TextStyle(
-                  color: isSelected ? Colors.white : PremiumCityTheme.ink,
-                  fontWeight: FontWeight.w900,
-                  fontSize: 11.5,
-                ),
-              ),
-            ),
+              );
+            },
           );
         },
       ),
+    );
+  }
+}
+
+class _HeadlineSlider extends StatelessWidget {
+  const _HeadlineSlider({
+    required this.controller,
+    required this.items,
+    required this.current,
+    required this.onChanged,
+    required this.onTap,
+  });
+
+  final PageController controller;
+  final List<NewsItem> items;
+  final int current;
+  final ValueChanged<int> onChanged;
+  final ValueChanged<NewsItem> onTap;
+
+  @override
+  Widget build(BuildContext context) {
+    return Column(
+      children: [
+        SizedBox(
+          height: 228,
+          child: PageView.builder(
+            controller: controller,
+            physics: const BouncingScrollPhysics(),
+            itemCount: items.length,
+            onPageChanged: onChanged,
+            itemBuilder: (context, index) {
+              final item = items[index];
+              return _HeadlineCard(
+                item: item,
+                onTap: () => onTap(item),
+              );
+            },
+          ),
+        ),
+        const SizedBox(height: 10),
+        _NumberedIndicators(count: items.length, current: current),
+      ],
     );
   }
 }
@@ -355,106 +387,165 @@ class _HeadlineCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: PremiumCityTheme.pagePadding),
-      child: Material(
-        color: Colors.transparent,
-        child: InkWell(
-          onTap: onTap,
-          borderRadius: BorderRadius.circular(24),
-          child: Ink(
-            height: 192,
-            decoration: BoxDecoration(
-              borderRadius: BorderRadius.circular(24),
-              boxShadow: PremiumCityTheme.softShadow(alpha: 0.16),
+    return Material(
+      color: Colors.transparent,
+      child: InkWell(
+        onTap: onTap,
+        child: Stack(
+          fit: StackFit.expand,
+          children: [
+            _NewsImage(url: item.imageUrl, category: item.category),
+            DecoratedBox(
+              decoration: BoxDecoration(
+                gradient: LinearGradient(
+                  begin: Alignment.topCenter,
+                  end: Alignment.bottomCenter,
+                  colors: [
+                    Colors.black.withValues(alpha: 0.05),
+                    Colors.black.withValues(alpha: 0.25),
+                    Colors.black.withValues(alpha: 0.86),
+                  ],
+                ),
+              ),
             ),
-            child: ClipRRect(
-              borderRadius: BorderRadius.circular(24),
-              child: Stack(
-                fit: StackFit.expand,
+            Positioned(
+              left: 12,
+              right: 12,
+              bottom: 14,
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  _NewsImage(url: item.imageUrl, category: item.category),
-                  const DecoratedBox(
-                    decoration: BoxDecoration(
-                      gradient: LinearGradient(
-                        begin: Alignment.topCenter,
-                        end: Alignment.bottomCenter,
-                        colors: [
-                          Color(0x18000000),
-                          Color(0x330F2744),
-                          Color(0xE80F2744),
-                        ],
-                      ),
+                  Text(
+                    item.title,
+                    maxLines: 2,
+                    overflow: TextOverflow.ellipsis,
+                    style: const TextStyle(
+                      color: Colors.white,
+                      fontSize: 16.5,
+                      height: 1.15,
+                      fontWeight: FontWeight.w900,
                     ),
                   ),
-                  Positioned(
-                    left: 12,
-                    top: 12,
-                    child: _SourceChip(label: item.sourceName ?? 'Gündem'),
-                  ),
-                  Positioned(
-                    left: 12,
-                    right: 12,
-                    bottom: 12,
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Text(
-                          item.title,
-                          maxLines: 3,
-                          overflow: TextOverflow.ellipsis,
-                          style: const TextStyle(
-                            color: Colors.white,
-                            fontSize: 17.5,
-                            fontWeight: FontWeight.w900,
-                            height: 1.08,
-                            letterSpacing: -0.35,
+                  const SizedBox(height: 8),
+                  Row(
+                    children: [
+                      Icon(
+                        Icons.schedule_rounded,
+                        color: Colors.white.withValues(alpha: 0.74),
+                        size: 13,
+                      ),
+                      const SizedBox(width: 4),
+                      Text(
+                        RelativeTime.format(item.createdAt),
+                        style: TextStyle(
+                          color: Colors.white.withValues(alpha: 0.82),
+                          fontSize: 11,
+                          fontWeight: FontWeight.w700,
+                        ),
+                      ),
+                      if (item.sourceName?.isNotEmpty == true) ...[
+                        Padding(
+                          padding: const EdgeInsets.symmetric(horizontal: 7),
+                          child: Container(
+                            width: 3,
+                            height: 3,
+                            decoration: BoxDecoration(
+                              color: Colors.white.withValues(alpha: 0.55),
+                              shape: BoxShape.circle,
+                            ),
                           ),
                         ),
-                        const SizedBox(height: 8),
-                        Row(
-                          children: [
-                            Icon(
-                              Icons.schedule_rounded,
-                              color: Colors.white.withValues(alpha: 0.82),
-                              size: 13,
+                        Flexible(
+                          child: Text(
+                            item.sourceName!,
+                            maxLines: 1,
+                            overflow: TextOverflow.ellipsis,
+                            style: TextStyle(
+                              color: Colors.white.withValues(alpha: 0.72),
+                              fontSize: 11,
+                              fontWeight: FontWeight.w700,
                             ),
-                            const SizedBox(width: 4),
-                            Expanded(
-                              child: Text(
-                                RelativeTime.format(item.createdAt),
-                                maxLines: 1,
-                                overflow: TextOverflow.ellipsis,
-                                style: TextStyle(
-                                  color: Colors.white.withValues(alpha: 0.82),
-                                  fontSize: 10.5,
-                                  fontWeight: FontWeight.w700,
-                                ),
-                              ),
-                            ),
-                            FavoriteButton(
-                              id: item.id,
-                              category: FavoriteCategory.news,
-                              size: 17,
-                              padding: const EdgeInsets.all(5),
-                            ),
-                          ],
+                          ),
                         ),
                       ],
-                    ),
+                    ],
                   ),
                 ],
               ),
             ),
-          ),
+          ],
         ),
       ),
     );
   }
 }
 
-class _PremiumNewsCard extends StatelessWidget {
-  const _PremiumNewsCard({required this.item, required this.onTap});
+class _NumberedIndicators extends StatelessWidget {
+  const _NumberedIndicators({required this.count, required this.current});
+
+  final int count;
+  final int current;
+
+  @override
+  Widget build(BuildContext context) {
+    final visibleCount = count.clamp(0, 16);
+    return SizedBox(
+      height: 18,
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: List.generate(visibleCount, (index) {
+          final selected = index == current;
+          return AnimatedContainer(
+            duration: const Duration(milliseconds: 220),
+            margin: const EdgeInsets.symmetric(horizontal: 4),
+            width: selected ? 18 : 12,
+            height: selected ? 18 : 12,
+            alignment: Alignment.center,
+            decoration: BoxDecoration(
+              color:
+                  selected ? const Color(0xFFE31B23) : const Color(0xFFE4E5E8),
+              shape: BoxShape.circle,
+            ),
+            child: selected
+                ? Text(
+                    '${index + 1}',
+                    style: const TextStyle(
+                      color: Colors.white,
+                      fontSize: 9,
+                      fontWeight: FontWeight.w900,
+                    ),
+                  )
+                : null,
+          );
+        }),
+      ),
+    );
+  }
+}
+
+class _SectionTitle extends StatelessWidget {
+  const _SectionTitle({required this.title});
+
+  final String title;
+
+  @override
+  Widget build(BuildContext context) {
+    return Padding(
+      padding: const EdgeInsets.symmetric(horizontal: 14),
+      child: Text(
+        title,
+        style: const TextStyle(
+          color: Color(0xFF111827),
+          fontSize: 16,
+          fontWeight: FontWeight.w800,
+        ),
+      ),
+    );
+  }
+}
+
+class _LatestNewsTile extends StatelessWidget {
+  const _LatestNewsTile({required this.item, required this.onTap});
 
   final NewsItem item;
   final VoidCallback onTap;
@@ -465,136 +556,52 @@ class _PremiumNewsCard extends StatelessWidget {
       color: Colors.transparent,
       child: InkWell(
         onTap: onTap,
-        borderRadius: BorderRadius.circular(20),
-        child: Ink(
-          padding: const EdgeInsets.all(8),
-          decoration: BoxDecoration(
-            color: Colors.white.withValues(alpha: 0.94),
-            borderRadius: BorderRadius.circular(20),
-            border: Border.all(color: const Color(0xFFE8EDF4)),
-            boxShadow: PremiumCityTheme.softShadow(alpha: 0.07),
-          ),
+        borderRadius: BorderRadius.circular(12),
+        child: Padding(
+          padding: const EdgeInsets.symmetric(vertical: 2),
           child: Row(
+            crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               ClipRRect(
-                borderRadius: BorderRadius.circular(14),
+                borderRadius: BorderRadius.circular(10),
                 child: SizedBox(
-                  width: 88,
-                  height: 76,
-                  child: _NewsImage(url: item.imageUrl, category: item.category),
+                  width: 58,
+                  height: 58,
+                  child:
+                      _NewsImage(url: item.imageUrl, category: item.category),
                 ),
               ),
-              const SizedBox(width: 10),
+              const SizedBox(width: 12),
               Expanded(
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    Row(
-                      children: [
-                        Flexible(
-                          child: _SourceChip(
-                            label: item.sourceName ?? item.category,
-                            compact: true,
-                          ),
-                        ),
-                        const Spacer(),
-                        FavoriteButton(
-                          id: item.id,
-                          category: FavoriteCategory.news,
-                          size: 15,
-                          padding: const EdgeInsets.all(4),
-                        ),
-                      ],
+                    Text(
+                      RelativeTime.format(item.createdAt),
+                      maxLines: 1,
+                      overflow: TextOverflow.ellipsis,
+                      style: const TextStyle(
+                        color: Color(0xFF6B7280),
+                        fontSize: 11.5,
+                        fontWeight: FontWeight.w500,
+                      ),
                     ),
-                    const SizedBox(height: 6),
+                    const SizedBox(height: 5),
                     Text(
                       item.title,
                       maxLines: 2,
                       overflow: TextOverflow.ellipsis,
                       style: const TextStyle(
-                        color: PremiumCityTheme.ink,
-                        fontSize: 13.5,
-                        fontWeight: FontWeight.w900,
-                        height: 1.14,
-                        letterSpacing: -0.12,
+                        color: Color(0xFF111827),
+                        fontSize: 13.4,
+                        height: 1.28,
+                        fontWeight: FontWeight.w800,
                       ),
-                    ),
-                    const SizedBox(height: 6),
-                    Row(
-                      children: [
-                        const Icon(
-                          Icons.schedule_rounded,
-                          color: PremiumCityTheme.muted,
-                          size: 12,
-                        ),
-                        const SizedBox(width: 3),
-                        Expanded(
-                          child: Text(
-                            RelativeTime.format(item.createdAt),
-                            maxLines: 1,
-                            overflow: TextOverflow.ellipsis,
-                            style: const TextStyle(
-                              color: PremiumCityTheme.muted,
-                              fontWeight: FontWeight.w700,
-                              fontSize: 10.5,
-                            ),
-                          ),
-                        ),
-                        const Icon(
-                          Icons.arrow_forward_rounded,
-                          color: PremiumCityTheme.gold,
-                          size: 15,
-                        ),
-                      ],
                     ),
                   ],
                 ),
               ),
             ],
-          ),
-        ),
-      ),
-    );
-  }
-}
-
-class _SourceChip extends StatelessWidget {
-  const _SourceChip({required this.label, this.compact = false});
-
-  final String label;
-  final bool compact;
-
-  @override
-  Widget build(BuildContext context) {
-    return ClipRRect(
-      borderRadius: BorderRadius.circular(999),
-      child: BackdropFilter(
-        filter: ui.ImageFilter.blur(sigmaX: 12, sigmaY: 12),
-        child: Container(
-          padding: EdgeInsets.symmetric(
-            horizontal: compact ? 7 : 8,
-            vertical: compact ? 3 : 5,
-          ),
-          decoration: BoxDecoration(
-            color: compact
-                ? PremiumCityTheme.gold.withValues(alpha: 0.13)
-                : Colors.white.withValues(alpha: 0.18),
-            borderRadius: BorderRadius.circular(999),
-            border: Border.all(
-              color: compact
-                  ? PremiumCityTheme.gold.withValues(alpha: 0.16)
-                  : Colors.white.withValues(alpha: 0.18),
-            ),
-          ),
-          child: Text(
-            label,
-            maxLines: 1,
-            overflow: TextOverflow.ellipsis,
-            style: TextStyle(
-              color: compact ? PremiumCityTheme.gold : Colors.white,
-              fontWeight: FontWeight.w900,
-              fontSize: compact ? 9 : 10,
-            ),
           ),
         ),
       ),
@@ -609,7 +616,9 @@ class _NewsImage extends StatelessWidget {
   final String category;
 
   String get _placeholderAsset {
-    if (category == 'Osmaniye') {
+    final normalized =
+        category.toLowerCase().replaceAll('ü', 'u').replaceAll('Ã¼', 'u');
+    if (normalized.contains('osmaniye')) {
       return 'assets/images/duzici_scenic_header.png';
     }
     return 'assets/images/duzici_castle_header.png';
@@ -617,7 +626,7 @@ class _NewsImage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    if (url == null || url!.isEmpty) {
+    if (url == null || url!.trim().isEmpty) {
       return Image.asset(_placeholderAsset, fit: BoxFit.cover);
     }
     return Image.network(
@@ -637,13 +646,13 @@ class _EmptyNewsState extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: PremiumCityTheme.pagePadding),
+      padding: const EdgeInsets.symmetric(horizontal: 14),
       child: Container(
         height: 148,
         alignment: Alignment.center,
-        decoration: PremiumCityTheme.card(radius: 22),
+        decoration: PremiumCityTheme.card(radius: 18),
         child: const Text(
-          'Bu kategori için henüz haber yok.',
+          'Henüz haber bulunamadı.',
           style: TextStyle(
             color: PremiumCityTheme.muted,
             fontWeight: FontWeight.w800,
