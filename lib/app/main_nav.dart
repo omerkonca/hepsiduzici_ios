@@ -5,6 +5,7 @@ import 'package:flutter_animate/flutter_animate.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'dart:ui' as ui;
 import '../core/ads/ad_service.dart';
+import '../core/push/push_notification_service.dart';
 import '../core/theme/app_colors.dart';
 import '../core/utils/app_navigation.dart';
 import '../core/widgets/app_banner_ad.dart';
@@ -39,6 +40,7 @@ class _MainNavState extends ConsumerState<MainNav> with WidgetsBindingObserver {
       await _loadPendingNewsTap();
       await _checkNewsOnResume();
       await _syncReminders();
+      await _registerPushToken();
       AdService.instance.startSessionTimer();
     });
   }
@@ -58,7 +60,14 @@ class _MainNavState extends ConsumerState<MainNav> with WidgetsBindingObserver {
     if (isForeground) {
       _checkNewsOnResume();
       _syncReminders();
+      _registerPushToken();
     }
+  }
+
+  Future<void> _registerPushToken() async {
+    if (kIsWeb) return;
+    final notify = ref.read(notificationServiceProvider);
+    await PushNotificationService.instance.ensureRegistered(notify);
   }
 
   Future<void> _syncReminders() async {

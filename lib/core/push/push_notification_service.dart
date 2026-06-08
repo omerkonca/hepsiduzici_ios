@@ -30,6 +30,16 @@ class PushNotificationService {
 
   bool get isReady => _ready;
 
+  /// Uygulama açılışında veya ön plana dönüşte tekrar dene.
+  Future<bool> ensureRegistered(NotificationService localNotifications) async {
+    if (_currentToken != null) {
+      await _registerToken(_currentToken!);
+      return true;
+    }
+    _ready = false;
+    return initialize(localNotifications);
+  }
+
   Future<bool> initialize(NotificationService localNotifications) async {
     if (_ready) return true;
     if (kIsWeb) return false;
@@ -99,10 +109,10 @@ class PushNotificationService {
 
   Future<String?> _resolveFcmToken(FirebaseMessaging messaging) async {
     if (Platform.isIOS) {
-      for (var attempt = 0; attempt < 8; attempt++) {
+      for (var attempt = 0; attempt < 3; attempt++) {
         final apns = await messaging.getAPNSToken();
         if (apns != null) break;
-        await Future.delayed(Duration(milliseconds: 500 * (attempt + 1)));
+        await Future.delayed(Duration(milliseconds: 300 * (attempt + 1)));
       }
     }
     return messaging.getToken();
