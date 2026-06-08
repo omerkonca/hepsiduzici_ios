@@ -15,6 +15,8 @@ import workmanager
       UNUserNotificationCenter.current().delegate = self
     }
 
+    application.registerForRemoteNotifications()
+
     // Arka plan isolate içinde diğer plugin'lerin çalışması için (workmanager 0.5.2)
     WorkmanagerPlugin.setPluginRegistrantCallback { registry in
       GeneratedPluginRegistrant.register(with: registry)

@@ -1,3 +1,4 @@
+import 'dart:developer' as developer;
 import 'dart:io' show Platform;
 
 import 'package:dio/dio.dart';
@@ -61,9 +62,12 @@ class PushNotificationService {
         );
       }
 
-      final token = await messaging.getToken();
+      final token = await _resolveFcmToken(messaging);
       if (token != null) {
         await _registerToken(token);
+        developer.log('[Push] token kaydedildi', name: 'hepsiduzici.push');
+      } else {
+        developer.log('[Push] FCM token alınamadı', name: 'hepsiduzici.push');
       }
 
       messaging.onTokenRefresh.listen(_registerToken);
@@ -88,11 +92,20 @@ class PushNotificationService {
       _ready = true;
       return true;
     } catch (e, st) {
-      if (kDebugMode) {
-        debugPrint('[Push] init failed: $e\n$st');
-      }
+      developer.log('[Push] init failed: $e', name: 'hepsiduzici.push', error: e, stackTrace: st);
       return false;
     }
+  }
+
+  Future<String?> _resolveFcmToken(FirebaseMessaging messaging) async {
+    if (Platform.isIOS) {
+      for (var attempt = 0; attempt < 8; attempt++) {
+        final apns = await messaging.getAPNSToken();
+        if (apns != null) break;
+        await Future.delayed(Duration(milliseconds: 500 * (attempt + 1)));
+      }
+    }
+    return messaging.getToken();
   }
 
   Future<bool> getMarketingOptIn() async {
@@ -138,7 +151,7 @@ class PushNotificationService {
         onConflict: 'token',
       );
     } catch (e) {
-      if (kDebugMode) debugPrint('[Push] Supabase upsert: $e');
+      developer.log('[Push] Supabase upsert: $e', name: 'hepsiduzici.push');
     }
 
     // 2) Backend yedek kayıt
@@ -159,7 +172,7 @@ class PushNotificationService {
         },
       );
     } catch (e) {
-      if (kDebugMode) debugPrint('[Push] backend register: $e');
+      developer.log('[Push] backend register: $e', name: 'hepsiduzici.push');
     }
   }
 }

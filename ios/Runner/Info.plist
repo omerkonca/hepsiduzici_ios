@@ -59,6 +59,7 @@
 	<key>UIBackgroundModes</key>
 	<array>
 		<string>fetch</string>
+		<string>remote-notification</string>
 	</array>
 	<key>GADApplicationIdentifier</key>
 	<string>ca-app-pub-5097523004889494~5837842118</string>
