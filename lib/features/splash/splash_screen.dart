@@ -40,7 +40,7 @@ class _SplashScreenState extends ConsumerState<SplashScreen>
     super.initState();
     _controller = AnimationController(
       vsync: this,
-      duration: const Duration(milliseconds: 2300),
+      duration: const Duration(milliseconds: 900),
     )..forward();
     _loopController = AnimationController(
       vsync: this,
@@ -57,11 +57,11 @@ class _SplashScreenState extends ConsumerState<SplashScreen>
   }
 
   Future<void> _bootstrap() async {
-    final minWait = Future<void>.delayed(const Duration(milliseconds: 1700));
-    final prefs = await SharedPreferences.getInstance();
+    final prefsFuture = SharedPreferences.getInstance();
+    final minWait = Future<void>.delayed(const Duration(milliseconds: 450));
+    final prefs = await prefsFuture;
     final onboardingCompleted = prefs.getBool('has_seen_onboarding') ?? false;
     await minWait;
-    await _controller.animateTo(1, duration: const Duration(milliseconds: 250));
     if (!mounted) return;
 
     Navigator.of(context).pushReplacement(

@@ -1,32 +1,15 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:intl/date_symbol_data_local.dart';
-import 'package:supabase_flutter/supabase_flutter.dart';
 import 'app/providers.dart';
-import 'core/ads/ad_service.dart';
-import 'core/config/ad_config.dart';
-import 'core/push/push_notification_service.dart';
-import 'core/config/app_config.dart';
-import 'data/services/background_fetch_service.dart';
+import 'core/app_bootstrap.dart';
 import 'features/splash/splash_screen.dart';
 
-void main() async {
+void main() {
   WidgetsFlutterBinding.ensureInitialized();
-  await initializeDateFormatting('tr_TR', null);
-  
-  try {
-    await Supabase.initialize(
-      url: AppConfig.supabaseUrl,
-      publishableKey: AppConfig.supabaseAnonKey,
-    );
-    // ignore: avoid_print
-    print('✅ Supabase initialized successfully');
-  } catch (e) {
-    // ignore: avoid_print
-    print('❌ Supabase initialization failed: $e');
-  }
-  
+
   SystemChrome.setSystemUIOverlayStyle(
     const SystemUiOverlayStyle(
       statusBarColor: Colors.transparent,
@@ -35,24 +18,9 @@ void main() async {
       systemNavigationBarIconBrightness: Brightness.dark,
     ),
   );
-  
+
   final container = ProviderContainer();
-  final notificationService = container.read(notificationServiceProvider);
-  await notificationService.init();
-  // Android + iOS bildirim iznini ilk açılışta iste.
-  await notificationService.ensureNotificationPermissions();
-
-  // Arka plan haber kontrol servisini başlat ve kaydet
-  try {
-    await BackgroundFetchService.init();
-    await BackgroundFetchService.registerPeriodicTask();
-  } catch (_) {}
-
-  if (AdConfig.adsEnabled) {
-    await AdService.instance.initialize();
-  }
-
-  await PushNotificationService.instance.initialize(notificationService);
+  unawaited(bootstrapAppServices(container));
 
   runApp(
     UncontrolledProviderScope(
