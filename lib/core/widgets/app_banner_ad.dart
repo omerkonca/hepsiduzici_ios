@@ -1,6 +1,8 @@
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:google_mobile_ads/google_mobile_ads.dart';
 
+import '../ads/ad_service.dart';
 import '../config/ad_config.dart';
 
 /// AdMob banner — alt menü veya içerik içi kullanım.
@@ -17,29 +19,66 @@ class AppBannerAd extends StatefulWidget {
 class _AppBannerAdState extends State<AppBannerAd> {
   BannerAd? _banner;
   bool _loaded = false;
+  int _loadAttempts = 0;
+  static const _maxAttempts = 3;
 
   @override
   void initState() {
     super.initState();
-    if (!AdConfig.adsEnabled) return;
+    WidgetsBinding.instance.addPostFrameCallback((_) => _loadBanner());
+  }
+
+  Future<void> _loadBanner() async {
+    if (!AdConfig.adsEnabled || !mounted) return;
+
+    await AdService.instance.ensureInitialized();
+    if (!mounted || !AdService.instance.isInitialized) return;
+
+    final width = MediaQuery.sizeOf(context).width.truncate();
+    final adaptiveSize =
+        await AdSize.getCurrentOrientationAnchoredAdaptiveBannerAdSize(width);
+    final adSize = adaptiveSize ?? AdSize.banner;
+
+    _banner?.dispose();
+    _loaded = false;
 
     final banner = BannerAd(
       adUnitId: AdConfig.bannerAdUnitId,
-      size: AdSize.banner,
+      size: adSize,
       request: const AdRequest(),
       listener: BannerAdListener(
         onAdLoaded: (ad) {
           if (!mounted) return;
           setState(() => _loaded = true);
+          if (kDebugMode) {
+            debugPrint('[AppBannerAd] loaded (${AdConfig.bannerAdUnitId})');
+          }
         },
         onAdFailedToLoad: (ad, error) {
           ad.dispose();
-          if (mounted) setState(() => _loaded = false);
+          if (kDebugMode) {
+            debugPrint(
+              '[AppBannerAd] failed (${AdConfig.bannerAdUnitId}): $error',
+            );
+          }
+          if (!mounted) return;
+          setState(() {
+            _loaded = false;
+            _banner = null;
+          });
+          _loadAttempts++;
+          if (_loadAttempts < _maxAttempts) {
+            Future<void>.delayed(
+              Duration(seconds: 2 * _loadAttempts),
+              _loadBanner,
+            );
+          }
         },
       ),
     );
-    _banner = banner;
-    banner.load();
+
+    setState(() => _banner = banner);
+    await banner.load();
   }
 
   @override

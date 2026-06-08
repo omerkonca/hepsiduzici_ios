@@ -1,5 +1,6 @@
 import 'dart:async';
 
+import 'package:app_tracking_transparency/app_tracking_transparency.dart';
 import 'package:flutter/foundation.dart';
 import 'package:google_mobile_ads/google_mobile_ads.dart';
 
@@ -12,6 +13,8 @@ class AdService {
   static final AdService instance = AdService._();
 
   bool _initialized = false;
+  bool _attHandled = false;
+  Future<void>? _initFuture;
   InterstitialAd? _interstitial;
   bool _loadingInterstitial = false;
   DateTime? _lastInterstitialShownAt;
@@ -24,25 +27,63 @@ class AdService {
   /// İki geçiş reklamı arasındaki minimum süre.
   static const Duration _minInterstitialInterval = Duration(minutes: 2);
 
-  Future<void> initialize() async {
-    if (!AdConfig.adsEnabled || _initialized) return;
+  bool get isInitialized => _initialized;
+
+  Future<void> initialize() => ensureInitialized();
+
+  Future<void> ensureInitialized() {
+    if (_initialized) return Future<void>.value();
+    return _initFuture ??= _doInitialize();
+  }
+
+  Future<void> _doInitialize() async {
+    if (!AdConfig.adsEnabled) return;
     try {
-      await MobileAds.instance.initialize();
+      await _requestAttIfNeeded();
+      final status = await MobileAds.instance.initialize();
       _initialized = true;
+      if (kDebugMode) {
+        for (final entry in status.adapterStatuses.entries) {
+          debugPrint(
+            '[AdService] adapter ${entry.key}: ${entry.value.description}',
+          );
+        }
+      }
       preloadInterstitial();
+    } catch (e, st) {
+      debugPrint('[AdService] init failed: $e\n$st');
+      _initFuture = null;
+    }
+  }
+
+  Future<void> _requestAttIfNeeded() async {
+    if (_attHandled || defaultTargetPlatform != TargetPlatform.iOS) return;
+    _attHandled = true;
+    try {
+      var status = await AppTrackingTransparency.trackingAuthorizationStatus;
+      if (status == TrackingStatus.notDetermined) {
+        await Future<void>.delayed(const Duration(milliseconds: 300));
+        status = await AppTrackingTransparency.requestTrackingAuthorization();
+      }
+      if (kDebugMode) {
+        debugPrint('[AdService] ATT status: $status');
+      }
     } catch (e) {
-      debugPrint('[AdService] init failed: $e');
+      debugPrint('[AdService] ATT failed: $e');
     }
   }
 
   /// Ana ekranda uygulama açıkken periyodik geçiş reklamı zamanlayıcısı.
   void startSessionTimer() {
-    if (!AdConfig.adsEnabled || !_initialized) return;
-    _sessionTimer?.cancel();
-    _sessionTimer = Timer.periodic(sessionInterstitialInterval, (_) {
-      if (_isForeground) {
-        showSessionInterstitial();
-      }
+    if (!AdConfig.adsEnabled) return;
+    ensureInitialized().then((_) {
+      if (!_initialized) return;
+      _sessionTimer?.cancel();
+      _sessionTimer = Timer.periodic(sessionInterstitialInterval, (_) {
+        if (_isForeground) {
+          showSessionInterstitial();
+        }
+      });
     });
   }
 
@@ -85,7 +126,6 @@ class AdService {
     return DateTime.now().difference(last) >= _minInterstitialInterval;
   }
 
-  /// Uygulamada belirli süre kaldıktan sonra çağrılır.
   Future<void> showSessionInterstitial() async {
     await _showInterstitial();
   }
