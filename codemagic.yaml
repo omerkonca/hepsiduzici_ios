@@ -7,7 +7,8 @@ workflows:
       flutter: stable
       xcode: latest
       groups:
-        - app_store_credentials # API Key değişkenlerimiz için bu grubu ekli tutuyoruz
+        - app_store_credentials
+        - firebase_credentials # GOOGLE_SERVICE_INFO_PLIST_BASE64 (encrypted)
       vars:
         APP_ID: "net.hepsiduzici.hepsiDuzici"
         TEAM_ID: "7RJ993N2DP"
@@ -15,6 +16,10 @@ workflows:
         distribution_type: app_store # Apple Store dağıtımı için App Store seçildi
         bundle_identifier: "net.hepsiduzici.hepsiDuzici" # Projenin Bundle ID'si
     scripts:
+      - name: "0. Firebase plist (secret)"
+        script: |
+          bash scripts/codemagic-firebase-plist.sh
+
       - name: "1. Bagimliliklari Kur"
         script: |
           flutter config --no-enable-swift-package-manager

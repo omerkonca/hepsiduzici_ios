@@ -2,26 +2,34 @@ import 'package:firebase_core/firebase_core.dart' show FirebaseOptions;
 import 'package:flutter/foundation.dart'
     show defaultTargetPlatform, kIsWeb, TargetPlatform;
 
-/// Firebase istemci yapılandırması (public config).
+/// Firebase yapılandırması — anahtarlar repoda tutulmaz.
+///
+/// iOS: `ios/Runner/GoogleService-Info.plist` (Codemagic secret / yerel dosya)
+/// Android: `android/app/google-services.json`
+/// Yedek: `--dart-define=FIREBASE_*` (Codemagic environment)
 class DefaultFirebaseOptions {
-  static const String projectId = 'hepsiduzici-84436';
-  static const String messagingSenderId = '967533721193';
-  static const String storageBucket = 'hepsiduzici-84436.firebasestorage.app';
-
-  static const String androidApiKey = 'AIzaSyDVGJJUcvfyFRI2c6b_Z43szoSPK1TsOeA';
-  static const String androidAppId =
-      '1:967533721193:android:21d0f3fe2ff04c5737d4f8';
-
-  static const String iosApiKey = 'AIzaSyCAbRMtb_vByT8MkRWFXYZBaunK5EiPW_c';
-  static const String iosAppId = '1:967533721193:ios:73b9135346c7b2cf37d4f8';
+  static const String _projectId =
+      String.fromEnvironment('FIREBASE_PROJECT_ID', defaultValue: '');
+  static const String _senderId =
+      String.fromEnvironment('FIREBASE_MESSAGING_SENDER_ID', defaultValue: '');
+  static const String _storageBucket =
+      String.fromEnvironment('FIREBASE_STORAGE_BUCKET', defaultValue: '');
+  static const String _androidApiKey =
+      String.fromEnvironment('FIREBASE_ANDROID_API_KEY', defaultValue: '');
+  static const String _androidAppId =
+      String.fromEnvironment('FIREBASE_ANDROID_APP_ID', defaultValue: '');
+  static const String _iosApiKey =
+      String.fromEnvironment('FIREBASE_IOS_API_KEY', defaultValue: '');
+  static const String _iosAppId =
+      String.fromEnvironment('FIREBASE_IOS_APP_ID', defaultValue: '');
 
   static bool get isConfigured {
     if (kIsWeb) return false;
     switch (defaultTargetPlatform) {
       case TargetPlatform.android:
-        return androidApiKey.isNotEmpty && androidAppId.isNotEmpty;
+        return _androidApiKey.isNotEmpty && _androidAppId.isNotEmpty;
       case TargetPlatform.iOS:
-        return iosApiKey.isNotEmpty && iosAppId.isNotEmpty;
+        return _iosApiKey.isNotEmpty && _iosAppId.isNotEmpty;
       default:
         return false;
     }
@@ -41,20 +49,24 @@ class DefaultFirebaseOptions {
     }
   }
 
-  static const FirebaseOptions android = FirebaseOptions(
-    apiKey: androidApiKey,
-    appId: androidAppId,
-    messagingSenderId: messagingSenderId,
-    projectId: projectId,
-    storageBucket: storageBucket,
-  );
+  static FirebaseOptions get android => FirebaseOptions(
+        apiKey: _androidApiKey,
+        appId: _androidAppId,
+        messagingSenderId: _senderId,
+        projectId: _projectId,
+        storageBucket: _storageBucket.isNotEmpty
+            ? _storageBucket
+            : '$_projectId.appspot.com',
+      );
 
-  static const FirebaseOptions ios = FirebaseOptions(
-    apiKey: iosApiKey,
-    appId: iosAppId,
-    messagingSenderId: messagingSenderId,
-    projectId: projectId,
-    storageBucket: storageBucket,
-    iosBundleId: 'net.hepsiduzici.hepsiDuzici',
-  );
+  static FirebaseOptions get ios => FirebaseOptions(
+        apiKey: _iosApiKey,
+        appId: _iosAppId,
+        messagingSenderId: _senderId,
+        projectId: _projectId,
+        storageBucket: _storageBucket.isNotEmpty
+            ? _storageBucket
+            : '$_projectId.appspot.com',
+        iosBundleId: 'net.hepsiduzici.hepsiDuzici',
+      );
 }
