@@ -17,7 +17,6 @@ class HomeScreen extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     ref.watch(autoRefreshProvider);
-    ref.watch(cityContentProvider);
 
     return DecoratedBox(
       decoration: const BoxDecoration(
@@ -38,6 +37,7 @@ class HomeScreen extends ConsumerWidget {
         onRefresh: () async {
           ref.invalidate(stampedWeatherProvider);
           ref.invalidate(stampedPrayerProvider);
+          ref.read(pharmacyForceRefreshProvider.notifier).state++;
           ref.invalidate(stampedPharmacyProvider);
           ref.invalidate(stampedNewsProvider);
           ref.invalidate(stampedEventsProvider);

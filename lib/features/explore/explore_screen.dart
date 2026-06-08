@@ -1,3 +1,4 @@
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_animate/flutter_animate.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -56,7 +57,7 @@ class ExploreScreen extends ConsumerWidget {
               slivers: [
                 // === FOTOĞRAFTAKİ TARZDA HERO + ARAMA ===
                 SliverToBoxAdapter(
-                  child: _ExploreHeroHeader(
+                  child: _ExploreHeroHeaderModern(
                     query: query,
                     onQueryChanged: (value) => ref
                         .read(exploreSearchQueryProvider.notifier)
@@ -340,6 +341,310 @@ class ExploreScreen extends ConsumerWidget {
   }
 }
 
+class _ExploreHeroHeaderModern extends ConsumerWidget {
+  const _ExploreHeroHeaderModern({
+    required this.query,
+    required this.onQueryChanged,
+  });
+
+  final String query;
+  final ValueChanged<String> onQueryChanged;
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    final branding = ref.watch(brandingProvider);
+    final exploreHeaderBg = branding?.exploreHeaderBg;
+
+    return SizedBox(
+      height: 326,
+      child: Stack(
+        clipBehavior: Clip.none,
+        children: [
+          Container(
+            height: 270,
+            margin: const EdgeInsets.fromLTRB(12, 10, 12, 0),
+            decoration: BoxDecoration(
+              borderRadius: BorderRadius.circular(32),
+              boxShadow: PremiumCityTheme.softShadow(
+                color: PremiumCityTheme.navy,
+                alpha: 0.22,
+              ),
+            ),
+            clipBehavior: Clip.antiAlias,
+            child: Stack(
+              fit: StackFit.expand,
+              children: [
+                _buildBackgroundImage(exploreHeaderBg),
+                DecoratedBox(
+                  decoration: BoxDecoration(
+                    gradient: LinearGradient(
+                      begin: Alignment.topLeft,
+                      end: Alignment.bottomRight,
+                      colors: [
+                        PremiumCityTheme.navy.withValues(alpha: 0.78),
+                        Colors.black.withValues(alpha: 0.08),
+                        PremiumCityTheme.navy.withValues(alpha: 0.72),
+                      ],
+                      stops: const [0, 0.48, 1],
+                    ),
+                  ),
+                ),
+                DecoratedBox(
+                  decoration: BoxDecoration(
+                    gradient: RadialGradient(
+                      center: const Alignment(0.72, -0.72),
+                      radius: 1.1,
+                      colors: [
+                        PremiumCityTheme.gold.withValues(alpha: 0.22),
+                        Colors.transparent,
+                      ],
+                    ),
+                  ),
+                ),
+                Positioned(
+                  left: 18,
+                  right: 18,
+                  top: 18,
+                  child: Row(
+                    children: [
+                      const _HeroPill(
+                        child: Row(
+                          mainAxisSize: MainAxisSize.min,
+                          children: [
+                            _LiveDot(),
+                            SizedBox(width: 8),
+                            Text(
+                              'CANLI KEŞİF',
+                              style: TextStyle(
+                                color: Colors.white,
+                                fontWeight: FontWeight.w900,
+                                fontSize: 10.5,
+                                letterSpacing: 0.4,
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+                      const Spacer(),
+                      _HeroPill(
+                        child: Row(
+                          mainAxisSize: MainAxisSize.min,
+                          children: const [
+                            Icon(Icons.cloud_rounded,
+                                color: Color(0xFFD7ECFF), size: 18),
+                            SizedBox(width: 6),
+                            Text(
+                              '19°  Parçalı Bulutlu',
+                              style: TextStyle(
+                                color: Colors.white,
+                                fontSize: 10.5,
+                                fontWeight: FontWeight.w800,
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+                Positioned(
+                  left: 20,
+                  right: 20,
+                  bottom: 40,
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Container(
+                        width: 38,
+                        height: 38,
+                        decoration: BoxDecoration(
+                          gradient: PremiumCityTheme.goldGradient,
+                          borderRadius: BorderRadius.circular(16),
+                          boxShadow: [
+                            BoxShadow(
+                              color:
+                                  PremiumCityTheme.gold.withValues(alpha: 0.32),
+                              blurRadius: 18,
+                              offset: const Offset(0, 8),
+                            ),
+                          ],
+                        ),
+                        child: const Icon(
+                          Icons.explore_rounded,
+                          color: Colors.white,
+                          size: 22,
+                        ),
+                      ),
+                      const SizedBox(height: 12),
+                      const Text(
+                        'Hepsi\nDüziçi',
+                        style: TextStyle(
+                          color: Colors.white,
+                          fontSize: 38,
+                          fontWeight: FontWeight.w900,
+                          letterSpacing: 0,
+                          height: 0.92,
+                          shadows: [
+                            Shadow(
+                              color: Color(0x99000000),
+                              blurRadius: 16,
+                              offset: Offset(0, 4),
+                            ),
+                          ],
+                        ),
+                      ),
+                      const SizedBox(height: 10),
+                      Row(
+                        children: [
+                          Container(
+                            width: 34,
+                            height: 4,
+                            decoration: BoxDecoration(
+                              gradient: PremiumCityTheme.goldGradient,
+                              borderRadius: BorderRadius.circular(999),
+                            ),
+                          ),
+                          const SizedBox(width: 10),
+                          Text(
+                            'Akdeniz’in incisi Düziçi',
+                            style: TextStyle(
+                              color: Colors.white.withValues(alpha: 0.92),
+                              fontWeight: FontWeight.w800,
+                              fontSize: 13.2,
+                            ),
+                          ),
+                        ],
+                      ),
+                    ],
+                  ),
+                ),
+              ],
+            ),
+          ),
+          Positioned(
+            left: 14,
+            right: 14,
+            bottom: 2,
+            child: Container(
+              height: 62,
+              padding: const EdgeInsets.symmetric(horizontal: 10),
+              decoration: BoxDecoration(
+                color: Colors.white,
+                borderRadius: BorderRadius.circular(24),
+                border: Border.all(color: const Color(0xFFE8EDF4)),
+                boxShadow: [
+                  BoxShadow(
+                    color: Colors.black.withValues(alpha: 0.10),
+                    blurRadius: 28,
+                    spreadRadius: -16,
+                    offset: const Offset(0, 16),
+                  ),
+                ],
+              ),
+              child: Row(
+                children: [
+                  Container(
+                    width: 40,
+                    height: 40,
+                    decoration: BoxDecoration(
+                      color: PremiumCityTheme.gold.withValues(alpha: 0.12),
+                      shape: BoxShape.circle,
+                    ),
+                    child: const Icon(Icons.search_rounded,
+                        color: PremiumCityTheme.gold, size: 22),
+                  ),
+                  const SizedBox(width: 8),
+                  Expanded(
+                    child: TextField(
+                      controller: TextEditingController(text: query)
+                        ..selection =
+                            TextSelection.collapsed(offset: query.length),
+                      onChanged: onQueryChanged,
+                      decoration: const InputDecoration(
+                        border: InputBorder.none,
+                        hintText: 'Haber, etkinlik veya hizmet ara...',
+                        hintStyle: TextStyle(
+                          color: Color(0xFF9CA3AF),
+                          fontWeight: FontWeight.w700,
+                          fontSize: 12.5,
+                        ),
+                      ),
+                      style: const TextStyle(
+                        color: PremiumCityTheme.ink,
+                        fontWeight: FontWeight.w800,
+                        fontSize: 12.5,
+                      ),
+                    ),
+                  ),
+                  const SizedBox(width: 8),
+                  _HeroRoundButton(
+                      icon: Icons.mic_rounded, color: PremiumCityTheme.gold),
+                  const SizedBox(width: 6),
+                  _HeroRoundButton(
+                      icon: Icons.auto_awesome_rounded,
+                      color: PremiumCityTheme.navy),
+                ],
+              ),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildBackgroundImage(String? heroCardBg) {
+    final bg = heroCardBg;
+    if (bg == null || bg.trim().isEmpty) {
+      return Image.asset(
+        'assets/images/duzici_castle_header.png',
+        fit: BoxFit.cover,
+        alignment: const Alignment(0.04, -0.14),
+      );
+    }
+
+    if (bg.startsWith('http://') || bg.startsWith('https://')) {
+      return CachedNetworkImage(
+        imageUrl: bg,
+        fit: BoxFit.cover,
+        alignment: const Alignment(0.04, -0.14),
+        placeholder: (context, url) => Container(color: PremiumCityTheme.navy),
+        errorWidget: (context, url, error) => Image.asset(
+          'assets/images/duzici_castle_header.png',
+          fit: BoxFit.cover,
+          alignment: const Alignment(0.04, -0.14),
+        ),
+      );
+    }
+
+    final assetPath = bg.startsWith('asset:') ? bg.substring(6) : bg;
+    return Image.asset(
+      assetPath,
+      fit: BoxFit.cover,
+      alignment: const Alignment(0.04, -0.14),
+    );
+  }
+}
+
+class _HeroPill extends StatelessWidget {
+  const _HeroPill({required this.child});
+
+  final Widget child;
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      padding: const EdgeInsets.symmetric(horizontal: 11, vertical: 7),
+      decoration: BoxDecoration(
+        color: Colors.black.withValues(alpha: 0.30),
+        borderRadius: BorderRadius.circular(999),
+        border: Border.all(color: Colors.white.withValues(alpha: 0.18)),
+      ),
+      child: child,
+    );
+  }
+}
+
+// ignore: unused_element
 class _ExploreHeroHeader extends StatelessWidget {
   const _ExploreHeroHeader({
     required this.query,
@@ -906,21 +1211,23 @@ class _PremiumExploreCard extends StatelessWidget {
                               const Icon(Icons.image_not_supported, size: 40),
                         ),
                       )
-                    : Image.network(
-                        imageUrl,
+                    : CachedNetworkImage(
+                        imageUrl: imageUrl,
                         fit: BoxFit.cover,
-                        loadingBuilder: (context, child, loadingProgress) {
-                          if (loadingProgress == null) return child;
-                          return Container(
-                            color: Theme.of(context)
-                                .disabledColor
-                                .withValues(alpha: 0.05),
-                            child: const Center(
-                                child:
-                                    CircularProgressIndicator(strokeWidth: 2)),
-                          );
-                        },
-                        errorBuilder: (_, __, ___) => Container(
+                        placeholder: (context, url) => Container(
+                          color: Theme.of(context)
+                              .disabledColor
+                              .withValues(alpha: 0.05),
+                          child: const Center(
+                            child: SizedBox(
+                              width: 20,
+                              height: 20,
+                              child:
+                                  CircularProgressIndicator(strokeWidth: 1.5),
+                            ),
+                          ),
+                        ),
+                        errorWidget: (_, __, ___) => Container(
                           color: Theme.of(context)
                               .disabledColor
                               .withValues(alpha: 0.1),

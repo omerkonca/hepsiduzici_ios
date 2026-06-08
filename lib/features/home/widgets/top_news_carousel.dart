@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../../app/providers.dart';
@@ -237,19 +238,20 @@ class _NewsCard extends StatelessWidget {
                 Positioned.fill(
                   child: item.imageUrl != null &&
                           item.imageUrl!.trim().isNotEmpty
-                      ? Image.network(
-                          item.imageUrl!,
+                      ? CachedNetworkImage(
+                          imageUrl: item.imageUrl!,
                           fit: BoxFit.cover,
-                          loadingBuilder: (context, child, loadingProgress) {
-                            if (loadingProgress == null) return child;
-                            return Container(
-                              color: Colors.grey[100],
-                              child: const Center(
-                                  child: CircularProgressIndicator(
-                                      strokeWidth: 2)),
-                            );
-                          },
-                          errorBuilder: (_, __, ___) => Image.asset(
+                          placeholder: (context, url) => Container(
+                            color: Colors.grey[100],
+                            child: const Center(
+                              child: SizedBox(
+                                width: 24,
+                                height: 24,
+                                child: CircularProgressIndicator(strokeWidth: 2),
+                              ),
+                            ),
+                          ),
+                          errorWidget: (_, __, ___) => Image.asset(
                             'assets/images/duzici_castle_header.png',
                             fit: BoxFit.cover,
                           ),

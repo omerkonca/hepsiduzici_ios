@@ -1,3 +1,4 @@
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../../app/providers.dart';
@@ -565,10 +566,20 @@ class _NewsRowTile extends StatelessWidget {
                   width: _thumbSize,
                   height: _thumbSize,
                   child: item.imageUrl != null && item.imageUrl!.isNotEmpty
-                      ? Image.network(
-                          item.imageUrl!,
+                      ? CachedNetworkImage(
+                          imageUrl: item.imageUrl!,
                           fit: BoxFit.cover,
-                          errorBuilder: (_, __, ___) => _placeholder(),
+                          placeholder: (context, url) => Container(
+                            color: Colors.grey.shade100,
+                            child: const Center(
+                              child: SizedBox(
+                                width: 16,
+                                height: 16,
+                                child: CircularProgressIndicator(strokeWidth: 1.5),
+                              ),
+                            ),
+                          ),
+                          errorWidget: (_, __, ___) => _placeholder(),
                         )
                       : _placeholder(),
                 ),
@@ -661,10 +672,20 @@ class _FeaturedNewsCard extends StatelessWidget {
               fit: StackFit.expand,
               children: [
                 if (item.imageUrl != null && item.imageUrl!.isNotEmpty)
-                  Image.network(
-                    item.imageUrl!,
+                  CachedNetworkImage(
+                    imageUrl: item.imageUrl!,
                     fit: BoxFit.cover,
-                    errorBuilder: (_, __, ___) => _placeholderGradient(),
+                    placeholder: (context, url) => Container(
+                      color: Colors.grey.shade100,
+                      child: const Center(
+                        child: SizedBox(
+                          width: 24,
+                          height: 24,
+                          child: CircularProgressIndicator(strokeWidth: 2),
+                        ),
+                      ),
+                    ),
+                    errorWidget: (_, __, ___) => _placeholderGradient(),
                   )
                 else
                   _placeholderGradient(),

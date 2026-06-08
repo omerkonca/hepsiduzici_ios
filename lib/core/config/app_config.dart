@@ -27,4 +27,10 @@ class AppConfig {
   static String get weatherUrl => '$baseUrl/weather';
   static String get prayersUrl => '$baseUrl/prayers';
   static String get obituariesUrl => '$baseUrl/obituaries';
+
+  /// Google Play Haber politikası — yayıncı iletişim bilgileri
+  static const String publisherName = 'Ömer Faruk Konca';
+  static const String contactEmail = 'hepsiduzici@gmail.com';
+  static String get contactPageUrl => '$backendBaseUrl/iletisim.html';
+  static String get privacyPolicyUrl => '$backendBaseUrl/gizlilik-politikasi.html';
 }

@@ -1,3 +1,4 @@
+import 'package:flutter/foundation.dart' show defaultTargetPlatform, TargetPlatform;
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
@@ -36,7 +37,11 @@ Future<void> handleStampedNewsNotification(
   var notified = false;
 
   if (systemTray) {
-    final granted = await notifySvc.areSystemNotificationsEnabled();
+    var granted = await notifySvc.areSystemNotificationsEnabled();
+    if (!granted && defaultTargetPlatform == TargetPlatform.iOS) {
+      await notifySvc.ensureNotificationPermissions();
+      granted = await notifySvc.areSystemNotificationsEnabled();
+    }
     if (granted) {
       final trackingKey = head.id.trim().isNotEmpty ? head.id.trim() : head.title.trim();
       await notifySvc.showNewsHeadlineUpdate(

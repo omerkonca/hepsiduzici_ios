@@ -1,6 +1,13 @@
 import 'package:flutter/material.dart';
 
-enum AppNotificationType { outage, roadClosure, news, event }
+enum AppNotificationType {
+  outage,
+  roadClosure,
+  news,
+  event,
+  custom,
+  pharmacy,
+}
 
 class AppNotification {
   const AppNotification({
@@ -12,6 +19,7 @@ class AppNotification {
     required this.color,
     required this.type,
     required this.originalData,
+    this.categoryLabel,
   });
 
   final String id;
@@ -22,4 +30,9 @@ class AppNotification {
   final Color color;
   final AppNotificationType type;
   final Object? originalData;
+  final String? categoryLabel;
+
+  bool get isMunicipality =>
+      type == AppNotificationType.outage ||
+      type == AppNotificationType.roadClosure;
 }

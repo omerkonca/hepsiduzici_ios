@@ -69,6 +69,8 @@ class IconMapper {
         return Icons.support_agent_rounded;
       case 'settings':
         return Icons.settings_rounded;
+      case 'admin_panel_settings':
+        return Icons.admin_panel_settings_rounded;
       case 'tune':
         return Icons.tune_rounded;
       case 'phone':

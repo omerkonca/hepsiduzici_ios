@@ -21,6 +21,9 @@ import '../../features/services/outages_screen.dart';
 import '../../features/services/closed_roads_screen.dart';
 import '../../features/services/taxi_call_screen.dart';
 import '../../features/services/transportation_screen.dart';
+import '../../features/more/contact_screen.dart';
+import '../../features/more/news_sources_screen.dart';
+import '../../features/more/admin_panel_screen.dart';
 import '../../features/settings/notification_preferences_screen.dart';
 import '../../features/veterinary/veterinary_screen.dart';
 import '../../features/weather/weather_screen.dart';
@@ -133,6 +136,15 @@ class TargetRouter {
         return;
       case 'notification_settings':
         await _pushPage(context, const NotificationPreferencesScreen());
+        return;
+      case 'contact':
+        await _pushPage(context, const ContactScreen());
+        return;
+      case 'news_sources':
+        await _pushPage(context, const NewsSourcesScreen());
+        return;
+      case 'admin_panel':
+        await _pushPage(context, const AdminPanelScreen());
         return;
       case 'outages':
         await _openOutages(context);

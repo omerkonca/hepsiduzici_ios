@@ -1,5 +1,6 @@
 import 'dart:async';
 
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_animate/flutter_animate.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -7,7 +8,9 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../app/providers.dart';
 import '../../core/theme/app_colors.dart';
 import '../../core/theme/premium_city_theme.dart';
+import '../../core/config/app_config.dart';
 import '../../core/utils/relative_time.dart';
+import '../../core/utils/target_router.dart';
 import '../../data/models/news_item.dart';
 import 'news_detail_screen.dart';
 
@@ -170,7 +173,9 @@ class _NewsScreenState extends ConsumerState<NewsScreen> {
                     ),
                   ),
                 ] else
-                  const SliverToBoxAdapter(child: SizedBox(height: 96)),
+                  const SliverToBoxAdapter(child: SizedBox(height: 18)),
+                const SliverToBoxAdapter(child: _NewsPolicyFooter()),
+                const SliverToBoxAdapter(child: SizedBox(height: 96)),
               ],
             ),
           );
@@ -755,10 +760,20 @@ class _NewsImage extends StatelessWidget {
     if (url == null || url!.trim().isEmpty) {
       return Image.asset(_placeholderAsset, fit: BoxFit.cover);
     }
-    return Image.network(
-      url!,
+    return CachedNetworkImage(
+      imageUrl: url!,
       fit: BoxFit.cover,
-      errorBuilder: (_, __, ___) => Image.asset(
+      placeholder: (context, url) => Container(
+        color: Colors.grey.shade100,
+        child: const Center(
+          child: SizedBox(
+            width: 16,
+            height: 16,
+            child: CircularProgressIndicator(strokeWidth: 1.5),
+          ),
+        ),
+      ),
+      errorWidget: (_, __, ___) => Image.asset(
         _placeholderAsset,
         fit: BoxFit.cover,
       ),
@@ -783,6 +798,63 @@ class _EmptyNewsState extends StatelessWidget {
             color: PremiumCityTheme.muted,
             fontWeight: FontWeight.w800,
           ),
+        ),
+      ),
+    );
+  }
+}
+
+class _NewsPolicyFooter extends StatelessWidget {
+  const _NewsPolicyFooter();
+
+  @override
+  Widget build(BuildContext context) {
+    return Padding(
+      padding: const EdgeInsets.fromLTRB(14, 8, 14, 8),
+      child: Container(
+        padding: const EdgeInsets.all(16),
+        decoration: PremiumCityTheme.card(radius: 18),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            const Text(
+              'Haber kaynakları',
+              style: TextStyle(
+                color: PremiumCityTheme.ink,
+                fontSize: 15,
+                fontWeight: FontWeight.w900,
+              ),
+            ),
+            const SizedBox(height: 6),
+            const Text(
+              'Haberler bağımsız yayıncılardan toplanır. Her haberde yayıncı '
+              'adı ve orijinal bağlantı gösterilir.',
+              style: TextStyle(
+                color: PremiumCityTheme.muted,
+                fontSize: 12.5,
+                height: 1.45,
+                fontWeight: FontWeight.w600,
+              ),
+            ),
+            const SizedBox(height: 12),
+            Wrap(
+              spacing: 8,
+              runSpacing: 8,
+              children: [
+                OutlinedButton.icon(
+                  onPressed: () =>
+                      TargetRouter.handle(context, 'screen:news_sources'),
+                  icon: const Icon(Icons.newspaper_rounded, size: 18),
+                  label: const Text('Kaynakları gör'),
+                ),
+                OutlinedButton.icon(
+                  onPressed: () => TargetRouter.handle(context, 'screen:contact'),
+                  icon: const Icon(Icons.email_rounded, size: 18),
+                  label: Text(AppConfig.contactEmail),
+                ),
+              ],
+            ),
+          ],
         ),
       ),
     );

@@ -2497,10 +2497,17 @@
         "tiles": [
           {
             "icon": "support_agent_rounded",
-            "title": "İletişim ve İş Birliği",
-            "subtitle": "Bize ulaşın, sponsor olun",
+            "title": "Bize Ulaşın",
+            "subtitle": "E-posta ve yayıncı bilgileri",
             "color": "#9C27B0",
-            "target": ""
+            "target": "screen:contact"
+          },
+          {
+            "icon": "newspaper_rounded",
+            "title": "Haber Kaynakları",
+            "subtitle": "İçerik sağlayıcı yayıncılar",
+            "color": "#1565C0",
+            "target": "screen:news_sources"
           },
           {
             "icon": "settings_rounded",

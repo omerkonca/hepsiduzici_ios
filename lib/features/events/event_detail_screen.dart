@@ -1,25 +1,30 @@
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:intl/intl.dart';
+import '../../app/providers.dart';
 import '../../core/theme/app_colors.dart';
 import '../../core/utils/launcher_utils.dart';
 import '../../core/widgets/favorite_button.dart';
 import '../../data/models/event_item.dart';
 import '../../data/services/favorites_service.dart';
 
-class EventDetailScreen extends StatelessWidget {
+class EventDetailScreen extends ConsumerWidget {
   final EventItem event;
 
   const EventDetailScreen({super.key, required this.event});
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
     final dateFormat = DateFormat('d MMMM yyyy, EEEE', 'tr_TR');
     final timeFormat = DateFormat('HH:mm');
+    final favEvents = ref.watch(favoritesProvider)[FavoriteCategory.event] ?? {};
+    final isFavorite = favEvents.contains(event.id);
+    final isMuted = ref.watch(mutedEventIdsProvider).contains(event.id);
 
     return Scaffold(
       body: CustomScrollView(
         slivers: [
-          // Header with Image
           SliverAppBar(
             expandedHeight: 300,
             pinned: true,
@@ -40,10 +45,16 @@ class EventDetailScreen extends StatelessWidget {
               background: Stack(
                 fit: StackFit.expand,
                 children: [
-                  Image.network(
-                    event.imageUrl,
+                  CachedNetworkImage(
+                    imageUrl: event.imageUrl,
                     fit: BoxFit.cover,
-                    errorBuilder: (context, error, stackTrace) => Container(
+                    placeholder: (context, url) => Container(
+                      color: AppColors.primary.withValues(alpha: 0.1),
+                      child: const Center(
+                        child: CircularProgressIndicator(strokeWidth: 2, color: Colors.white),
+                      ),
+                    ),
+                    errorWidget: (context, url, error) => Container(
                       color: AppColors.primary,
                       child: const Icon(Icons.image_not_supported, color: Colors.white, size: 48),
                     ),
@@ -65,15 +76,12 @@ class EventDetailScreen extends StatelessWidget {
               ),
             ),
           ),
-
-          // Content
           SliverToBoxAdapter(
             child: Padding(
               padding: const EdgeInsets.all(20.0),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  // Category Badge
                   Container(
                     padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
                     decoration: BoxDecoration(
@@ -91,8 +99,6 @@ class EventDetailScreen extends StatelessWidget {
                     ),
                   ),
                   const SizedBox(height: 16),
-
-                  // Title
                   Text(
                     event.title,
                     style: const TextStyle(
@@ -101,9 +107,44 @@ class EventDetailScreen extends StatelessWidget {
                       height: 1.2,
                     ),
                   ),
+                  if (isFavorite) ...[
+                    const SizedBox(height: 16),
+                    Material(
+                      color: isMuted
+                          ? Colors.orange.shade50
+                          : AppColors.primary.withValues(alpha: 0.08),
+                      borderRadius: BorderRadius.circular(14),
+                      child: ListTile(
+                        contentPadding: const EdgeInsets.symmetric(horizontal: 12),
+                        leading: Icon(
+                          isMuted
+                              ? Icons.notifications_off_rounded
+                              : Icons.alarm_on_rounded,
+                          color: isMuted ? Colors.orange.shade800 : AppColors.primary,
+                        ),
+                        title: Text(
+                          isMuted ? 'Hatırlatıcı kapalı' : 'Hatırlatıcı açık',
+                          style: const TextStyle(fontWeight: FontWeight.w800, fontSize: 14),
+                        ),
+                        subtitle: Text(
+                          isMuted
+                              ? 'Bu etkinlik için bildirim gelmiyor.'
+                              : 'Etkinlikten 1 saat önce bildirim alırsınız.',
+                          style: const TextStyle(fontSize: 12),
+                        ),
+                        trailing: Switch.adaptive(
+                          value: !isMuted,
+                          activeColor: AppColors.primary,
+                          onChanged: (on) async {
+                            await ref
+                                .read(mutedEventIdsProvider.notifier)
+                                .setMuted(event.id, !on);
+                          },
+                        ),
+                      ),
+                    ),
+                  ],
                   const SizedBox(height: 24),
-
-                  // Info Cards
                   _buildInfoRow(
                     context,
                     icon: Icons.calendar_today_outlined,
@@ -124,10 +165,7 @@ class EventDetailScreen extends StatelessWidget {
                     title: 'Bilet Bilgisi',
                     subtitle: event.price,
                   ),
-
                   const SizedBox(height: 32),
-
-                  // Map Section
                   const Text(
                     'Etkinlik Konumu',
                     style: TextStyle(
@@ -178,10 +216,7 @@ class EventDetailScreen extends StatelessWidget {
                       ),
                     ),
                   ),
-
                   const SizedBox(height: 32),
-
-                  // Description
                   const Text(
                     'Hakkında',
                     style: TextStyle(
@@ -198,7 +233,7 @@ class EventDetailScreen extends StatelessWidget {
                       height: 1.6,
                     ),
                   ),
-                  const SizedBox(height: 100), // Bottom padding for button
+                  const SizedBox(height: 100),
                 ],
               ),
             ),

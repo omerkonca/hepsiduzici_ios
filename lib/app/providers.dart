@@ -27,7 +27,10 @@ import '../data/services/favorites_service.dart';
 import '../data/services/notification_service.dart';
 import '../data/services/notification_preferences_service.dart';
 import '../data/models/app_notification.dart';
+import '../data/models/custom_reminder.dart';
 import '../data/services/app_notifications_builder.dart';
+import '../data/services/reminder_scheduler_service.dart';
+import '../data/services/reminder_storage_service.dart';
 import '../data/services/discover_service.dart';
 import '../data/services/outage_service.dart';
 import '../data/services/road_closure_service.dart';
@@ -112,6 +115,164 @@ final notificationServiceProvider = Provider<NotificationService>((ref) {
 final notificationPreferencesServiceProvider = Provider<NotificationPreferencesService>((ref) {
   return const NotificationPreferencesService();
 });
+
+final reminderStorageServiceProvider = Provider<ReminderStorageService>((ref) {
+  return const ReminderStorageService();
+});
+
+final reminderSchedulerServiceProvider = Provider<ReminderSchedulerService>((ref) {
+  return ReminderSchedulerService(
+    ref.watch(notificationServiceProvider),
+    ref.watch(reminderStorageServiceProvider),
+  );
+});
+
+final customRemindersProvider = FutureProvider<List<CustomReminder>>((ref) async {
+  return ref.watch(reminderStorageServiceProvider).getCustomReminders();
+});
+
+final mutedEventIdsProvider =
+    StateNotifierProvider<MutedEventIdsNotifier, Set<String>>((ref) {
+  return MutedEventIdsNotifier(
+    ref.watch(reminderStorageServiceProvider),
+    ref.watch(notificationServiceProvider),
+    ref,
+  );
+});
+
+class MutedEventIdsNotifier extends StateNotifier<Set<String>> {
+  MutedEventIdsNotifier(this._storage, this._notifications, this._ref)
+      : super({}) {
+    _load();
+  }
+
+  final ReminderStorageService _storage;
+  final NotificationService _notifications;
+  final Ref _ref;
+
+  Future<void> _load() async {
+    state = await _storage.getMutedEventIds();
+  }
+
+  bool isMuted(String eventId) => state.contains(eventId);
+
+  Future<void> setMuted(String eventId, bool muted) async {
+    await _storage.setEventMuted(eventId, muted);
+    if (muted) {
+      state = {...state, eventId};
+      await _notifications.cancelReminder(_eventNotificationId(eventId));
+    } else {
+      state = {...state}..remove(eventId);
+      final favIds = _ref.read(favoritesProvider)[FavoriteCategory.event] ?? {};
+      if (favIds.contains(eventId)) {
+        await _ref.read(favoritesProvider.notifier).rescheduleEventReminder(eventId);
+      }
+    }
+  }
+
+  int _eventNotificationId(String eventId) => eventId.hashCode.abs() % 100000;
+}
+
+class ReminderPrefsState {
+  const ReminderPrefsState({
+    required this.prayerReminders,
+    required this.pharmacyReminders,
+    required this.prayerMinutesBefore,
+    this.ready = false,
+  });
+
+  final bool prayerReminders;
+  final bool pharmacyReminders;
+  final int prayerMinutesBefore;
+  final bool ready;
+
+  ReminderPrefsState copyWith({
+    bool? prayerReminders,
+    bool? pharmacyReminders,
+    int? prayerMinutesBefore,
+    bool? ready,
+  }) {
+    return ReminderPrefsState(
+      prayerReminders: prayerReminders ?? this.prayerReminders,
+      pharmacyReminders: pharmacyReminders ?? this.pharmacyReminders,
+      prayerMinutesBefore: prayerMinutesBefore ?? this.prayerMinutesBefore,
+      ready: ready ?? this.ready,
+    );
+  }
+}
+
+final reminderPrefsProvider =
+    StateNotifierProvider<ReminderPrefsNotifier, ReminderPrefsState>((ref) {
+  return ReminderPrefsNotifier(
+    ref.watch(reminderStorageServiceProvider),
+    ref.watch(reminderSchedulerServiceProvider),
+    ref.watch(notificationServiceProvider),
+    ref,
+  );
+});
+
+class ReminderPrefsNotifier extends StateNotifier<ReminderPrefsState> {
+  ReminderPrefsNotifier(
+    this._storage,
+    this._scheduler,
+    this._notifications,
+    this._ref,
+  ) : super(const ReminderPrefsState(
+          prayerReminders: true,
+          pharmacyReminders: true,
+          prayerMinutesBefore: 15,
+        )) {
+    _load();
+  }
+
+  final ReminderStorageService _storage;
+  final ReminderSchedulerService _scheduler;
+  final NotificationService _notifications;
+  final Ref _ref;
+
+  Future<void> _load() async {
+    state = ReminderPrefsState(
+      prayerReminders: await _storage.getPrayerRemindersEnabled(),
+      pharmacyReminders: await _storage.getPharmacyRemindersEnabled(),
+      prayerMinutesBefore: await _storage.getPrayerMinutesBefore(),
+      ready: true,
+    );
+  }
+
+  Future<void> _resync() async {
+    final prayer = _ref.read(stampedPrayerProvider).valueOrNull?.data;
+    final pharmacies = _ref.read(stampedPharmacyProvider).valueOrNull?.data;
+    await _scheduler.syncAll(prayerTimes: prayer, pharmacies: pharmacies);
+  }
+
+  Future<bool> setPrayerReminders(bool value) async {
+    if (value) {
+      final ok = await _notifications.ensureNotificationPermissions();
+      if (ok == false) return false;
+    }
+    await _storage.setPrayerRemindersEnabled(value);
+    state = state.copyWith(prayerReminders: value);
+    await _resync();
+    return true;
+  }
+
+  Future<bool> setPharmacyReminders(bool value) async {
+    if (value) {
+      final ok = await _notifications.ensureNotificationPermissions();
+      if (ok == false) return false;
+    }
+    await _storage.setPharmacyRemindersEnabled(value);
+    state = state.copyWith(pharmacyReminders: value);
+    await _resync();
+    return true;
+  }
+
+  Future<void> setPrayerMinutesBefore(int minutes) async {
+    await _storage.setPrayerMinutesBefore(minutes);
+    state = state.copyWith(prayerMinutesBefore: minutes);
+    await _resync();
+  }
+}
 
 class NotificationPrefsState {
   const NotificationPrefsState({
@@ -256,6 +417,8 @@ class ReadNotificationsNotifier extends StateNotifier<ReadNotificationsState> {
 final appNotificationsProvider = Provider<List<AppNotification>>((ref) {
   final favorites = ref.watch(favoritesProvider);
   final favEventIds = favorites[FavoriteCategory.event] ?? {};
+  final mutedIds = ref.watch(mutedEventIdsProvider);
+  final customReminders = ref.watch(customRemindersProvider).valueOrNull ?? [];
 
   return AppNotificationsBuilder.build(
     outages: ref.watch(stampedOutagesProvider).valueOrNull,
@@ -263,6 +426,9 @@ final appNotificationsProvider = Provider<List<AppNotification>>((ref) {
     news: ref.watch(stampedNewsProvider).valueOrNull,
     events: ref.watch(stampedEventsProvider).valueOrNull,
     favoriteEventIds: favEventIds,
+    mutedEventIds: mutedIds,
+    customReminders: customReminders,
+    pharmacies: ref.watch(stampedPharmacyProvider).valueOrNull,
   );
 });
 
@@ -305,28 +471,72 @@ final roadClosureServiceProvider = Provider<RoadClosureService>((ref) {
 });
 
 final favoritesProvider = StateNotifierProvider<FavoritesNotifier, Map<FavoriteCategory, Set<String>>>((ref) {
-  return FavoritesNotifier(ref.watch(favoritesServiceProvider));
+  return FavoritesNotifier(
+    ref.watch(favoritesServiceProvider),
+    ref.watch(notificationServiceProvider),
+    ref,
+  );
 });
 
 class FavoritesNotifier extends StateNotifier<Map<FavoriteCategory, Set<String>>> {
-  final FavoritesService _service;
-  FavoritesNotifier(this._service) : super({}) {
+  FavoritesNotifier(this._service, this._notifications, this._ref) : super({}) {
     _load();
   }
 
+  final FavoritesService _service;
+  final NotificationService _notifications;
+  final Ref _ref;
+
   Future<void> _load() async {
     state = await _service.getAllFavorites();
+    await _rescheduleEventReminders();
   }
 
   Future<void> toggle(FavoriteCategory category, String id) async {
+    final wasFavorite = state[category]?.contains(id) ?? false;
     await _service.toggleFavorite(category, id);
     final currentSet = {...(state[category] ?? <String>{})};
-    if (currentSet.contains(id)) {
+    if (wasFavorite) {
       currentSet.remove(id);
     } else {
       currentSet.add(id);
     }
     state = {...state, category: currentSet};
+
+    if (category == FavoriteCategory.event) {
+      if (wasFavorite) {
+        await _notifications.cancelReminder(_eventNotificationId(id));
+      } else {
+        await _scheduleEventReminder(id);
+      }
+    }
+  }
+
+  int _eventNotificationId(String eventId) => eventId.hashCode.abs() % 100000;
+
+  Future<void> _scheduleEventReminder(String eventId) async {
+    if (_ref.read(mutedEventIdsProvider).contains(eventId)) return;
+    try {
+      final stamped = await _ref.read(stampedEventsProvider.future);
+      final event = stamped.data.where((e) => e.id == eventId).firstOrNull;
+      if (event == null) return;
+      await _notifications.scheduleEventReminder(
+        id: _eventNotificationId(eventId),
+        title: 'Etkinlik yaklaşıyor',
+        body: '${event.title} — 1 saat içinde başlıyor.',
+        scheduledDate: event.date,
+      );
+    } catch (_) {}
+  }
+
+  Future<void> rescheduleEventReminder(String eventId) =>
+      _scheduleEventReminder(eventId);
+
+  Future<void> _rescheduleEventReminders() async {
+    final eventIds = state[FavoriteCategory.event] ?? {};
+    for (final id in eventIds) {
+      await _scheduleEventReminder(id);
+    }
   }
 
   bool isFavorite(FavoriteCategory category, String id) {
@@ -350,9 +560,14 @@ final stampedFuelProvider = FutureProvider<Stamped<List<FuelPrice>>>((ref) {
   return ref.watch(fuelServiceProvider).getStampedPrices();
 });
 
+final pharmacyForceRefreshProvider = StateProvider<int>((ref) => 0);
+
 final stampedPharmacyProvider =
     FutureProvider<Stamped<List<Pharmacy>>>((ref) {
-  return ref.watch(pharmacyServiceProvider).getStampedDutyPharmacies();
+  final forceRefresh = ref.watch(pharmacyForceRefreshProvider) > 0;
+  return ref
+      .watch(pharmacyServiceProvider)
+      .getStampedDutyPharmacies(forceRefresh: forceRefresh);
 });
 
 final stampedWeatherProvider = FutureProvider<Stamped<WeatherReport>>((ref) {

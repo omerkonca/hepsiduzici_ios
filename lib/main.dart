@@ -4,6 +4,8 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:intl/date_symbol_data_local.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 import 'app/providers.dart';
+import 'core/ads/ad_service.dart';
+import 'core/config/ad_config.dart';
 import 'core/config/app_config.dart';
 import 'data/services/background_fetch_service.dart';
 import 'features/splash/splash_screen.dart';
@@ -44,6 +46,10 @@ void main() async {
     await BackgroundFetchService.init();
     await BackgroundFetchService.registerPeriodicTask();
   } catch (_) {}
+
+  if (AdConfig.adsEnabled) {
+    await AdService.instance.initialize();
+  }
 
   runApp(
     UncontrolledProviderScope(

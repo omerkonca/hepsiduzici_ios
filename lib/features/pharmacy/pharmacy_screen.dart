@@ -180,7 +180,11 @@ class _PharmacyScreenState extends ConsumerState<PharmacyScreen> {
           subtitle: 'Bugün Düziçi genelinde hizmet veren onaylı nöbetçi eczanelerin canlı listesi.',
           icon: 'local_pharmacy',
           color: const Color(0xFF009688),
-          onRefresh: () async => ref.invalidate(pharmacyListProvider),
+          onRefresh: () async {
+            ref.read(pharmacyForceRefreshProvider.notifier).state++;
+            ref.invalidate(stampedPharmacyProvider);
+            await ref.read(stampedPharmacyProvider.future);
+          },
           isEmpty: false, // Hata durumunu özel şık kartla SliverList içinde kendimiz yöneteceğiz
           child: SliverMainAxisGroup(
             slivers: [
@@ -223,7 +227,11 @@ class _PharmacyScreenState extends ConsumerState<PharmacyScreen> {
                               ),
                               const SizedBox(height: 4),
                               Text(
-                                'Nöbetler bugün saat 08:00\'de başlar, yarın sabah saat 08:00\'e kadar kesintisiz 24 saat sürer.',
+                                pharmacies.isNotEmpty &&
+                                        pharmacies.first.dateRange?.isNotEmpty ==
+                                            true
+                                    ? pharmacies.first.dateRange!
+                                    : 'Nöbetler bugün saat 08:00\'de başlar, yarın sabah saat 08:00\'e kadar kesintisiz 24 saat sürer.',
                                 style: Theme.of(context).textTheme.bodySmall?.copyWith(
                                       color: Colors.white.withValues(alpha: 0.85),
                                       height: 1.3,

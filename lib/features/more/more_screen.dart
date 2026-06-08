@@ -88,10 +88,17 @@ class MoreScreen extends ConsumerWidget {
       tiles: [
         MoreTileItem(
           icon: 'support_agent_rounded',
-          title: 'İletişim ve İş Birliği',
-          subtitle: 'Bize ulaşın, sponsor olun',
+          title: 'Bize Ulaşın',
+          subtitle: 'E-posta ve yayıncı bilgileri',
           color: '#9C27B0',
-          target: '',
+          target: 'screen:contact',
+        ),
+        MoreTileItem(
+          icon: 'newspaper_rounded',
+          title: 'Haber Kaynakları',
+          subtitle: 'İçerik sağlayıcı yayıncılar',
+          color: '#1565C0',
+          target: 'screen:news_sources',
         ),
         MoreTileItem(
           icon: 'settings_rounded',
@@ -99,6 +106,13 @@ class MoreScreen extends ConsumerWidget {
           subtitle: 'Bildirim ve uyarı seçenekleri',
           color: '#616161',
           target: 'screen:notification_settings',
+        ),
+        MoreTileItem(
+          icon: 'admin_panel_settings_rounded',
+          title: 'Yayıncı Paneli',
+          subtitle: 'Arka plan görselini güncelleyin',
+          color: '#E53935',
+          target: 'screen:admin_panel',
         ),
       ],
     ),
@@ -164,7 +178,12 @@ class MoreScreen extends ConsumerWidget {
               ),
             ),
           ],
-          SliverToBoxAdapter(child: _Footer(appName: branding?.appName)),
+          SliverToBoxAdapter(
+            child: _Footer(
+              appName: branding?.appName,
+              onContactTap: () => TargetRouter.handle(context, 'screen:contact'),
+            ),
+          ),
         ],
       ),
     );
@@ -735,61 +754,110 @@ class _MoreTile extends StatelessWidget {
 }
 
 class _Footer extends StatelessWidget {
-  const _Footer({this.appName});
+  const _Footer({this.appName, this.onContactTap});
 
   final String? appName;
+  final VoidCallback? onContactTap;
 
   @override
   Widget build(BuildContext context) {
     return Padding(
       padding: const EdgeInsets.fromLTRB(14, 24, 14, 116),
-      child: Container(
-        padding: const EdgeInsets.all(18),
-        decoration: PremiumCityTheme.card(radius: 26),
-        child: Row(
-          children: [
-            Container(
-              width: 44,
-              height: 44,
+      child: Column(
+        children: [
+          AppPressable(
+            onTap: onContactTap,
+            borderRadius: BorderRadius.circular(22),
+            child: Container(
+              width: double.infinity,
+              padding: const EdgeInsets.all(16),
               decoration: BoxDecoration(
-                gradient: PremiumCityTheme.goldGradient,
-                borderRadius: BorderRadius.circular(16),
+                gradient: PremiumCityTheme.navyGradient,
+                borderRadius: BorderRadius.circular(22),
               ),
-              child: const Icon(
-                Icons.auto_awesome_rounded,
-                color: Colors.white,
-                size: 22,
-              ),
-            ),
-            const SizedBox(width: 13),
-            Expanded(
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
+              child: const Row(
                 children: [
-                  Text(
-                    appName ?? 'Hepsi Düziçi',
-                    maxLines: 1,
-                    overflow: TextOverflow.ellipsis,
-                    style: const TextStyle(
-                      color: PremiumCityTheme.ink,
-                      fontSize: 14.5,
-                      fontWeight: FontWeight.w900,
+                  Icon(Icons.support_agent_rounded, color: Colors.white, size: 26),
+                  SizedBox(width: 12),
+                  Expanded(
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(
+                          'Bize Ulaşın',
+                          style: TextStyle(
+                            color: Colors.white,
+                            fontSize: 16,
+                            fontWeight: FontWeight.w900,
+                          ),
+                        ),
+                        SizedBox(height: 2),
+                        Text(
+                          'hepsiduzici@gmail.com',
+                          style: TextStyle(
+                            color: Colors.white70,
+                            fontSize: 12,
+                            fontWeight: FontWeight.w700,
+                          ),
+                        ),
+                      ],
                     ),
                   ),
-                  const SizedBox(height: 3),
-                  const Text(
-                    'Version 1.2.0 • Build 2024.1',
-                    style: TextStyle(
-                      color: PremiumCityTheme.muted,
-                      fontSize: 11,
-                      fontWeight: FontWeight.w700,
-                    ),
-                  ),
+                  Icon(Icons.chevron_right_rounded, color: Colors.white),
                 ],
               ),
             ),
-          ],
-        ),
+          ),
+          const SizedBox(height: 10),
+          Container(
+            padding: const EdgeInsets.all(18),
+            decoration: PremiumCityTheme.card(radius: 26),
+            child: Row(
+              children: [
+                Container(
+                  width: 44,
+                  height: 44,
+                  decoration: BoxDecoration(
+                    gradient: PremiumCityTheme.goldGradient,
+                    borderRadius: BorderRadius.circular(16),
+                  ),
+                  child: const Icon(
+                    Icons.auto_awesome_rounded,
+                    color: Colors.white,
+                    size: 22,
+                  ),
+                ),
+                const SizedBox(width: 13),
+                Expanded(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        appName ?? 'Hepsi Düziçi',
+                        maxLines: 1,
+                        overflow: TextOverflow.ellipsis,
+                        style: const TextStyle(
+                          color: PremiumCityTheme.ink,
+                          fontSize: 14.5,
+                          fontWeight: FontWeight.w900,
+                        ),
+                      ),
+                      const SizedBox(height: 3),
+                      const Text(
+                        'Sürüm 1.0.1',
+                        style: TextStyle(
+                          color: PremiumCityTheme.muted,
+                          fontSize: 11,
+                          fontWeight: FontWeight.w700,
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+              ],
+            ),
+          ),
+        ],
       ),
     );
   }

@@ -27,8 +27,9 @@ class PremiumHomeHeroCard extends ConsumerWidget {
         '${now.hour.toString().padLeft(2, '0')}:${now.minute.toString().padLeft(2, '0')}';
     final nextPrayer =
         prayer?.nextPrayer(currentTime) ?? prayer?.allTimes.first;
-    final pharmacyName =
-        pharmacy?.isNotEmpty == true ? pharmacy!.first.name : 'Aydın Eczanesi';
+    final pharmacyName = pharmacy?.isNotEmpty == true
+        ? pharmacy!.first.name
+        : 'Nöbetçi eczane yükleniyor…';
 
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
@@ -91,21 +92,26 @@ class _CityHeader extends StatelessWidget {
     return Row(
       crossAxisAlignment: CrossAxisAlignment.center,
       children: [
-        Container(
-          width: 40,
-          height: 40,
-          decoration: BoxDecoration(
-            gradient: PremiumCityTheme.navyGradient,
-            borderRadius: BorderRadius.circular(16),
-            boxShadow: PremiumCityTheme.softShadow(
-              color: PremiumCityTheme.navy,
-              alpha: 0.18,
+        ClipRRect(
+          borderRadius: BorderRadius.circular(16),
+          child: Image.asset(
+            'assets/images/app_logo.png',
+            width: 40,
+            height: 40,
+            fit: BoxFit.cover,
+            errorBuilder: (_, __, ___) => Container(
+              width: 40,
+              height: 40,
+              decoration: BoxDecoration(
+                gradient: PremiumCityTheme.navyGradient,
+                borderRadius: BorderRadius.circular(16),
+              ),
+              child: const Icon(
+                Icons.location_on_rounded,
+                color: Colors.white,
+                size: 22,
+              ),
             ),
-          ),
-          child: const Icon(
-            Icons.location_on_rounded,
-            color: Colors.white,
-            size: 22,
           ),
         ),
         const SizedBox(width: 10),
@@ -134,24 +140,32 @@ class _CityHeader extends StatelessWidget {
                           fontSize: 26,
                           fontWeight: FontWeight.w900,
                           letterSpacing: 0,
-                          height: 0.96,
+                          height: 1.08,
                         ),
                       ),
                     ),
                   ),
                   const SizedBox(width: 7),
                   Container(
-                    width: 7,
-                    height: 7,
+                    width: 17,
+                    height: 17,
                     decoration: BoxDecoration(
-                      color: PremiumCityTheme.gold,
+                      color: const Color(0xFF1D9BF0),
                       shape: BoxShape.circle,
+                      border: Border.all(color: Colors.white, width: 1.6),
                       boxShadow: [
                         BoxShadow(
-                          color: PremiumCityTheme.gold.withValues(alpha: 0.55),
+                          color:
+                              const Color(0xFF1D9BF0).withValues(alpha: 0.42),
                           blurRadius: 10,
+                          offset: const Offset(0, 3),
                         ),
                       ],
+                    ),
+                    child: const Icon(
+                      Icons.check_rounded,
+                      color: Colors.white,
+                      size: 11,
                     ),
                   ),
                 ],
@@ -271,9 +285,11 @@ class _LiveCityCard extends StatelessWidget {
                             color: Colors.transparent,
                             child: InkWell(
                               borderRadius: BorderRadius.circular(16),
-                              onTap: () => TargetRouter.handle(context, 'screen:weather'),
+                              onTap: () => TargetRouter.handle(
+                                  context, 'screen:weather'),
                               child: Padding(
-                                padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 4),
+                                padding: const EdgeInsets.symmetric(
+                                    horizontal: 6, vertical: 4),
                                 child: _WeatherBlock(
                                   temperature: temperature,
                                   condition: condition,
@@ -290,9 +306,11 @@ class _LiveCityCard extends StatelessWidget {
                             color: Colors.transparent,
                             child: InkWell(
                               borderRadius: BorderRadius.circular(16),
-                              onTap: () => TargetRouter.handle(context, 'screen:prayer'),
+                              onTap: () =>
+                                  TargetRouter.handle(context, 'screen:prayer'),
                               child: Padding(
-                                padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 4),
+                                padding: const EdgeInsets.symmetric(
+                                    horizontal: 6, vertical: 4),
                                 child: _PrayerBlock(
                                   title: prayerTitle,
                                   time: prayerTime,

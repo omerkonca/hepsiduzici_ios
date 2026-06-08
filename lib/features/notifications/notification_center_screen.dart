@@ -6,10 +6,12 @@ import '../../app/providers.dart';
 import '../../core/theme/app_colors.dart';
 import '../../core/utils/target_router.dart';
 import '../../data/models/app_notification.dart';
+import '../../data/models/custom_reminder.dart';
 import '../../data/models/event_item.dart';
 import '../../data/models/news_item.dart';
 import '../events/event_detail_screen.dart';
 import '../news/news_detail_screen.dart';
+import 'add_custom_reminder_sheet.dart';
 
 class NotificationCenterScreen extends ConsumerStatefulWidget {
   const NotificationCenterScreen({super.key});
@@ -36,6 +38,72 @@ class _NotificationCenterScreenState extends ConsumerState<NotificationCenterScr
     ref.read(readNotificationsProvider.notifier).markAllAsRead(
           notifications.map((n) => n.id),
         );
+  }
+
+  Future<void> _addCustomReminder() async {
+    final added = await showAddCustomReminderSheet(context);
+    if (added && mounted) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Hatırlatıcı oluşturuldu.')),
+      );
+    }
+  }
+
+  Future<void> _showEventMuteSheet(EventItem event) async {
+    final muted = ref.read(mutedEventIdsProvider).contains(event.id);
+    if (!mounted) return;
+    await showModalBottomSheet<void>(
+      context: context,
+      backgroundColor: Colors.transparent,
+      builder: (ctx) => Container(
+        margin: const EdgeInsets.all(12),
+        padding: const EdgeInsets.fromLTRB(20, 16, 20, 20),
+        decoration: BoxDecoration(
+          color: Theme.of(ctx).colorScheme.surface,
+          borderRadius: BorderRadius.circular(20),
+        ),
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          crossAxisAlignment: CrossAxisAlignment.stretch,
+          children: [
+            Text(
+              event.title,
+              maxLines: 2,
+              overflow: TextOverflow.ellipsis,
+              style: const TextStyle(fontWeight: FontWeight.w900, fontSize: 16),
+            ),
+            const SizedBox(height: 12),
+            ListTile(
+              contentPadding: EdgeInsets.zero,
+              leading: Icon(
+                muted ? Icons.notifications_active_rounded : Icons.notifications_off_rounded,
+                color: AppColors.primary,
+              ),
+              title: Text(muted ? 'Hatırlatıcıyı aç' : 'Hatırlatıcıyı sessize al'),
+              subtitle: Text(
+                muted
+                    ? 'Bu etkinlik için tekrar bildirim alırsınız.'
+                    : 'Favori olsa bile bu etkinlik için bildirim gelmez.',
+              ),
+              onTap: () async {
+                await ref
+                    .read(mutedEventIdsProvider.notifier)
+                    .setMuted(event.id, !muted);
+                if (ctx.mounted) Navigator.pop(ctx);
+                if (!mounted) return;
+                ScaffoldMessenger.of(context).showSnackBar(
+                  SnackBar(
+                    content: Text(
+                      muted ? 'Etkinlik hatırlatıcısı açıldı.' : 'Etkinlik sessize alındı.',
+                    ),
+                  ),
+                );
+              },
+            ),
+          ],
+        ),
+      ),
+    );
   }
 
   @override
@@ -67,8 +135,12 @@ class _NotificationCenterScreenState extends ConsumerState<NotificationCenterScr
             n.type == AppNotificationType.news)
         .toList();
 
-    final reminderList =
-        allNotifications.where((n) => n.type == AppNotificationType.event).toList();
+    final reminderList = allNotifications
+        .where((n) =>
+            n.type == AppNotificationType.event ||
+            n.type == AppNotificationType.custom ||
+            n.type == AppNotificationType.pharmacy)
+        .toList();
 
     return PopScope(
       onPopInvokedWithResult: (didPop, _) {
@@ -151,6 +223,12 @@ class _NotificationCenterScreenState extends ConsumerState<NotificationCenterScr
               ),
             ),
           ),
+          floatingActionButton: FloatingActionButton.extended(
+            onPressed: _addCustomReminder,
+            backgroundColor: AppColors.primary,
+            icon: const Icon(Icons.add_alarm_rounded),
+            label: const Text('Hatırlatıcı'),
+          ),
           body: isLoading
               ? const Center(child: CircularProgressIndicator())
               : TabBarView(
@@ -160,25 +238,66 @@ class _NotificationCenterScreenState extends ConsumerState<NotificationCenterScr
                       readIds: readIds,
                       emptyMessage: 'Henüz bildiriminiz yok.\nKesinti, yol ve haberler burada görünür.',
                       onTap: (n) => _handleTap(context, n),
+                      onLongPress: (n) => _handleLongPress(n),
                     ),
                     _NotificationList(
                       items: announcementList,
                       readIds: readIds,
                       emptyMessage: 'Şu an şehir duyurusu veya kesinti bildirimi yok.',
                       onTap: (n) => _handleTap(context, n),
+                      onLongPress: (n) => _handleLongPress(n),
                     ),
                     _NotificationList(
                       items: reminderList,
                       readIds: readIds,
                       emptyMessage:
-                          'Favori etkinlik hatırlatıcınız yok.\nTakvimden etkinlik favorileyerek ekleyebilirsiniz.',
+                          'Henüz hatırlatıcınız yok.\nEtkinlik favorileyin veya özel hatırlatıcı ekleyin.',
+                      emptyActions: [
+                        _EmptyAction(
+                          label: 'Hatırlatıcı ekle',
+                          icon: Icons.add_alarm_rounded,
+                          onTap: _addCustomReminder,
+                        ),
+                        _EmptyAction(
+                          label: 'Etkinliklere git',
+                          icon: Icons.event_rounded,
+                          onTap: () => TargetRouter.handle(context, 'screen:calendar'),
+                        ),
+                      ],
                       onTap: (n) => _handleTap(context, n),
+                      onLongPress: (n) => _handleLongPress(n),
                     ),
                   ],
                 ),
         ),
       ),
     );
+  }
+
+  Future<void> _handleLongPress(AppNotification n) async {
+    if (n.type == AppNotificationType.event) {
+      await _showEventMuteSheet(n.originalData as EventItem);
+    } else if (n.type == AppNotificationType.custom) {
+      final item = n.originalData as CustomReminder;
+      final confirm = await showDialog<bool>(
+        context: context,
+        builder: (ctx) => AlertDialog(
+          title: const Text('Hatırlatıcıyı sil'),
+          content: Text('“${item.title}” hatırlatıcısı silinsin mi?'),
+          actions: [
+            TextButton(onPressed: () => Navigator.pop(ctx, false), child: const Text('Vazgeç')),
+            FilledButton(onPressed: () => Navigator.pop(ctx, true), child: const Text('Sil')),
+          ],
+        ),
+      );
+      if (confirm != true || !mounted) return;
+      await ref.read(reminderSchedulerServiceProvider).removeCustomReminder(item.id);
+      ref.invalidate(customRemindersProvider);
+      if (!mounted) return;
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Hatırlatıcı silindi.')),
+      );
+    }
   }
 
   Future<void> _handleTap(BuildContext context, AppNotification n) async {
@@ -206,6 +325,12 @@ class _NotificationCenterScreenState extends ConsumerState<NotificationCenterScr
           MaterialPageRoute(builder: (_) => EventDetailScreen(event: item)),
         );
         break;
+      case AppNotificationType.pharmacy:
+        ref.read(currentIndexProvider.notifier).state = 0;
+        if (context.mounted) Navigator.pop(context);
+        break;
+      case AppNotificationType.custom:
+        break;
     }
   }
 }
@@ -228,18 +353,34 @@ class _CountDot extends StatelessWidget {
   }
 }
 
+class _EmptyAction {
+  const _EmptyAction({
+    required this.label,
+    required this.icon,
+    required this.onTap,
+  });
+
+  final String label;
+  final IconData icon;
+  final VoidCallback onTap;
+}
+
 class _NotificationList extends StatelessWidget {
   const _NotificationList({
     required this.items,
     required this.readIds,
     required this.emptyMessage,
     required this.onTap,
+    this.onLongPress,
+    this.emptyActions = const [],
   });
 
   final List<AppNotification> items;
   final Set<String> readIds;
   final String emptyMessage;
+  final List<_EmptyAction> emptyActions;
   final void Function(AppNotification) onTap;
+  final void Function(AppNotification)? onLongPress;
 
   @override
   Widget build(BuildContext context) {
@@ -263,6 +404,30 @@ class _NotificationList extends StatelessWidget {
                   height: 1.5,
                 ),
               ),
+              if (emptyActions.isNotEmpty) ...[
+                const SizedBox(height: 20),
+                Wrap(
+                  alignment: WrapAlignment.center,
+                  spacing: 10,
+                  runSpacing: 10,
+                  children: [
+                    for (final action in emptyActions)
+                      FilledButton.icon(
+                        onPressed: action.onTap,
+                        icon: Icon(action.icon, size: 18),
+                        label: Text(action.label),
+                        style: FilledButton.styleFrom(
+                          backgroundColor: AppColors.primary,
+                          foregroundColor: Colors.white,
+                          padding: const EdgeInsets.symmetric(
+                            horizontal: 16,
+                            vertical: 12,
+                          ),
+                        ),
+                      ),
+                  ],
+                ),
+              ],
             ],
           ),
         ),
@@ -271,7 +436,7 @@ class _NotificationList extends StatelessWidget {
 
     return ListView.builder(
         physics: const AlwaysScrollableScrollPhysics(),
-        padding: const EdgeInsets.symmetric(vertical: 12),
+        padding: const EdgeInsets.fromLTRB(16, 12, 16, 88),
         itemCount: items.length,
         itemBuilder: (context, index) {
           final item = items[index];
@@ -281,8 +446,9 @@ class _NotificationList extends StatelessWidget {
             color: Colors.transparent,
             child: InkWell(
               onTap: () => onTap(item),
+              onLongPress: onLongPress != null ? () => onLongPress!(item) : null,
               child: Container(
-                margin: const EdgeInsets.fromLTRB(16, 0, 16, 10),
+                margin: const EdgeInsets.only(bottom: 10),
                 padding: const EdgeInsets.all(14),
                 decoration: BoxDecoration(
                   color: Theme.of(context).colorScheme.surface,
@@ -310,6 +476,31 @@ class _NotificationList extends StatelessWidget {
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
+                          if (item.categoryLabel != null) ...[
+                            Container(
+                              margin: const EdgeInsets.only(bottom: 6),
+                              padding: const EdgeInsets.symmetric(
+                                horizontal: 8,
+                                vertical: 3,
+                              ),
+                              decoration: BoxDecoration(
+                                color: item.isMunicipality
+                                    ? const Color(0xFF1565C0).withValues(alpha: 0.12)
+                                    : item.color.withValues(alpha: 0.1),
+                                borderRadius: BorderRadius.circular(8),
+                              ),
+                              child: Text(
+                                item.categoryLabel!,
+                                style: TextStyle(
+                                  fontSize: 10,
+                                  fontWeight: FontWeight.w800,
+                                  color: item.isMunicipality
+                                      ? const Color(0xFF1565C0)
+                                      : item.color,
+                                ),
+                              ),
+                            ),
+                          ],
                           Row(
                             children: [
                               Expanded(

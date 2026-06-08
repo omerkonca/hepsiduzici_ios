@@ -730,12 +730,24 @@ class _ExploreDetailScreenState extends State<ExploreDetailScreen> {
   Widget _buildYoutubeThumbnail() {
     final videoId = YoutubePlayer.convertUrlToId(widget.place.videoUrl!);
     if (videoId != null) {
-      return Image.network(
-        'https://img.youtube.com/vi/$videoId/hqdefault.jpg',
+      return CachedNetworkImage(
+        imageUrl: 'https://img.youtube.com/vi/$videoId/hqdefault.jpg',
         width: double.infinity,
         height: 200,
         fit: BoxFit.cover,
-        errorBuilder: (context, error, stackTrace) {
+        placeholder: (context, url) => Container(
+          width: double.infinity,
+          height: 200,
+          color: Colors.black87,
+          child: const Center(
+            child: SizedBox(
+              width: 20,
+              height: 20,
+              child: CircularProgressIndicator(strokeWidth: 1.5),
+            ),
+          ),
+        ),
+        errorWidget: (context, url, error) {
           return Container(
             width: double.infinity,
             height: 200,

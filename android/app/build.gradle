@@ -11,6 +11,16 @@ if (keystorePropertiesFile.exists()) {
     keystoreProperties.load(new FileInputStream(keystorePropertiesFile))
 }
 
+def admobProperties = new Properties()
+def admobPropertiesFile = rootProject.file("admob.properties")
+if (admobPropertiesFile.exists()) {
+    admobProperties.load(new FileInputStream(admobPropertiesFile))
+}
+def admobAppId = admobProperties.getProperty(
+    "admobAppId",
+    "ca-app-pub-3940256099942544~3347511713"
+)
+
 android {
     namespace = "net.hepsiduzici.hepsi_duzici"
     compileSdk = flutter.compileSdkVersion
@@ -30,10 +40,11 @@ android {
         applicationId = "net.hepsiduzici.hepsi_duzici"
         // You can update the following values to match your application needs.
         // For more information, see: https://flutter.dev/to/review-gradle-config.
-        minSdk = flutter.minSdkVersion
+        minSdk = 23
         targetSdk = flutter.targetSdkVersion
         versionCode = flutter.versionCode
         versionName = flutter.versionName
+        manifestPlaceholders.admobAppId = admobAppId
     }
 
     signingConfigs {

@@ -189,11 +189,18 @@ class _StoryBubble extends StatelessWidget {
                       padding: const EdgeInsets.all(2.5),
                       decoration: BoxDecoration(
                         shape: BoxShape.circle,
-                        gradient: const LinearGradient(
-                          begin: Alignment.topLeft,
-                          end: Alignment.bottomRight,
-                          colors: [Color(0xFFE3AF4C), Color(0xFFD4941A), Color(0xFFB45309)],
-                        ),
+                        gradient: hasNew
+                            ? const LinearGradient(
+                                begin: Alignment.topLeft,
+                                end: Alignment.bottomRight,
+                                colors: [
+                                  Color(0xFFE3AF4C),
+                                  Color(0xFFD4941A),
+                                  Color(0xFFB45309)
+                                ],
+                              )
+                            : null,
+                        color: hasNew ? null : const Color(0xFFD1D5DB),
                       ),
                       child: DecoratedBox(
                         decoration: BoxDecoration(

@@ -1,0 +1,4 @@
+# AdMob App ID (ca-app-pub-XXXX~YYYY formatında)
+# Bu dosyayı admob.properties olarak kopyalayın ve gerçek App ID'nizi yazın.
+# admob.properties git'e eklenmez.
+admobAppId=ca-app-pub-5097523004889494~5039235533

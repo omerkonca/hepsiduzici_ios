@@ -1,11 +1,13 @@
-import 'package:flutter/foundation.dart' show kIsWeb;
+import 'package:flutter/foundation.dart' show defaultTargetPlatform, kIsWeb, TargetPlatform;
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_animate/flutter_animate.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'dart:ui' as ui;
+import '../core/ads/ad_service.dart';
 import '../core/theme/app_colors.dart';
 import '../core/utils/app_navigation.dart';
+import '../core/widgets/app_banner_ad.dart';
 import '../data/models/news_item.dart';
 import '../data/models/stamped_data.dart';
 import '../data/services/news_notification_utils.dart';
@@ -36,21 +38,37 @@ class _MainNavState extends ConsumerState<MainNav> with WidgetsBindingObserver {
     Future.microtask(() async {
       await _loadPendingNewsTap();
       await _checkNewsOnResume();
+      await _syncReminders();
+      AdService.instance.startSessionTimer();
     });
   }
 
   @override
   void dispose() {
     WidgetsBinding.instance.removeObserver(this);
+    AdService.instance.dispose();
     super.dispose();
   }
 
   @override
   void didChangeAppLifecycleState(AppLifecycleState state) {
     ref.read(appLifecycleStateProvider.notifier).state = state;
-    if (state == AppLifecycleState.resumed) {
+    final isForeground = state == AppLifecycleState.resumed;
+    AdService.instance.onAppLifecycle(isForeground);
+    if (isForeground) {
       _checkNewsOnResume();
+      _syncReminders();
     }
+  }
+
+  Future<void> _syncReminders() async {
+    if (kIsWeb) return;
+    final prayer = ref.read(stampedPrayerProvider).valueOrNull?.data;
+    final pharmacies = ref.read(stampedPharmacyProvider).valueOrNull?.data;
+    await ref.read(reminderSchedulerServiceProvider).syncAll(
+          prayerTimes: prayer,
+          pharmacies: pharmacies,
+        );
   }
 
   /// Arka plan görevleri her cihazda güvenilir değil; açılış / ön plana dönüşte kontrol.
@@ -62,7 +80,11 @@ class _MainNavState extends ConsumerState<MainNav> with WidgetsBindingObserver {
     if (!enabled) return;
 
     final notify = ref.read(notificationServiceProvider);
-    final granted = await notify.areSystemNotificationsEnabled();
+    var granted = await notify.areSystemNotificationsEnabled();
+    if (!granted && !kIsWeb && defaultTargetPlatform == TargetPlatform.iOS) {
+      await notify.ensureNotificationPermissions();
+      granted = await notify.areSystemNotificationsEnabled();
+    }
     if (!granted) return;
 
     await notify.checkAndNotifyNewHeadline();
@@ -84,6 +106,8 @@ class _MainNavState extends ConsumerState<MainNav> with WidgetsBindingObserver {
         });
       },
     );
+    ref.listen(stampedPrayerProvider, (_, __) => _syncReminders());
+    ref.listen(stampedPharmacyProvider, (_, __) => _syncReminders());
 
     final index = ref.watch(currentIndexProvider);
     return Scaffold(
@@ -98,9 +122,13 @@ class _MainNavState extends ConsumerState<MainNav> with WidgetsBindingObserver {
           const SafeArea(child: SizedBox.expand(child: MoreScreen())),
         ],
       ),
-      bottomNavigationBar: SafeArea(
-        minimum: EdgeInsets.zero,
-        child: Padding(
+      bottomNavigationBar: Column(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          SafeArea(
+            minimum: EdgeInsets.zero,
+            bottom: false,
+            child: Padding(
           padding: const EdgeInsets.fromLTRB(12, 0, 12, 8),
           child: DecoratedBox(
             decoration: BoxDecoration(
@@ -207,11 +235,16 @@ class _MainNavState extends ConsumerState<MainNav> with WidgetsBindingObserver {
             ),
           ),
         ),
+          ),
+          const AppBannerAd(),
+        ],
       ),
     );
   }
 
   void _switchTab(int i) {
+    final current = ref.read(currentIndexProvider);
+    if (current == i) return;
     HapticFeedback.selectionClick();
     ref.read(currentIndexProvider.notifier).state = i;
   }

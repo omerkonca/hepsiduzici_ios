@@ -275,15 +275,122 @@ class _NotificationPreferencesScreenState
             );
           },
         ),
+        const SizedBox(height: 24),
+        Text(
+          'Hatırlatıcılar',
+          style: Theme.of(context).textTheme.titleMedium?.copyWith(
+                fontWeight: FontWeight.w800,
+              ),
+        ),
+        const SizedBox(height: 8),
+        Text(
+          'Namaz vakti, hafta sonu eczane ve etkinlik hatırlatıcıları.',
+          style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                color: AppColors.textMuted,
+                fontWeight: FontWeight.w500,
+              ),
+        ),
+        const SizedBox(height: 16),
+        _ReminderPrefsCard(),
         const SizedBox(height: 16),
         Text(
-          'Etkinlik hatırlatıcıları için izinleri açık tuttuğundan emin ol; ek ayar takvim ekranındaki kayıtta kullanılıyor.',
+          'Etkinlik hatırlatıcıları için izinleri açık tuttuğundan emin ol; favori etkinliklerden 1 saat önce bildirim gelir.',
           style: Theme.of(context).textTheme.bodySmall?.copyWith(
                 color: AppColors.textMuted,
                 height: 1.35,
               ),
         ),
       ],
+      ),
+    );
+  }
+}
+
+class _ReminderPrefsCard extends ConsumerWidget {
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    final prefs = ref.watch(reminderPrefsProvider);
+    if (!prefs.ready) {
+      return const Card(
+        child: Padding(
+          padding: EdgeInsets.all(20),
+          child: Center(child: CircularProgressIndicator()),
+        ),
+      );
+    }
+
+    const minuteOptions = [5, 10, 15, 30];
+
+    return Card(
+      elevation: 0,
+      color: AppColors.surface,
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(16),
+        side: BorderSide(color: AppColors.softGrey.withValues(alpha: 0.5)),
+      ),
+      child: Column(
+        children: [
+          SwitchListTile.adaptive(
+            value: prefs.prayerReminders,
+            onChanged: (v) async {
+              final ok = await ref.read(reminderPrefsProvider.notifier).setPrayerReminders(v);
+              if (!context.mounted || ok || !v) return;
+              ScaffoldMessenger.of(context).showSnackBar(
+                const SnackBar(content: Text('Bildirim izni reddedildi.')),
+              );
+            },
+            title: const Text('Namaz vakti hatırlatıcı'),
+            subtitle: Text(
+              'Her vakitten ${prefs.prayerMinutesBefore} dk önce bildirim.',
+              style: TextStyle(fontSize: 12, color: AppColors.textMuted.withValues(alpha: 0.9)),
+            ),
+          ),
+          Padding(
+            padding: const EdgeInsets.fromLTRB(16, 0, 16, 12),
+            child: Row(
+              children: [
+                Text(
+                  'Önceden uyar',
+                  style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                        fontWeight: FontWeight.w700,
+                      ),
+                ),
+                const SizedBox(width: 12),
+                Expanded(
+                  child: Wrap(
+                    spacing: 8,
+                    children: [
+                      for (final m in minuteOptions)
+                        ChoiceChip(
+                          label: Text('$m dk'),
+                          selected: prefs.prayerMinutesBefore == m,
+                          onSelected: (_) => ref
+                              .read(reminderPrefsProvider.notifier)
+                              .setPrayerMinutesBefore(m),
+                        ),
+                    ],
+                  ),
+                ),
+              ],
+            ),
+          ),
+          const Divider(height: 1),
+          SwitchListTile.adaptive(
+            value: prefs.pharmacyReminders,
+            onChanged: (v) async {
+              final ok = await ref.read(reminderPrefsProvider.notifier).setPharmacyReminders(v);
+              if (!context.mounted || ok || !v) return;
+              ScaffoldMessenger.of(context).showSnackBar(
+                const SnackBar(content: Text('Bildirim izni reddedildi.')),
+              );
+            },
+            title: const Text('Hafta sonu nöbetçi eczane'),
+            subtitle: Text(
+              'Cumartesi ve pazar sabahı nöbetçi eczane hatırlatması.',
+              style: TextStyle(fontSize: 12, color: AppColors.textMuted.withValues(alpha: 0.9)),
+            ),
+          ),
+        ],
       ),
     );
   }

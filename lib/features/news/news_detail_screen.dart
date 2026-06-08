@@ -1,8 +1,12 @@
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../app/providers.dart';
+import '../../core/config/app_config.dart';
 import '../../core/theme/app_colors.dart';
 import '../../core/utils/launcher_utils.dart';
+import '../../core/utils/target_router.dart';
+import '../../core/widgets/app_banner_ad.dart';
 import '../../data/models/news_item.dart';
 
 /// Haber tıklanınca açılan ayrı sayfa: tam metin (kaynaktan çekilir) + kaynağa link.
@@ -65,12 +69,23 @@ class NewsDetailScreen extends ConsumerWidget {
           if (imageUrl != null && imageUrl.isNotEmpty) ...[
             ClipRRect(
               borderRadius: BorderRadius.circular(16),
-              child: Image.network(
-                imageUrl,
+              child: CachedNetworkImage(
+                imageUrl: imageUrl,
                 width: double.infinity,
                 height: 220,
                 fit: BoxFit.cover,
-                errorBuilder: (_, __, ___) => Container(
+                placeholder: (context, url) => Container(
+                  height: 220,
+                  color: Theme.of(context).disabledColor.withValues(alpha: 0.05),
+                  child: const Center(
+                    child: SizedBox(
+                      width: 24,
+                      height: 24,
+                      child: CircularProgressIndicator(strokeWidth: 2),
+                    ),
+                  ),
+                ),
+                errorWidget: (_, __, ___) => Container(
                   height: 160,
                   color: Theme.of(context).disabledColor.withValues(alpha: 0.1),
                   child: Icon(Icons.image_not_supported_rounded, size: 48, color: Theme.of(context).disabledColor),
@@ -88,31 +103,7 @@ class NewsDetailScreen extends ConsumerWidget {
                 ),
           ),
           const SizedBox(height: 12),
-          Row(
-            children: [
-              if (item.sourceName != null && item.sourceName!.isNotEmpty) ...[
-                Container(
-                  padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
-                  decoration: BoxDecoration(
-                    color: AppColors.primaryDark.withValues(alpha: 0.12),
-                    borderRadius: BorderRadius.circular(20),
-                  ),
-                  child: Text(
-                    item.sourceName!,
-                    style: Theme.of(context).textTheme.labelMedium?.copyWith(
-                          color: AppColors.primaryDark,
-                          fontWeight: FontWeight.w700,
-                        ),
-                  ),
-                ),
-                const SizedBox(width: 12),
-              ],
-              Text(
-                _formatDate(item.createdAt),
-                style: Theme.of(context).textTheme.bodySmall?.copyWith(color: Theme.of(context).textTheme.bodySmall?.color),
-              ),
-            ],
-          ),
+          _PublisherCard(item: item, dateLabel: _formatDate(item.createdAt)),
           const SizedBox(height: 20),
           if (showLoading)
             const Padding(
@@ -127,11 +118,16 @@ class NewsDetailScreen extends ConsumerWidget {
                     height: 1.65,
                   ),
             ),
+          const SizedBox(height: 20),
+          const AppBannerAd(inline: true),
           if (item.sourceUrl != null && item.sourceUrl!.isNotEmpty) ...[
             const SizedBox(height: 28),
             Text(
-              'Haberi kaynak sitede okuyabilirsiniz.',
-              style: Theme.of(context).textTheme.bodyMedium?.copyWith(color: Theme.of(context).textTheme.bodySmall?.color),
+              'Bu haber bağımsız bir yayıncıdan alınmıştır. Tam metin ve güncel '
+              'içerik için orijinal kaynağı ziyaret edin.',
+              style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                    color: Theme.of(context).textTheme.bodySmall?.color,
+                  ),
             ),
             const SizedBox(height: 12),
             SizedBox(
@@ -139,7 +135,11 @@ class NewsDetailScreen extends ConsumerWidget {
               child: FilledButton.icon(
                 onPressed: () => LauncherUtils.openUrlExternal(context, item.sourceUrl!),
                 icon: const Icon(Icons.open_in_new_rounded, size: 20),
-                label: const Text('Habere git'),
+                label: Text(
+                  item.sourceName?.isNotEmpty == true
+                      ? '${item.sourceName} sitesinde oku'
+                      : 'Orijinal kaynağı aç',
+                ),
                 style: FilledButton.styleFrom(
                   backgroundColor: AppColors.primaryDark,
                   foregroundColor: AppColors.white,
@@ -149,6 +149,69 @@ class NewsDetailScreen extends ConsumerWidget {
               ),
             ),
           ],
+          const SizedBox(height: 16),
+          TextButton.icon(
+            onPressed: () => TargetRouter.handle(context, 'screen:news_sources'),
+            icon: const Icon(Icons.newspaper_rounded, size: 18),
+            label: const Text('Tüm haber kaynaklarını gör'),
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+class _PublisherCard extends StatelessWidget {
+  const _PublisherCard({required this.item, required this.dateLabel});
+
+  final NewsItem item;
+  final String dateLabel;
+
+  @override
+  Widget build(BuildContext context) {
+    final publisher = item.sourceName?.trim().isNotEmpty == true
+        ? item.sourceName!.trim()
+        : 'Bilinmeyen yayıncı';
+
+    return Container(
+      width: double.infinity,
+      padding: const EdgeInsets.all(14),
+      decoration: BoxDecoration(
+        color: AppColors.primaryDark.withValues(alpha: 0.08),
+        borderRadius: BorderRadius.circular(14),
+        border: Border.all(color: AppColors.primaryDark.withValues(alpha: 0.16)),
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Text(
+            'Yayıncı / Kaynak',
+            style: Theme.of(context).textTheme.labelSmall?.copyWith(
+                  color: AppColors.primaryDark,
+                  fontWeight: FontWeight.w800,
+                  letterSpacing: 0.3,
+                ),
+          ),
+          const SizedBox(height: 6),
+          Text(
+            publisher,
+            style: Theme.of(context).textTheme.titleMedium?.copyWith(
+                  fontWeight: FontWeight.w800,
+                  color: Theme.of(context).colorScheme.onSurface,
+                ),
+          ),
+          const SizedBox(height: 4),
+          Text(
+            'Yayın tarihi: $dateLabel',
+            style: Theme.of(context).textTheme.bodySmall,
+          ),
+          const SizedBox(height: 4),
+          Text(
+            'Uygulama yayıncısı: ${AppConfig.publisherName}',
+            style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                  color: Theme.of(context).textTheme.bodySmall?.color,
+                ),
+          ),
         ],
       ),
     );

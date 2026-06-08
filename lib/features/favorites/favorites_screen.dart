@@ -1,3 +1,4 @@
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../app/providers.dart';
@@ -224,10 +225,20 @@ class _PlaceFavTile extends ConsumerWidget {
                 width: 52,
                 height: 52,
                 child: imageUrl != null && imageUrl.isNotEmpty
-                    ? Image.network(
-                        imageUrl,
+                    ? CachedNetworkImage(
+                        imageUrl: imageUrl,
                         fit: BoxFit.cover,
-                        errorBuilder: (_, __, ___) => Container(
+                        placeholder: (context, url) => Container(
+                          color: Colors.grey.shade100,
+                          child: const Center(
+                            child: SizedBox(
+                              width: 16,
+                              height: 16,
+                              child: CircularProgressIndicator(strokeWidth: 1),
+                            ),
+                          ),
+                        ),
+                        errorWidget: (_, __, ___) => Container(
                           color: Theme.of(context).disabledColor.withValues(alpha: 0.1),
                           child: const Icon(Icons.image_not_supported, size: 20),
                         ),

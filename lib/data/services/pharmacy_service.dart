@@ -8,17 +8,30 @@ class PharmacyService {
   final Dio _dio;
   final String remoteUrl;
 
+  static const String sourceUrl =
+      'https://www.eczaneler.gen.tr/nobetci-osmaniye-duzici';
+
   Future<List<Pharmacy>> getDutyPharmacies({
     String city = 'Osmaniye',
     String district = 'Duzici',
+    bool forceRefresh = false,
   }) async =>
-      (await getStampedDutyPharmacies(city: city, district: district)).data;
+      (await getStampedDutyPharmacies(
+        city: city,
+        district: district,
+        forceRefresh: forceRefresh,
+      ))
+          .data;
 
   Future<Stamped<List<Pharmacy>>> getStampedDutyPharmacies({
     String city = 'Osmaniye',
     String district = 'Duzici',
+    bool forceRefresh = false,
   }) async {
-    // 1. Try our backend first
+    final refreshParams =
+        forceRefresh ? {'refresh': '1'} : <String, dynamic>{};
+
+    // 1. Backend API
     if (remoteUrl.trim().isNotEmpty) {
       try {
         final response = await _dio.get(
@@ -26,65 +39,67 @@ class PharmacyService {
           queryParameters: {
             'city': city,
             'district': district,
+            ...refreshParams,
           },
           options: Options(
-            receiveTimeout: const Duration(seconds: 8),
-            sendTimeout: const Duration(seconds: 8),
+            receiveTimeout: const Duration(seconds: 12),
+            sendTimeout: const Duration(seconds: 12),
           ),
         );
-        final data = response.data;
-        if (data is Map<String, dynamic>) {
-          final list = data['pharmacies'] as List<dynamic>? ?? [];
-          if (list.isNotEmpty) {
-            final items = list
-                .map((e) => Pharmacy.fromJson(Map<String, dynamic>.from(e as Map)))
-                .toList();
-            final fetchedAt = _parseDate(data['fetchedAt']) ?? DateTime.now();
-            return Stamped(data: items, fetchedAt: fetchedAt, source: 'backend');
-          }
-        }
+        final parsed = _parseBackendResponse(response.data);
+        if (parsed != null) return parsed;
       } catch (_) {}
     }
 
-    // 2. Fallback: If configured url is not the Render URL, try Render directly
-    const productionPharmacyUrl = 'https://hdbackend-vo99.onrender.com/api/pharmacies/duty';
-    if (remoteUrl != productionPharmacyUrl) {
-      try {
-        final response = await _dio.get(
-          productionPharmacyUrl,
-          queryParameters: {
-            'city': city,
-            'district': district,
-          },
-          options: Options(
-            receiveTimeout: const Duration(seconds: 10),
-            sendTimeout: const Duration(seconds: 10),
-          ),
-        );
-        final data = response.data;
-        if (data is Map<String, dynamic>) {
-          final list = data['pharmacies'] as List<dynamic>? ?? [];
-          if (list.isNotEmpty) {
-            final items = list
-                .map((e) => Pharmacy.fromJson(Map<String, dynamic>.from(e as Map)))
-                .toList();
-            final fetchedAt = _parseDate(data['fetchedAt']) ?? DateTime.now();
-            return Stamped(data: items, fetchedAt: fetchedAt, source: 'render-backend');
-          }
-        }
-      } catch (_) {}
-    }
+    // 2. Kaynak siteden doğrudan çek (Render 403 aldığında mobil cihaz yedek yolu)
+    try {
+      final direct = await _scrapeFromSource();
+      if (direct.data.isNotEmpty) return direct;
+    } catch (_) {}
 
-    // Safety and integrity fallback: do not show non-duty pharmacies if offline
     return Stamped(data: [], fetchedAt: DateTime.now(), source: 'offline');
+  }
+
+  Stamped<List<Pharmacy>>? _parseBackendResponse(Object? raw) {
+    if (raw is! Map<String, dynamic>) return null;
+    if (raw['ok'] == false) return null;
+    final list = raw['pharmacies'] as List<dynamic>? ?? [];
+    if (list.isEmpty) return null;
+    final items = list
+        .map((e) => Pharmacy.fromJson(Map<String, dynamic>.from(e as Map)))
+        .toList();
+    final fetchedAt = _parseDate(raw['fetchedAt']) ?? DateTime.now();
+    return Stamped(data: items, fetchedAt: fetchedAt, source: 'backend');
+  }
+
+  Future<Stamped<List<Pharmacy>>> _scrapeFromSource() async {
+    final response = await _dio.get<String>(
+      sourceUrl,
+      options: Options(
+        responseType: ResponseType.plain,
+        headers: const {
+          'User-Agent':
+              'Mozilla/5.0 (Linux; Android 14) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/123 Mobile Safari/537.36',
+          'Accept-Language': 'tr-TR,tr;q=0.9',
+          'Accept': 'text/html,application/xhtml+xml',
+        },
+        receiveTimeout: const Duration(seconds: 15),
+        sendTimeout: const Duration(seconds: 15),
+      ),
+    );
+    final html = response.data ?? '';
+    final items = parsePharmaciesFromHtml(html);
+    return Stamped(
+      data: items,
+      fetchedAt: DateTime.now(),
+      source: 'eczaneler-gen-tr',
+    );
   }
 
   static DateTime? _parseDate(Object? raw) {
     if (raw is String && raw.isNotEmpty) return DateTime.tryParse(raw);
     return null;
   }
-
-
 
   /// Resmi sayfanın HTML içeriğinden nöbetçi eczaneleri ayıklayan robust algoritma
   static List<Pharmacy> parsePharmaciesFromHtml(String html) {
@@ -98,8 +113,18 @@ class PharmacyService {
 
       final String bugunHtml = html.substring(bugunStartIdx, tableEndIdx);
 
-      // Eczane isimlerini bul
-      final RegExp nameRegExp = RegExp(r'''<span class=["']isim["']>([^<]+)</span>''', caseSensitive: false);
+      final rangeMatch = RegExp(
+        r'''class=["']d-flex alert alert-warning[^>]*>([\s\S]*?)</div>''',
+        caseSensitive: false,
+      ).firstMatch(bugunHtml);
+      final dateRange = rangeMatch != null
+          ? rangeMatch.group(1)!.replaceAll(RegExp(r'<[^>]+>'), ' ').trim()
+          : '';
+
+      final RegExp nameRegExp = RegExp(
+        r'''<span class=["']isim["']>([^<]+)</span>''',
+        caseSensitive: false,
+      );
       final Iterable<RegExpMatch> nameMatches = nameRegExp.allMatches(bugunHtml);
 
       for (final RegExpMatch nameMatch in nameMatches) {
@@ -115,15 +140,23 @@ class PharmacyService {
 
         if (detailMatch != null) {
           String address = detailMatch.group(1)!;
-          address = address.replaceAll(RegExp(r'<[^>]+>'), ' ').replaceAll(RegExp(r'\s+'), ' ').trim();
+          address = address
+              .replaceAll(RegExp(r'<[^>]+>'), ' ')
+              .replaceAll(RegExp(r'\s+'), ' ')
+              .trim();
 
           String phone = detailMatch.group(2)!;
-          phone = phone.replaceAll(RegExp(r'<[^>]+>'), ' ').replaceAll(RegExp(r'\s+'), ' ').trim();
+          phone = phone
+              .replaceAll(RegExp(r'<[^>]+>'), ' ')
+              .replaceAll(RegExp(r'\s+'), ' ')
+              .trim();
 
           pharmacies.add(Pharmacy(
             name: name,
             address: address,
             phone: phone,
+            dateLabel: 'Bugün',
+            dateRange: dateRange.isNotEmpty ? dateRange : null,
           ));
         }
       }

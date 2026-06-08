@@ -43,7 +43,14 @@ class BackgroundFetchService {
 @pragma('vm:entry-point')
 void callbackDispatcher() {
   Workmanager().executeTask((task, inputData) async {
-    await NewsBackgroundChecker.run();
+    switch (task) {
+      case Workmanager.iOSBackgroundTask:
+      case BackgroundFetchService.newsFetchTask:
+        await NewsBackgroundChecker.run();
+        break;
+      default:
+        await NewsBackgroundChecker.run();
+    }
     return true;
   });
 }

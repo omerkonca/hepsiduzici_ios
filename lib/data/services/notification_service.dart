@@ -25,6 +25,9 @@ class NotificationService {
       requestAlertPermission: true,
       requestBadgePermission: true,
       requestSoundPermission: true,
+      defaultPresentAlert: true,
+      defaultPresentBadge: true,
+      defaultPresentSound: true,
     );
     const InitializationSettings settings = InitializationSettings(android: android, iOS: ios);
     await _notifications.initialize(
@@ -48,31 +51,58 @@ class NotificationService {
     required String body,
     required DateTime scheduledDate,
   }) async {
-    // Etkinlikten 1 saat once bildirim gonder
     final reminderTime = scheduledDate.subtract(const Duration(hours: 1));
-    if (reminderTime.isBefore(DateTime.now())) return;
+    await scheduleZonedReminder(
+      id: id,
+      title: title,
+      body: body,
+      scheduledAt: reminderTime,
+      channelId: 'event_reminders',
+      channelName: 'Etkinlik Hatırlatıcıları',
+      channelDescription: 'Favori etkinliklerinizden önce gelen bildirimler',
+    );
+  }
+
+  Future<void> scheduleZonedReminder({
+    required int id,
+    required String title,
+    required String body,
+    required DateTime scheduledAt,
+    required String channelId,
+    required String channelName,
+    String? channelDescription,
+    DateTimeComponents? matchComponents,
+  }) async {
+    if (scheduledAt.isBefore(DateTime.now())) return;
 
     await _notifications.zonedSchedule(
       id,
       title,
       body,
-      tz.TZDateTime.from(reminderTime, tz.local),
-      const NotificationDetails(
+      tz.TZDateTime.from(scheduledAt, tz.local),
+      NotificationDetails(
         android: AndroidNotificationDetails(
-          'event_reminders',
-          'Etkinlik Hatırlatıcıları',
-          channelDescription: 'Favori etkinliklerinizden önce gelen bildirimler',
+          channelId,
+          channelName,
+          channelDescription: channelDescription ?? channelName,
           importance: Importance.max,
           priority: Priority.high,
         ),
-        iOS: DarwinNotificationDetails(),
+        iOS: const DarwinNotificationDetails(),
       ),
       androidScheduleMode: AndroidScheduleMode.exactAllowWhileIdle,
+      matchDateTimeComponents: matchComponents,
     );
   }
 
   Future<void> cancelReminder(int id) async {
     await _notifications.cancel(id);
+  }
+
+  Future<void> cancelRemindersInRange(int startId, int endId) async {
+    for (var id = startId; id <= endId; id++) {
+      await _notifications.cancel(id);
+    }
   }
 
   /// Android 13+ ve iOS bildirim izinlerini ister.
@@ -111,7 +141,10 @@ class NotificationService {
       final ios = _notifications
           .resolvePlatformSpecificImplementation<IOSFlutterLocalNotificationsPlugin>();
       final settings = await ios?.checkPermissions();
-      return settings?.isEnabled ?? false;
+      if (settings == null) return false;
+      return settings.isEnabled ||
+          settings.isAlertEnabled ||
+          settings.isProvisionalEnabled;
     }
     return true;
   }
