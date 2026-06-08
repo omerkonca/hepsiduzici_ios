@@ -11,23 +11,8 @@ workflows:
       vars:
         APP_ID: "net.hepsiduzici.hepsiDuzici"
         TEAM_ID: "7RJ993N2DP"
-      ios_signing:
-        distribution_type: app_store # Apple Store dağıtımı için App Store seçildi
-        bundle_identifier: "net.hepsiduzici.hepsiDuzici" # Projenin Bundle ID'si
     scripts:
-      - name: "0. Firebase plist (secret)"
-        script: |
-          bash scripts/codemagic-firebase-plist.sh
-
-      - name: "1. Bagimliliklari Kur"
-        script: |
-          flutter config --no-enable-swift-package-manager
-          flutter clean
-          flutter pub get
-          flutter build ios --config-only --no-codesign
-          cd ios && pod install --repo-update
-
-      - name: "2. Push profili yenile ve bagla"
+      - name: "0. Profil ve sertifika indir (Apple)"
         script: |
           app-store-connect fetch-signing-files "$APP_ID" \
             --platform IOS \
@@ -37,6 +22,18 @@ workflows:
             --private-key "$APP_STORE_CONNECT_PRIVATE_KEY" \
             --create
           xcode-project use-profiles --project ios/Runner.xcodeproj
+
+      - name: "1. Firebase plist (secret)"
+        script: |
+          bash scripts/codemagic-firebase-plist.sh
+
+      - name: "2. Bagimliliklari Kur"
+        script: |
+          flutter config --no-enable-swift-package-manager
+          flutter clean
+          flutter pub get
+          flutter build ios --config-only --no-codesign
+          cd ios && pod install --repo-update
 
       - name: "3. Final Build ve IPA Uretimi"
         script: |

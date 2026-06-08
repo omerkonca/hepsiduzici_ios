@@ -20,6 +20,7 @@ Apple'da Push açtıktan sonra eski profil geçersiz kalır. Yeni profil build s
 1. **Applications** → **hepsiduzici_ios**
 2. **Start new build** → branch **main** → **Start build**
 
+Profil sildikten sonra ya **Fetch profiles** butonuna bas ya da direkt build başlat.
 Build script'i (`fetch-signing-files --create`) Apple'dan Push dahil **yeni profil** indirir.
 
 ## Adım 3 — Kontrol
