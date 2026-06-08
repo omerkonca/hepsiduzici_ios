@@ -11,12 +11,18 @@ Apple'da Push açtıktan sonra eski profil geçersiz kalır. Yeni profil build s
 
 Profil sildikten sonra **sertifikayı silme** — sadece provisioning profile silinir.
 
-## Adım 1 — Eski profili sil (isteğe bağlı)
+## Adım 1 — Profili Apple'dan geri indir (zorunlu)
+
+Profil sildiysen önce Codemagic kasasına geri yükle:
 
 1. https://codemagic.io/apps
-2. **Teams** → **Code signing identities**
+2. Sol altta **Teams** → **Code signing identities**
 3. **iOS provisioning profiles** sekmesi
-4. **Hepsi Duzici App Store** → çöp kutusu → sil
+4. **Fetch profiles** butonuna bas
+5. Listeden **net.hepsiduzici.hepsiDuzici** (App Store) profilini seç
+6. Reference name: `Hepsi Duzici App Store` → **Download selected**
+
+> Sertifikayı (**Hepsi Duzici Dist**) silme.
 
 ## Adım 2 — Yeni build başlat
 

@@ -12,8 +12,8 @@ workflows:
         APP_ID: "net.hepsiduzici.hepsiDuzici"
         TEAM_ID: "7RJ993N2DP"
       ios_signing:
-        certificates:
-          - "Hepsi Duzici Dist"
+        distribution_type: app_store
+        bundle_identifier: "net.hepsiduzici.hepsiDuzici"
     scripts:
       - name: "0. Push profili indir (Apple)"
         script: |
