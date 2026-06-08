@@ -1,26 +1,11 @@
-# iOS Build Hatası: Push Notifications / aps-environment
+# iOS Push — İleride açılacak
 
-Hata:
-```
-Provisioning profile doesn't include the Push Notifications capability
-Provisioning profile doesn't include the aps-environment entitlement
-```
+Build'in geçmesi için `aps-environment` entitlement geçici kaldırıldı.
+iOS push TestFlight'ta şu an çalışmaz; Android push çalışır.
 
-## 1. Apple Developer (2 dk — zorunlu)
+## Push'u iOS'ta açmak için (boş zamanında)
 
-1. https://developer.apple.com/account → **Identifiers**
-2. **net.hepsiduzici.hepsiDuzici** seç
-3. **Push Notifications** kutusunu işaretle → **Save**
-
-## 2. Codemagic
-
-Build script profili otomatik yeniler (`fetch-signing-files --create`).
-
-Eski profil takılırsa:
-- Codemagic → **Code signing identities** → **Provisioning profiles**
-- **Hepsi Duzici App Store** profilini sil
-- Yeni build başlat
-
-## 3. Tekrar build
-
-Push capability + yeni profil = build geçer, TestFlight'ta push çalışır.
+1. developer.apple.com → Identifiers → **net.hepsiduzici.hepsiDuzici** → **Push Notifications** aç
+2. Codemagic → Code signing → **Hepsi Duzici App Store** profilini sil
+3. `ios/Runner/Runner.entitlements` dosyasını projeye geri bağla (CODE_SIGN_ENTITLEMENTS)
+4. Yeni build al
