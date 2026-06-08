@@ -27,21 +27,11 @@ workflows:
           flutter build ios --config-only --no-codesign
           cd ios && pod install --repo-update
 
-      - name: "3. Apple'dan guncel profil indir"
-        script: |
-          app-store-connect fetch-signing-files "$APP_ID" \
-            --platform IOS \
-            --type IOS_APP_STORE \
-            --issuer-id "$APP_STORE_CONNECT_ISSUER_ID" \
-            --key-id "$APP_STORE_CONNECT_KEY_ID" \
-            --private-key "$APP_STORE_CONNECT_PRIVATE_KEY" \
-            --delete-stale-profiles
-
-      - name: "4. Profilleri projeye bagla"
+      - name: "3. Profilleri projeye bagla"
         script: |
           xcode-project use-profiles --project ios/Runner.xcodeproj
 
-      - name: "5. Final Build ve IPA Uretimi"
+      - name: "4. Final Build ve IPA Uretimi"
         script: |
           EXPORT_PLIST="/Users/builder/export_options.plist"
           if [ ! -f "$EXPORT_PLIST" ]; then
@@ -51,7 +41,7 @@ workflows:
             --export-options-plist="$EXPORT_PLIST" \
             --no-tree-shake-icons
 
-      - name: "6. App Store Connect'e YUKLE (Otomatik)"
+      - name: "5. App Store Connect'e YUKLE (Otomatik)"
         script: |
           IPA_PATH=$(find build/ios/ipa -name "*.ipa" | head -n 1)
           echo "Bulunan IPA: $IPA_PATH"

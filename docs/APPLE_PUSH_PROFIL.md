@@ -42,6 +42,8 @@ Provisioning profile doesn't include the aps-environment entitlement
 
 Yeni profil `aps-environment` içerir → build geçer → TestFlight'ta push çalışır.
 
+> Build script'i Apple'dan profil indirmez (sertifika anahtarı gerekir). Profil **Fetch profiles** ile Codemagic kasasına alınmalıdır.
+
 ---
 
 ## Kontrol listesi
