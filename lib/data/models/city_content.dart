@@ -21,11 +21,13 @@ class CityContent {
     List<NewsSourceItem>? newsSources,
     List<CityServiceItem>? cityServices,
     List<HeaderMediaItem>? headerMedia,
+    List<AutoVehicleItem>? autoVehicles,
   })  : _quickActions = quickActions,
         _moreSections = moreSections,
         _newsSources = newsSources,
         _cityServices = cityServices,
-        _headerMedia = headerMedia;
+        _headerMedia = headerMedia,
+        _autoVehicles = autoVehicles;
 
   final List<ServiceTileItem> serviceTiles;
   final List<HealthFacilityItem> healthFacilities;
@@ -44,6 +46,7 @@ class CityContent {
   final List<NewsSourceItem>? _newsSources;
   final List<HeaderMediaItem>? _headerMedia;
   final List<CityServiceItem>? _cityServices;
+  final List<AutoVehicleItem>? _autoVehicles;
 
   // Hot reload sonrasi olusmus eski instance'larda null olabilecegi icin
   // her zaman default bos liste donen getter'lar.
@@ -52,6 +55,7 @@ class CityContent {
   List<NewsSourceItem> get newsSources => _newsSources ?? const [];
   List<CityServiceItem> get cityServices => _cityServices ?? const [];
   List<HeaderMediaItem> get headerMedia => _headerMedia ?? const [];
+  List<AutoVehicleItem> get autoVehicles => _autoVehicles ?? const [];
 
   factory CityContent.fromJson(Map<String, dynamic> json) {
     final services = (json['services'] as Map<String, dynamic>? ?? {});
@@ -118,6 +122,10 @@ class CityContent {
       headerMedia: (home['headerMedia'] as List<dynamic>? ?? [])
           .whereType<Map>()
           .map((e) => HeaderMediaItem.fromJson(Map<String, dynamic>.from(e)))
+          .toList(),
+      autoVehicles: (explore['autoVehicles'] as List<dynamic>? ?? [])
+          .whereType<Map>()
+          .map((e) => AutoVehicleItem.fromJson(Map<String, dynamic>.from(e)))
           .toList(),
     );
   }
@@ -814,5 +822,83 @@ class HeaderMediaItem {
       if (id != null) 'id': id,
       if (bubbleId != null) 'bubbleId': bubbleId,
     };
+  }
+}
+
+/// Oto galeri araç ilanı modeli — sahibinden.com tarzı.
+class AutoVehicleItem {
+  const AutoVehicleItem({
+    required this.id,
+    required this.title,
+    required this.brand,
+    required this.model,
+    this.year,
+    this.km,
+    this.price,
+    this.color,
+    this.fuelType,
+    this.gearType,
+    this.bodyType,
+    this.description,
+    this.sellerName,
+    this.contact,
+    this.images = const [],
+    this.image,
+    this.isPaid = false,
+    this.isActive = true,
+    this.createdAt,
+  });
+
+  final String id;
+  final String title;
+  final String brand;
+  final String model;
+  final String? year;
+  final String? km;
+  final String? price;
+  final String? color;
+  /// benzin | dizel | lpg | hibrit | elektrik
+  final String? fuelType;
+  /// manuel | otomatik | yari_otomatik
+  final String? gearType;
+  /// sedan | hatchback | suv | pickup | van | coupe | cabrio | kamyon | diger
+  final String? bodyType;
+  final String? description;
+  final String? sellerName;
+  final String? contact;
+  final List<String> images;
+  final String? image;
+  /// Ücretli / öne çıkan ilan
+  final bool isPaid;
+  final bool isActive;
+  final String? createdAt;
+
+  /// Ana fotoğraf (images dizisinin ilk elemanı veya image alanı)
+  String? get thumbnailUrl => images.isNotEmpty ? images.first : image;
+
+  factory AutoVehicleItem.fromJson(Map<String, dynamic> json) {
+    return AutoVehicleItem(
+      id: json['id'] as String? ?? '',
+      title: json['title'] as String? ?? '',
+      brand: json['brand'] as String? ?? '',
+      model: json['model'] as String? ?? '',
+      year: json['year']?.toString(),
+      km: json['km']?.toString(),
+      price: json['price']?.toString(),
+      color: json['color'] as String?,
+      fuelType: json['fuelType'] as String?,
+      gearType: json['gearType'] as String?,
+      bodyType: json['bodyType'] as String?,
+      description: json['description'] as String?,
+      sellerName: json['sellerName'] as String?,
+      contact: json['contact'] as String?,
+      images: (json['images'] as List<dynamic>? ?? [])
+          .map((e) => e.toString())
+          .toList(),
+      image: json['image'] as String?,
+      isPaid: json['isPaid'] as bool? ?? false,
+      isActive: json['isActive'] as bool? ?? true,
+      createdAt: json['createdAt'] as String?,
+    );
   }
 }

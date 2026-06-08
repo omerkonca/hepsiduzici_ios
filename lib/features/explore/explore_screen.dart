@@ -92,7 +92,7 @@ class ExploreScreen extends ConsumerWidget {
                           final svc = services[index];
                           return _CityServiceCard(
                             service: svc,
-                            onTap: () => _handleServiceTap(context, svc),
+                            onTap: () => _handleServiceTap(context, svc, autoVehicles: content.autoVehicles),
                           )
                               .animate(delay: (120 + index * 30).ms)
                               .fadeIn(
@@ -244,7 +244,7 @@ class ExploreScreen extends ConsumerWidget {
     );
   }
 
-  void _handleServiceTap(BuildContext context, CityServiceItem svc) {
+  void _handleServiceTap(BuildContext context, CityServiceItem svc, {List<AutoVehicleItem> autoVehicles = const []}) {
     if (svc.id == 'veterinary') {
       Navigator.of(context).push(
         MaterialPageRoute(builder: (_) => const VeterinaryScreen()),
@@ -267,6 +267,7 @@ class ExploreScreen extends ConsumerWidget {
               subtitle: svc.subtitle,
               color: _parseColor(svc.color),
               entries: svc.directoryData!,
+              autoVehicles: autoVehicles,
             ),
           ),
         );

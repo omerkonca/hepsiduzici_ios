@@ -145,6 +145,23 @@ class _AdminPushPanelState extends ConsumerState<AdminPushPanel> {
               : 'Uygulama yüklü kullanıcılara anlık push gönderin.',
           style: const TextStyle(color: PremiumCityTheme.muted, fontSize: 13),
         ),
+        const SizedBox(height: 10),
+        Container(
+          width: double.infinity,
+          padding: const EdgeInsets.all(12),
+          decoration: BoxDecoration(
+            color: Colors.blue.shade50,
+            borderRadius: BorderRadius.circular(12),
+            border: Border.all(color: Colors.blue.shade100),
+          ),
+          child: const Text(
+            'Kurulum: Firebase dosyaları + Supabase secret\'ları gerekli. '
+            'Detay: docs/PUSH_KURULUM_ADIM_ADIM.md\n'
+            'Gönderim çalışmıyorsa PUSH_ADMIN_TOKEN ve '
+            'FIREBASE_SERVICE_ACCOUNT_JSON secret\'larını kontrol edin.',
+            style: TextStyle(fontSize: 11.5, height: 1.35, color: Color(0xFF1565C0)),
+          ),
+        ),
         const SizedBox(height: 16),
         Wrap(
           spacing: 8,

@@ -1,21 +1,20 @@
 import 'dart:io' show Platform;
 
 import 'package:dio/dio.dart';
-import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/foundation.dart';
 import 'package:package_info_plus/package_info_plus.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
-import '../../firebase_options.dart';
 import '../config/app_config.dart';
 import '../../data/services/notification_service.dart';
+import 'firebase_bootstrap.dart';
 
 /// Arka planda gelen FCM mesajları (top-level gerekli).
 @pragma('vm:entry-point')
 Future<void> firebaseMessagingBackgroundHandler(RemoteMessage message) async {
-  await Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform);
+  await FirebaseBootstrap.ensureInitialized();
 }
 
 class PushNotificationService {
@@ -33,15 +32,18 @@ class PushNotificationService {
   Future<bool> initialize(NotificationService localNotifications) async {
     if (_ready) return true;
     if (kIsWeb) return false;
-    if (!DefaultFirebaseOptions.isConfigured) {
-      if (kDebugMode) {
-        debugPrint('[Push] Firebase yapılandırılmamış — push devre dışı.');
-      }
-      return false;
-    }
 
     try {
-      await Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform);
+      final firebaseOk = await FirebaseBootstrap.ensureInitialized();
+      if (!firebaseOk) {
+        if (kDebugMode) {
+          debugPrint(
+            '[Push] Firebase yok — google-services.json ve '
+            'GoogleService-Info.plist ekleyin.',
+          );
+        }
+        return false;
+      }
       FirebaseMessaging.onBackgroundMessage(firebaseMessagingBackgroundHandler);
 
       final messaging = FirebaseMessaging.instance;
