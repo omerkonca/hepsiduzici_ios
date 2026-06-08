@@ -2,35 +2,44 @@
 
 Apple'da Push açtıktan sonra eski profil geçersiz kalır. Yeni profil build sırasında otomatik oluşur.
 
-## Adım 1 — Eski profili sil
+## Nasıl çalışıyor?
 
-1. https://codemagic.io/apps adresine git
-2. **hepsiduzici_ios** uygulamasına tıkla
-3. Üst menüden **Teams** → kendi takımına gir  
-   (veya sol alttan **Team settings**)
-4. **codemagic.yaml settings** → **Code signing identities**
-5. **iOS provisioning profiles** sekmesi
-6. **Hepsi Duzici App Store** satırını bul
-7. Sağdaki **çöp kutusu (Delete)** ikonuna tıkla → onayla
+| Kaynak | Ne sağlar |
+|--------|-----------|
+| Codemagic kasası (`Hepsi Duzici Dist`) | Dağıtım sertifikası + keychain |
+| Apple (`fetch-signing-files --create`) | Push dahil yeni App Store profili |
 
-> Sertifikayı (certificate) silme, sadece **provisioning profile** sil.
+Profil sildikten sonra **sertifikayı silme** — sadece provisioning profile silinir.
+
+## Adım 1 — Eski profili sil (isteğe bağlı)
+
+1. https://codemagic.io/apps
+2. **Teams** → **Code signing identities**
+3. **iOS provisioning profiles** sekmesi
+4. **Hepsi Duzici App Store** → çöp kutusu → sil
 
 ## Adım 2 — Yeni build başlat
 
 1. **Applications** → **hepsiduzici_ios**
-2. **Start new build** → branch **main** → **Start build**
+2. **Start new build** → branch **main**
 
-Profil sildikten sonra ya **Fetch profiles** butonuna bas ya da direkt build başlat.
-Build script'i (`fetch-signing-files --create`) Apple'dan Push dahil **yeni profil** indirir.
+Build logunda şu adımlar yeşil olmalı:
 
-## Adım 3 — Kontrol
+- `0. Push profili indir (Apple)`
+- `3. Profilleri projeye bagla`
+- `4. Final Build ve IPA Uretimi`
 
-Build logunda **"2. Push profili yenile ve bagla"** adımı yeşil olmalı.
+## Adım 3 — TestFlight
 
 Başarılı build → TestFlight → uygulamayı aç → panelde **Kayıtlı cihaz: 1+**
 
 ## Sorun çıkarsa
 
-- Apple'da App ID'de **Push Notifications** işaretli mi?
-- Codemagic'te **GOOGLE_SERVICE_INFO_PLIST_BASE64** secret var mı?
+| Hata | Çözüm |
+|------|-------|
+| No valid code signing certificates | Codemagic'te **Hepsi Duzici Dist** sertifikası var mı kontrol et |
+| No matching profiles | Build'i tekrar başlat (`fetch-signing-files --create` yeni profil oluşturur) |
+| Push entitlement uyuşmuyor | Apple'da App ID'de **Push Notifications** işaretli mi? |
+
+- **GOOGLE_SERVICE_INFO_PLIST_BASE64** secret ekli mi?
 - **app_store_credentials** grubu (App Store Connect API key) dolu mu?

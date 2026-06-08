@@ -11,8 +11,11 @@ workflows:
       vars:
         APP_ID: "net.hepsiduzici.hepsiDuzici"
         TEAM_ID: "7RJ993N2DP"
+      ios_signing:
+        certificates:
+          - "Hepsi Duzici Dist"
     scripts:
-      - name: "0. Profil ve sertifika indir (Apple)"
+      - name: "0. Push profili indir (Apple)"
         script: |
           app-store-connect fetch-signing-files "$APP_ID" \
             --platform IOS \
@@ -21,7 +24,6 @@ workflows:
             --key-id "$APP_STORE_CONNECT_KEY_ID" \
             --private-key "$APP_STORE_CONNECT_PRIVATE_KEY" \
             --create
-          xcode-project use-profiles --project ios/Runner.xcodeproj
 
       - name: "1. Firebase plist (secret)"
         script: |
@@ -35,19 +37,25 @@ workflows:
           flutter build ios --config-only --no-codesign
           cd ios && pod install --repo-update
 
-      - name: "3. Final Build ve IPA Uretimi"
+      - name: "3. Profilleri projeye bagla"
         script: |
-          # export_options.plist dosyamız üstteki adım sayesinde başarıyla oluştu!
+          xcode-project use-profiles --project ios/Runner.xcodeproj
+
+      - name: "4. Final Build ve IPA Uretimi"
+        script: |
+          EXPORT_PLIST="/Users/builder/export_options.plist"
+          if [ ! -f "$EXPORT_PLIST" ]; then
+            EXPORT_PLIST="ios/export_options.plist"
+          fi
           flutter build ipa --release \
-            --export-options-plist=/Users/builder/export_options.plist \
+            --export-options-plist="$EXPORT_PLIST" \
             --no-tree-shake-icons
 
-      - name: "4. App Store Connect'e YUKLE (Otomatik)"
+      - name: "5. App Store Connect'e YUKLE (Otomatik)"
         script: |
-          # Üretilen IPA dosyasını bul ve yükle
           IPA_PATH=$(find build/ios/ipa -name "*.ipa" | head -n 1)
           echo "Bulunan IPA: $IPA_PATH"
-          
+
           app-store-connect publish --path "$IPA_PATH" \
             --issuer-id "$APP_STORE_CONNECT_ISSUER_ID" \
             --key-id "$APP_STORE_CONNECT_KEY_ID" \
