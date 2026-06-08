@@ -8,7 +8,6 @@ workflows:
       xcode: latest
       groups:
         - app_store_credentials
-        - firebase_credentials # GOOGLE_SERVICE_INFO_PLIST_BASE64 (encrypted)
       vars:
         APP_ID: "net.hepsiduzici.hepsiDuzici"
         TEAM_ID: "7RJ993N2DP"

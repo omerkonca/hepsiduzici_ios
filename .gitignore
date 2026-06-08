@@ -50,6 +50,5 @@ app.*.map.json
 /android/keystore-password.txt
 /android/admob.properties
 /android/app/google-services.json
-/ios/Runner/GoogleService-Info.plist
 /secrets/
 *-firebase-adminsdk-*.json
