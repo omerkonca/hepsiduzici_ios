@@ -27,9 +27,16 @@ workflows:
           flutter build ios --config-only --no-codesign
           cd ios && pod install --repo-update
 
-      - name: "2. Profilleri Projeye Bagla"
+      - name: "2. Push profili yenile ve bagla"
         script: |
-          # Codemagic kasasından indirilen sertifika ve profilleri projeye bağlar
+          # Push entitlement eklendikten sonra profil yenilenmeli (Apple Developer'da Push acik olmali)
+          app-store-connect fetch-signing-files "$APP_ID" \
+            --platform IOS \
+            --type IOS_APP_STORE \
+            --issuer-id "$APP_STORE_CONNECT_ISSUER_ID" \
+            --key-id "$APP_STORE_CONNECT_KEY_ID" \
+            --private-key "$APP_STORE_CONNECT_PRIVATE_KEY" \
+            --create
           xcode-project use-profiles --project ios/Runner.xcodeproj
 
       - name: "3. Final Build ve IPA Uretimi"
