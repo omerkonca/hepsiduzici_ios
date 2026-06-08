@@ -6,6 +6,7 @@ import 'package:supabase_flutter/supabase_flutter.dart';
 import 'app/providers.dart';
 import 'core/ads/ad_service.dart';
 import 'core/config/ad_config.dart';
+import 'core/push/push_notification_service.dart';
 import 'core/config/app_config.dart';
 import 'data/services/background_fetch_service.dart';
 import 'features/splash/splash_screen.dart';
@@ -50,6 +51,8 @@ void main() async {
   if (AdConfig.adsEnabled) {
     await AdService.instance.initialize();
   }
+
+  await PushNotificationService.instance.initialize(notificationService);
 
   runApp(
     UncontrolledProviderScope(

@@ -79,3 +79,8 @@ configurations.all {
         force 'androidx.core:core-ktx:1.13.1'
     }
 }
+
+def googleServicesFile = file("google-services.json")
+if (googleServicesFile.exists()) {
+    apply plugin: "com.google.gms.google-services"
+}

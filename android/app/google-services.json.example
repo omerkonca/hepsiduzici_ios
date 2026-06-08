@@ -1,0 +1,21 @@
+{
+  "project_info": {
+    "project_number": "BURAYA_SENDER_ID",
+    "project_id": "hepsiduzici",
+    "storage_bucket": "hepsiduzici.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:BURAYA_SENDER_ID:android:BURAYA_APP_ID",
+        "android_client_info": {
+          "package_name": "net.hepsiduzici.hepsi_duzici"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [{ "current_key": "BURAYA_ANDROID_API_KEY" }],
+      "services": { "appinvite_service": { "other_platform_oauth_client": [] } }
+    }
+  ],
+  "configuration_version": "1"
+}

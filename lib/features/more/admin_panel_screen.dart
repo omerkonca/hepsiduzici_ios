@@ -9,6 +9,7 @@ import 'package:cached_network_image/cached_network_image.dart';
 import '../../app/providers.dart';
 import '../../core/config/app_config.dart';
 import '../../core/theme/premium_city_theme.dart';
+import 'admin_push_panel.dart';
 
 class AdminPanelScreen extends ConsumerStatefulWidget {
   const AdminPanelScreen({super.key});
@@ -359,12 +360,18 @@ class _AdminPanelScreenState extends ConsumerState<AdminPanelScreen> {
           fieldName: 'exploreHeaderBg',
         ),
 
+        const SizedBox(height: 32),
+        const Divider(),
+        const SizedBox(height: 20),
+
+        AdminPushPanel(adminToken: _tokenController.text.trim()),
+
         const SizedBox(height: 40),
         const Divider(),
         const SizedBox(height: 16),
         const Center(
           child: Text(
-            'Hepsi Düziçi Yönetim Sistemi v1.0',
+            'Hepsi Düziçi Yönetim Sistemi v1.1',
             style: TextStyle(
               color: PremiumCityTheme.muted,
               fontSize: 12,

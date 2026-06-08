@@ -149,6 +149,34 @@ class NotificationService {
     return true;
   }
 
+  Future<void> showPushBroadcast({
+    required String title,
+    required String body,
+    String? payload,
+  }) async {
+    await _notifications.show(
+      91003,
+      title,
+      body,
+      const NotificationDetails(
+        android: AndroidNotificationDetails(
+          'push_broadcast',
+          'Duyuru bildirimleri',
+          channelDescription: 'Yayıncıdan gelen duyurular',
+          importance: Importance.high,
+          priority: Priority.high,
+        ),
+        iOS: DarwinNotificationDetails(
+          presentAlert: true,
+          presentBadge: true,
+          presentSound: true,
+          interruptionLevel: InterruptionLevel.timeSensitive,
+        ),
+      ),
+      payload: payload,
+    );
+  }
+
   Future<void> showNewsHeadlineUpdate({
     required String title,
     String? trackingKey,

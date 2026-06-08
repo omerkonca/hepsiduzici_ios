@@ -3,6 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import '../../app/providers.dart';
 import '../../core/theme/app_colors.dart';
+import '../../core/push/push_notification_service.dart';
 import '../../data/services/background_fetch_service.dart';
 
 class NotificationPreferencesScreen extends ConsumerStatefulWidget {
@@ -277,6 +278,23 @@ class _NotificationPreferencesScreenState
         ),
         const SizedBox(height: 24),
         Text(
+          'Duyuru bildirimleri',
+          style: Theme.of(context).textTheme.titleMedium?.copyWith(
+                fontWeight: FontWeight.w800,
+              ),
+        ),
+        const SizedBox(height: 8),
+        Text(
+          'Yayıncıdan gelen günaydın mesajları, yeni özellik ve şehir duyuruları.',
+          style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                color: AppColors.textMuted,
+                fontWeight: FontWeight.w500,
+              ),
+        ),
+        const SizedBox(height: 16),
+        const _MarketingPushCard(),
+        const SizedBox(height: 24),
+        Text(
           'Hatırlatıcılar',
           style: Theme.of(context).textTheme.titleMedium?.copyWith(
                 fontWeight: FontWeight.w800,
@@ -301,6 +319,70 @@ class _NotificationPreferencesScreenState
               ),
         ),
       ],
+      ),
+    );
+  }
+}
+
+class _MarketingPushCard extends StatefulWidget {
+  const _MarketingPushCard();
+
+  @override
+  State<_MarketingPushCard> createState() => _MarketingPushCardState();
+}
+
+class _MarketingPushCardState extends State<_MarketingPushCard> {
+  bool? _optIn;
+  bool _busy = false;
+
+  @override
+  void initState() {
+    super.initState();
+    _load();
+  }
+
+  Future<void> _load() async {
+    final v = await PushNotificationService.instance.getMarketingOptIn();
+    if (mounted) setState(() => _optIn = v);
+  }
+
+  Future<void> _set(bool value) async {
+    setState(() => _busy = true);
+    await PushNotificationService.instance.setMarketingOptIn(value);
+    if (mounted) setState(() {
+      _optIn = value;
+      _busy = false;
+    });
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    if (_optIn == null) {
+      return const Card(
+        child: Padding(
+          padding: EdgeInsets.all(20),
+          child: Center(child: CircularProgressIndicator()),
+        ),
+      );
+    }
+
+    return Card(
+      elevation: 0,
+      color: AppColors.surface,
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(16),
+        side: BorderSide(color: AppColors.softGrey.withValues(alpha: 0.5)),
+      ),
+      child: SwitchListTile.adaptive(
+        value: _optIn!,
+        onChanged: _busy ? null : _set,
+        title: const Text('Yayıncı duyuruları'),
+        subtitle: Text(
+          PushNotificationService.instance.isReady
+              ? 'Günaydın, yeni özellik ve önemli duyurular.'
+              : 'Push henüz yapılandırılmadı; Firebase kurulumu sonrası aktif olur.',
+          style: TextStyle(fontSize: 12, color: AppColors.textMuted.withValues(alpha: 0.9)),
+        ),
       ),
     );
   }
