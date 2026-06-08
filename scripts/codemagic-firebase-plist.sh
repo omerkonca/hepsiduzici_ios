@@ -12,8 +12,8 @@ if [ -f "$TARGET" ]; then
 fi
 
 if [ -z "${GOOGLE_SERVICE_INFO_PLIST_BASE64:-}" ]; then
-  echo "UYARI: GOOGLE_SERVICE_INFO_PLIST_BASE64 yok; repodaki plist kullanilacak."
-  exit 0
+  echo "HATA: Codemagic uygulama ayarlarina GOOGLE_SERVICE_INFO_PLIST_BASE64 ekleyin (Secure)."
+  exit 1
 fi
 
 echo "$GOOGLE_SERVICE_INFO_PLIST_BASE64" | base64 --decode > "$TARGET"
