@@ -31,9 +31,10 @@ Profil sildiysen önce Codemagic kasasına geri yükle:
 
 Build logunda şu adımlar yeşil olmalı:
 
-- `0. Push profili indir (Apple)`
 - `3. Profilleri projeye bagla`
 - `4. Final Build ve IPA Uretimi`
+
+> Push açtıktan sonra profili **Fetch profiles** ile yenile. Build script'i sertifika oluşturmaz (özel anahtar gerekmez).
 
 ## Adım 3 — TestFlight
 
