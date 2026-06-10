@@ -5,6 +5,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../app/providers.dart';
 import '../../core/theme/app_colors.dart';
 import '../../core/theme/premium_city_theme.dart';
+import '../../core/widgets/publisher_contact_strip.dart';
 import 'widgets/city_tools_grid.dart';
 import 'widgets/discover_places_strip.dart';
 import 'widgets/top_news_carousel.dart';
@@ -69,6 +70,9 @@ class HomeScreen extends ConsumerWidget {
                   .fadeIn(duration: 360.ms, curve: Curves.easeOutCubic),
             ),
             const SliverToBoxAdapter(child: SizedBox(height: 14)),
+            const SliverToBoxAdapter(
+              child: PublisherContactStrip(compact: true),
+            ),
             _PremiumSliver(
               child: const TopNewsCarousel()
                   .animate(delay: 120.ms)

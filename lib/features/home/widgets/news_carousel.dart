@@ -591,7 +591,7 @@ class _NewsRowTile extends StatelessWidget {
                   mainAxisSize: MainAxisSize.min,
                   children: [
                     Text(
-                      _formatDate(item.createdAt),
+                      '${_formatDate(item.createdAt)}${item.sourceName?.isNotEmpty == true ? " • ${item.sourceName}" : ""}',
                       style: Theme.of(context).textTheme.bodySmall?.copyWith(
                             color: AppColors.textMuted,
                             fontSize: 12,

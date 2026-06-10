@@ -53,3 +53,6 @@ app.*.map.json
 /ios/Runner/GoogleService-Info.plist
 /secrets/
 *-firebase-adminsdk-*.json
+
+# Supabase temp files
+supabase/.temp/

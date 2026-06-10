@@ -34,6 +34,16 @@ class NewsCardList extends ConsumerWidget {
                           n.title,
                           style: Theme.of(context).textTheme.titleMedium,
                         ),
+                        if (n.sourceName?.isNotEmpty == true) ...[
+                          const SizedBox(height: 4),
+                          Text(
+                            n.sourceName!,
+                            style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                                  color: AppColors.primaryDark,
+                                  fontWeight: FontWeight.bold,
+                                ),
+                          ),
+                        ],
                         if (n.summary != null) ...[
                           const SizedBox(height: 6),
                           Text(

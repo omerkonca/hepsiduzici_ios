@@ -7,6 +7,7 @@ import '../../core/theme/app_colors.dart';
 import '../../core/utils/launcher_utils.dart';
 import '../../core/utils/target_router.dart';
 import '../../core/widgets/app_banner_ad.dart';
+import '../../core/widgets/publisher_contact_strip.dart';
 import '../../data/models/news_item.dart';
 
 /// Haber tıklanınca açılan ayrı sayfa: tam metin (kaynaktan çekilir) + kaynağa link.
@@ -40,6 +41,13 @@ class NewsDetailScreen extends ConsumerWidget {
         foregroundColor: Theme.of(context).appBarTheme.foregroundColor,
         elevation: 0,
         scrolledUnderElevation: 1,
+        actions: [
+          IconButton(
+            tooltip: 'Bize Ulaşın',
+            onPressed: () => TargetRouter.handle(context, 'screen:contact'),
+            icon: const Icon(Icons.support_agent_rounded),
+          ),
+        ],
       ),
       body: detailsAsync != null
           ? detailsAsync.when(
@@ -154,6 +162,11 @@ class NewsDetailScreen extends ConsumerWidget {
             onPressed: () => TargetRouter.handle(context, 'screen:news_sources'),
             icon: const Icon(Icons.newspaper_rounded, size: 18),
             label: const Text('Tüm haber kaynaklarını gör'),
+          ),
+          const SizedBox(height: 12),
+          const PublisherContactStrip(
+            compact: true,
+            margin: EdgeInsets.zero,
           ),
         ],
       ),

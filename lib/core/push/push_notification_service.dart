@@ -92,10 +92,22 @@ class PushNotificationService {
         );
       });
 
+      // Terminated durumunda push bildirimine tıklanarak açıldıysa:
+      messaging.getInitialMessage().then((message) {
+        if (message != null) {
+          final route = message.data['route'];
+          if (route != null && route.isNotEmpty) {
+            NotificationService.persistPendingNewsTap(route);
+            NotificationService.tapController.add(route);
+          }
+        }
+      });
+
       FirebaseMessaging.onMessageOpenedApp.listen((message) {
         final route = message.data['route'];
         if (route != null && route.isNotEmpty) {
           NotificationService.persistPendingNewsTap(route);
+          NotificationService.tapController.add(route);
         }
       });
 

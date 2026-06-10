@@ -1,9 +1,11 @@
+import 'dart:async';
 import 'package:flutter/foundation.dart' show defaultTargetPlatform, kIsWeb, TargetPlatform;
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_animate/flutter_animate.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'dart:ui' as ui;
+import '../data/services/notification_service.dart';
 import '../core/ads/ad_service.dart';
 import '../core/push/push_notification_service.dart';
 import '../core/theme/app_colors.dart';
@@ -31,11 +33,18 @@ class MainNav extends ConsumerStatefulWidget {
 class _MainNavState extends ConsumerState<MainNav> with WidgetsBindingObserver {
   String? _pendingNewsTapKey;
   bool _openingFromNotification = false;
+  StreamSubscription<String>? _tapSubscription;
 
   @override
   void initState() {
     super.initState();
     WidgetsBinding.instance.addObserver(this);
+    
+    // Bildirim tıklamalarını dinle ve anında yönlendir
+    _tapSubscription = NotificationService.tapController.stream.listen((payload) {
+      _handleDirectNotificationTap(payload);
+    });
+
     Future.microtask(() async {
       await _loadPendingNewsTap();
       await _checkNewsOnResume();
@@ -47,6 +56,7 @@ class _MainNavState extends ConsumerState<MainNav> with WidgetsBindingObserver {
 
   @override
   void dispose() {
+    _tapSubscription?.cancel();
     WidgetsBinding.instance.removeObserver(this);
     AdService.instance.dispose();
     super.dispose();
@@ -58,9 +68,21 @@ class _MainNavState extends ConsumerState<MainNav> with WidgetsBindingObserver {
     final isForeground = state == AppLifecycleState.resumed;
     AdService.instance.onAppLifecycle(isForeground);
     if (isForeground) {
+      _loadPendingNewsTap(); // Arka plandan tıklanarak gelindiyse kontrol et
       _checkNewsOnResume();
       _syncReminders();
       _registerPushToken();
+    }
+  }
+
+  void _handleDirectNotificationTap(String payload) {
+    if (payload.trim().isEmpty) return;
+    _pendingNewsTapKey = payload.trim();
+    final stamped = ref.read(stampedNewsProvider).valueOrNull;
+    if (stamped != null) {
+      _tryOpenPendingNews(stamped.data);
+    } else {
+      ref.invalidate(stampedNewsProvider);
     }
   }
 

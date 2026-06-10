@@ -31,6 +31,7 @@ class AppConfig {
   /// Google Play Haber politikası — yayıncı iletişim bilgileri
   static const String publisherName = 'Ömer Faruk Konca';
   static const String contactEmail = 'hepsiduzici@gmail.com';
+  static const String contactPhone = '0541 642 96 21';
   static String get contactPageUrl => '$backendBaseUrl/iletisim.html';
   static String get privacyPolicyUrl => '$backendBaseUrl/gizlilik-politikasi.html';
 }

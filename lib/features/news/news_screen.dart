@@ -8,9 +8,9 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../app/providers.dart';
 import '../../core/theme/app_colors.dart';
 import '../../core/theme/premium_city_theme.dart';
-import '../../core/config/app_config.dart';
 import '../../core/utils/relative_time.dart';
 import '../../core/utils/target_router.dart';
+import '../../core/widgets/publisher_contact_strip.dart';
 import '../../data/models/news_item.dart';
 import 'news_detail_screen.dart';
 
@@ -85,6 +85,7 @@ class _NewsScreenState extends ConsumerState<NewsScreen> {
               ),
               slivers: [
                 const SliverToBoxAdapter(child: SizedBox(height: 6)),
+                const SliverToBoxAdapter(child: PublisherContactStrip()),
                 SliverToBoxAdapter(
                   child: _LatestTicker(
                     items: allNews.take(10).toList(),
@@ -708,7 +709,7 @@ class _LatestNewsTile extends StatelessWidget {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Text(
-                      RelativeTime.format(item.createdAt),
+                      '${RelativeTime.format(item.createdAt)}${item.sourceName?.isNotEmpty == true ? " • ${item.sourceName}" : ""}',
                       maxLines: 1,
                       overflow: TextOverflow.ellipsis,
                       style: const TextStyle(
@@ -849,8 +850,8 @@ class _NewsPolicyFooter extends StatelessWidget {
                 ),
                 OutlinedButton.icon(
                   onPressed: () => TargetRouter.handle(context, 'screen:contact'),
-                  icon: const Icon(Icons.email_rounded, size: 18),
-                  label: Text(AppConfig.contactEmail),
+                  icon: const Icon(Icons.support_agent_rounded, size: 18),
+                  label: const Text('Bize Ulaşın'),
                 ),
               ],
             ),

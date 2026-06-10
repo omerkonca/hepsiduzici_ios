@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'package:flutter/foundation.dart' show defaultTargetPlatform, TargetPlatform;
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -9,9 +10,13 @@ import 'news_background_checker.dart';
 @pragma('vm:entry-point')
 void notificationTapBackground(NotificationResponse response) {
   NotificationService.persistPendingNewsTap(response.payload);
+  if (response.payload != null) {
+    NotificationService.tapController.add(response.payload!);
+  }
 }
 
 class NotificationService {
+  static final StreamController<String> tapController = StreamController<String>.broadcast();
   final FlutterLocalNotificationsPlugin _notifications = FlutterLocalNotificationsPlugin();
 
   static const int newsNotificationId = 91001;
@@ -34,6 +39,9 @@ class NotificationService {
       settings,
       onDidReceiveNotificationResponse: (response) {
         persistPendingNewsTap(response.payload);
+        if (response.payload != null) {
+          tapController.add(response.payload!);
+        }
       },
       onDidReceiveBackgroundNotificationResponse: notificationTapBackground,
     );
@@ -42,6 +50,7 @@ class NotificationService {
     final payload = launchDetails?.notificationResponse?.payload;
     if (payload != null && payload.trim().isNotEmpty) {
       await persistPendingNewsTap(payload);
+      tapController.add(payload);
     }
   }
 
