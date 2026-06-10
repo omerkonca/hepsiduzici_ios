@@ -22,7 +22,7 @@ class AdService {
   bool _isForeground = true;
 
   /// Uygulamada bu kadar süre geçince geçiş reklamı gösterilir.
-  static const Duration sessionInterstitialInterval = Duration(minutes: 4);
+  static const Duration sessionInterstitialInterval = Duration(minutes: 8);
 
   /// İki geçiş reklamı arasındaki minimum süre.
   static const Duration _minInterstitialInterval = Duration(minutes: 2);
