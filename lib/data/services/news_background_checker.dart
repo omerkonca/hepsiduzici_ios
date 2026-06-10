@@ -87,7 +87,7 @@ class NewsBackgroundChecker {
 
       final plugin = notifications ?? FlutterLocalNotificationsPlugin();
       if (notifications == null) {
-        const androidInit = AndroidInitializationSettings('@mipmap/ic_launcher');
+        const androidInit = AndroidInitializationSettings('ic_notification');
         const iosInit = DarwinInitializationSettings(
           requestAlertPermission: false,
           requestBadgePermission: false,
