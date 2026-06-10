@@ -34,6 +34,12 @@ class _PharmacyScreenState extends ConsumerState<PharmacyScreen> {
   double? _userLng;
   bool _isLocating = false;
 
+  @override
+  void initState() {
+    super.initState();
+    WidgetsBinding.instance.addPostFrameCallback((_) => _getUserLocation());
+  }
+
   // Düziçi mahalle merkez koordinatları (Kuş uçuşu mesafe hesaplama için)
   static const Map<String, _MahalleCoords> _mahalleler = {
     'Seçiniz...': _MahalleCoords(0, 0),

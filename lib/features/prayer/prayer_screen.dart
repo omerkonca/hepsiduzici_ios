@@ -5,6 +5,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../app/providers.dart';
 import '../../core/widgets/service_page_layout.dart';
 import '../../data/models/prayer_times.dart';
+import 'widgets/qibla_compass.dart';
 
 class PrayerScreen extends ConsumerStatefulWidget {
   const PrayerScreen({super.key});
@@ -15,13 +16,14 @@ class PrayerScreen extends ConsumerStatefulWidget {
 
 class _PrayerScreenState extends ConsumerState<PrayerScreen> {
   Timer? _timer;
+  bool _showCompass = false;
 
   @override
   void initState() {
     super.initState();
     // Her saniye ekranı güncelleyerek canlı geri sayımı tetikleriz
     _timer = Timer.periodic(const Duration(seconds: 1), (_) {
-      if (mounted) {
+      if (mounted && !_showCompass) {
         setState(() {});
       }
     });
@@ -118,16 +120,35 @@ class _PrayerScreenState extends ConsumerState<PrayerScreen> {
         const Color themeColor = Color(0xFF00796B); // Premium yeşil/teal renk
 
         return ServicePageLayout(
-          title: 'Namaz Vakitleri',
-          subtitle: 'Düziçi namaz vakitleri — Diyanet İşleri Başkanlığı uyumlu.',
-          icon: 'mosque',
+          title: _showCompass ? 'Kıble Pusulası' : 'Namaz Vakitleri',
+          subtitle: _showCompass
+              ? 'Telefonunuzu yere paralel tutarak kıbleyi bulun. Düziçi için Kıble Açısı: ~168.5°.'
+              : 'Düziçi namaz vakitleri — Diyanet İşleri Başkanlığı uyumlu.',
+          icon: _showCompass ? 'navigation' : 'mosque',
           color: themeColor,
-          onRefresh: () async {
-            ref.invalidate(prayerTimesProvider);
-            await ref.read(prayerTimesProvider.future);
-          },
-          child: SliverList(
-            delegate: SliverChildListDelegate([
+          actions: [
+            IconButton(
+              icon: Icon(_showCompass ? Icons.mosque_rounded : Icons.explore_rounded),
+              tooltip: _showCompass ? 'Namaz Vakitleri' : 'Kıble Pusulası',
+              onPressed: () {
+                setState(() {
+                  _showCompass = !_showCompass;
+                });
+              },
+            ),
+          ],
+          onRefresh: _showCompass
+              ? null
+              : () async {
+                  ref.invalidate(prayerTimesProvider);
+                  await ref.read(prayerTimesProvider.future);
+                },
+          child: _showCompass
+              ? const SliverToBoxAdapter(
+                  child: QiblaCompass(),
+                )
+              : SliverList(
+                  delegate: SliverChildListDelegate([
               // Geri Sayım Hero Kartı
               Container(
                 padding: const EdgeInsets.all(20),

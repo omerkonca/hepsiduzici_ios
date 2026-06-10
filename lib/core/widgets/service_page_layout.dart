@@ -17,6 +17,7 @@ class ServicePageLayout extends StatelessWidget {
     this.isEmpty = false,
     this.emptyMessage = 'Henüz kayıt bulunmamaktadır.',
     this.floatingActionButton,
+    this.actions,
   });
 
   final String title;
@@ -28,11 +29,15 @@ class ServicePageLayout extends StatelessWidget {
   final bool isEmpty;
   final String emptyMessage;
   final Widget? floatingActionButton;
+  final List<Widget>? actions;
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: Text(title)),
+      appBar: AppBar(
+        title: Text(title),
+        actions: actions,
+      ),
       floatingActionButton: floatingActionButton,
       body: onRefresh != null
           ? RefreshIndicator(

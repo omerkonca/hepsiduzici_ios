@@ -37,6 +37,12 @@ class _VeterinaryScreenState extends ConsumerState<VeterinaryScreen> {
   double? _userLng;
   bool _isLocating = false;
 
+  @override
+  void initState() {
+    super.initState();
+    WidgetsBinding.instance.addPostFrameCallback((_) => _getUserLocation());
+  }
+
   static const Map<String, _MahalleCoords> _mahalleler = {
     'Seçiniz...': _MahalleCoords(0, 0),
     'İrfanlı Mahallesi': _MahalleCoords(37.2440, 36.4510),
