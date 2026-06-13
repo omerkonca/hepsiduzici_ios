@@ -343,16 +343,20 @@ class _MarketingPushCardState extends State<_MarketingPushCard> {
 
   Future<void> _load() async {
     final v = await PushNotificationService.instance.getMarketingOptIn();
-    if (mounted) setState(() => _optIn = v);
+    if (mounted) {
+      setState(() => _optIn = v);
+    }
   }
 
   Future<void> _set(bool value) async {
     setState(() => _busy = true);
     await PushNotificationService.instance.setMarketingOptIn(value);
-    if (mounted) setState(() {
-      _optIn = value;
-      _busy = false;
-    });
+    if (mounted) {
+      setState(() {
+        _optIn = value;
+        _busy = false;
+      });
+    }
   }
 
   @override

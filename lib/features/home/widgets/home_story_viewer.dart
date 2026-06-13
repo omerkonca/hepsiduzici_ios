@@ -370,7 +370,7 @@ class _StoryPageMediaState extends State<_StoryPageMedia> with SingleTickerProvi
       return const Center(child: CircularProgressIndicator(color: Colors.white));
     }
 
-    final isAsset = !widget.item.url.startsWith('http');
+    final isAsset = widget.item.url.startsWith('assets/');
     if (isAsset) {
       return withHero(
         Image.asset(

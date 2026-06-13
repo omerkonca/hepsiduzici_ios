@@ -43,16 +43,6 @@ class ContactScreen extends ConsumerWidget {
               'mailto:${AppConfig.contactEmail}',
             ),
           ),
-          if (AppConfig.contactPhone.isNotEmpty)
-            _InfoTile(
-              icon: Icons.phone_rounded,
-              label: 'Telefon',
-              value: AppConfig.contactPhone,
-              onTap: () => LauncherUtils.callPhone(
-                context,
-                AppConfig.contactPhone,
-              ),
-            ),
           _InfoTile(
             icon: Icons.language_rounded,
             label: 'Web sitesi',

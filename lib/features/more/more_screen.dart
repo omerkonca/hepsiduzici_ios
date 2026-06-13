@@ -87,6 +87,13 @@ class MoreScreen extends ConsumerWidget {
       title: 'Destek ve Ayarlar',
       tiles: [
         MoreTileItem(
+          icon: 'campaign_rounded',
+          title: 'İhbar ve Öneri',
+          subtitle: 'Sorun, tavsiye paylaş — fotoğraf ekle',
+          color: '#E65100',
+          target: 'screen:citizen_report',
+        ),
+        MoreTileItem(
           icon: 'support_agent_rounded',
           title: 'Bize Ulaşın',
           subtitle: 'E-posta ve yayıncı bilgileri',

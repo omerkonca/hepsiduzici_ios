@@ -20,12 +20,28 @@ class _AppBannerAdState extends State<AppBannerAd> {
   BannerAd? _banner;
   bool _loaded = false;
   int _loadAttempts = 0;
-  static const _maxAttempts = 3;
+  static const _maxAttempts = 4;
 
   @override
   void initState() {
     super.initState();
     WidgetsBinding.instance.addPostFrameCallback((_) => _loadBanner());
+  }
+
+  Future<AdSize> _resolveBannerSize(double width) async {
+    if (width < 320) return AdSize.banner;
+
+    if (defaultTargetPlatform == TargetPlatform.iOS) {
+      final portrait = await AdSize.getAnchoredAdaptiveBannerAdSize(
+        Orientation.portrait,
+        width.truncate(),
+      );
+      if (portrait != null) return portrait;
+    }
+
+    final adaptive =
+        await AdSize.getCurrentOrientationAnchoredAdaptiveBannerAdSize(width.truncate());
+    return adaptive ?? AdSize.banner;
   }
 
   Future<void> _loadBanner() async {
@@ -34,10 +50,14 @@ class _AppBannerAdState extends State<AppBannerAd> {
     await AdService.instance.ensureInitialized();
     if (!mounted || !AdService.instance.isInitialized) return;
 
-    final width = MediaQuery.sizeOf(context).width.truncate();
-    final adaptiveSize =
-        await AdSize.getCurrentOrientationAnchoredAdaptiveBannerAdSize(width);
-    final adSize = adaptiveSize ?? AdSize.banner;
+    final width = MediaQuery.sizeOf(context).width;
+    if (width <= 0) {
+      await Future<void>.delayed(const Duration(milliseconds: 300));
+      if (mounted) return _loadBanner();
+    }
+
+    final adSize = await _resolveBannerSize(width);
+    if (!mounted) return;
 
     _banner?.dispose();
     _loaded = false;
@@ -45,7 +65,7 @@ class _AppBannerAdState extends State<AppBannerAd> {
     final banner = BannerAd(
       adUnitId: AdConfig.bannerAdUnitId,
       size: adSize,
-      request: const AdRequest(),
+      request: AdService.instance.adRequest,
       listener: BannerAdListener(
         onAdLoaded: (ad) {
           if (!mounted) return;
@@ -69,7 +89,7 @@ class _AppBannerAdState extends State<AppBannerAd> {
           _loadAttempts++;
           if (_loadAttempts < _maxAttempts) {
             Future<void>.delayed(
-              Duration(seconds: 2 * _loadAttempts),
+              Duration(seconds: 3 * _loadAttempts),
               _loadBanner,
             );
           }

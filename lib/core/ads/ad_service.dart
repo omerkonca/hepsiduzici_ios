@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'dart:developer' as developer;
 
 import 'package:app_tracking_transparency/app_tracking_transparency.dart';
 import 'package:flutter/foundation.dart';
@@ -14,6 +15,7 @@ class AdService {
 
   bool _initialized = false;
   bool _attHandled = false;
+  TrackingStatus? _attStatus;
   Future<void>? _initFuture;
   InterstitialAd? _interstitial;
   bool _loadingInterstitial = false;
@@ -29,6 +31,13 @@ class AdService {
 
   bool get isInitialized => _initialized;
 
+  /// ATT reddedildiyse kişiselleştirilmemiş reklam isteği (iOS doldurma oranı).
+  AdRequest get adRequest {
+    final limited = _attStatus == TrackingStatus.denied ||
+        _attStatus == TrackingStatus.restricted;
+    return AdRequest(nonPersonalizedAds: limited);
+  }
+
   Future<void> initialize() => ensureInitialized();
 
   Future<void> ensureInitialized() {
@@ -42,16 +51,13 @@ class AdService {
       await _requestAttIfNeeded();
       final status = await MobileAds.instance.initialize();
       _initialized = true;
-      if (kDebugMode) {
-        for (final entry in status.adapterStatuses.entries) {
-          debugPrint(
-            '[AdService] adapter ${entry.key}: ${entry.value.description}',
-          );
-        }
+      _logAd('MobileAds initialized (${AdConfig.bannerAdUnitId})');
+      for (final entry in status.adapterStatuses.entries) {
+        _logAd('adapter ${entry.key}: ${entry.value.description}');
       }
       preloadInterstitial();
     } catch (e, st) {
-      debugPrint('[AdService] init failed: $e\n$st');
+      _logAd('init failed: $e', error: e, stackTrace: st);
       _initFuture = null;
     }
   }
@@ -62,14 +68,20 @@ class AdService {
     try {
       var status = await AppTrackingTransparency.trackingAuthorizationStatus;
       if (status == TrackingStatus.notDetermined) {
-        await Future<void>.delayed(const Duration(milliseconds: 300));
+        await Future<void>.delayed(const Duration(milliseconds: 500));
         status = await AppTrackingTransparency.requestTrackingAuthorization();
       }
-      if (kDebugMode) {
-        debugPrint('[AdService] ATT status: $status');
-      }
+      _attStatus = status;
+      _logAd('ATT status: $status');
     } catch (e) {
-      debugPrint('[AdService] ATT failed: $e');
+      _logAd('ATT failed: $e');
+    }
+  }
+
+  void _logAd(String message, {Object? error, StackTrace? stackTrace}) {
+    developer.log(message, name: 'AdService', error: error, stackTrace: stackTrace);
+    if (kDebugMode) {
+      debugPrint('[AdService] $message');
     }
   }
 
@@ -105,14 +117,14 @@ class AdService {
     _loadingInterstitial = true;
     InterstitialAd.load(
       adUnitId: AdConfig.interstitialAdUnitId,
-      request: const AdRequest(),
+      request: adRequest,
       adLoadCallback: InterstitialAdLoadCallback(
         onAdLoaded: (ad) {
           _interstitial = ad;
           _loadingInterstitial = false;
         },
         onAdFailedToLoad: (error) {
-          debugPrint('[AdService] interstitial load failed: $error');
+          _logAd('interstitial load failed: $error');
           _loadingInterstitial = false;
         },
       ),
@@ -147,7 +159,7 @@ class AdService {
         preloadInterstitial();
       },
       onAdFailedToShowFullScreenContent: (failed, error) {
-        debugPrint('[AdService] interstitial show failed: $error');
+        _logAd('interstitial show failed: $error');
         failed.dispose();
         _interstitial = null;
         preloadInterstitial();

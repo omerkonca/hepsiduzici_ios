@@ -7,6 +7,8 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 import '../../app/main_nav.dart';
+import '../../core/ads/ad_service.dart';
+import '../../core/config/ad_config.dart';
 import '../../core/theme/app_colors.dart';
 import '../../core/theme/premium_city_theme.dart';
 import '../onboarding/onboarding_screen.dart';
@@ -59,9 +61,12 @@ class _SplashScreenState extends ConsumerState<SplashScreen>
   Future<void> _bootstrap() async {
     final prefsFuture = SharedPreferences.getInstance();
     final minWait = Future<void>.delayed(const Duration(milliseconds: 450));
+    final adsFuture = AdConfig.adsEnabled
+        ? AdService.instance.ensureInitialized()
+        : Future<void>.value();
     final prefs = await prefsFuture;
     final onboardingCompleted = prefs.getBool('has_seen_onboarding') ?? false;
-    await minWait;
+    await Future.wait([minWait, adsFuture]);
     if (!mounted) return;
 
     Navigator.of(context).pushReplacement(

@@ -18,6 +18,8 @@ class AdConfig {
   static const String _bannerIos = String.fromEnvironment('ADMOB_BANNER_IOS');
   static const String _interstitialIos =
       String.fromEnvironment('ADMOB_INTERSTITIAL_IOS');
+  static const bool _forceTestAds =
+      bool.fromEnvironment('ADMOB_USE_TEST_ADS', defaultValue: false);
 
   // Hepsi Düziçi — canlı AdMob birimleri (Android)
   static const String prodAppIdAndroid =
@@ -49,7 +51,7 @@ class AdConfig {
       (defaultTargetPlatform == TargetPlatform.android ||
           defaultTargetPlatform == TargetPlatform.iOS);
 
-  static bool get useTestAds => kDebugMode;
+  static bool get useTestAds => kDebugMode || _forceTestAds;
 
   static bool get _isIos => defaultTargetPlatform == TargetPlatform.iOS;
 

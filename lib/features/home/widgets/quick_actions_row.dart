@@ -39,6 +39,14 @@ class QuickActionsRow extends ConsumerWidget {
       target: 'screen:municipality',
     ),
     QuickActionItem(
+      id: 'ihbar',
+      icon: 'campaign_rounded',
+      label: 'İhbar',
+      subtitle: 'Sorun & öneri bildir',
+      color: '#E65100',
+      target: 'screen:citizen_report',
+    ),
+    QuickActionItem(
       id: 'haber',
       icon: 'newspaper_rounded',
       label: 'Haberler',

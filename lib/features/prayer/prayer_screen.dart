@@ -120,21 +120,33 @@ class _PrayerScreenState extends ConsumerState<PrayerScreen> {
         const Color themeColor = Color(0xFF00796B); // Premium yeşil/teal renk
 
         return ServicePageLayout(
-          title: _showCompass ? 'Kıble Pusulası' : 'Namaz Vakitleri',
+          title: _showCompass ? 'Kıble Yönü' : 'Namaz Vakitleri',
           subtitle: _showCompass
-              ? 'Telefonunuzu yere paralel tutarak kıbleyi bulun. Düziçi için Kıble Açısı: ~168.5°.'
+              ? 'Telefonu yere paralel tutun; yeşil ok Kabe yönünü gösterir. Düziçi: ~168.5°.'
               : 'Düziçi namaz vakitleri — Diyanet İşleri Başkanlığı uyumlu.',
           icon: _showCompass ? 'navigation' : 'mosque',
           color: themeColor,
           actions: [
-            IconButton(
-              icon: Icon(_showCompass ? Icons.mosque_rounded : Icons.explore_rounded),
-              tooltip: _showCompass ? 'Namaz Vakitleri' : 'Kıble Pusulası',
-              onPressed: () {
-                setState(() {
-                  _showCompass = !_showCompass;
-                });
-              },
+            Padding(
+              padding: const EdgeInsets.only(right: 8),
+              child: TextButton.icon(
+                onPressed: () {
+                  setState(() {
+                    _showCompass = !_showCompass;
+                  });
+                },
+                icon: Icon(
+                  _showCompass ? Icons.mosque_rounded : Icons.explore_rounded,
+                  size: 20,
+                ),
+                label: Text(
+                  _showCompass ? 'Namaz Vakitleri' : 'Kıble Yönü',
+                  style: const TextStyle(fontWeight: FontWeight.w800),
+                ),
+                style: TextButton.styleFrom(
+                  foregroundColor: themeColor,
+                ),
+              ),
             ),
           ],
           onRefresh: _showCompass
@@ -144,11 +156,67 @@ class _PrayerScreenState extends ConsumerState<PrayerScreen> {
                   await ref.read(prayerTimesProvider.future);
                 },
           child: _showCompass
-              ? const SliverToBoxAdapter(
+              ? const SliverFillRemaining(
+                  hasScrollBody: false,
                   child: QiblaCompass(),
                 )
               : SliverList(
                   delegate: SliverChildListDelegate([
+              // Kıble yönü
+              Material(
+                color: themeColor.withValues(alpha: 0.08),
+                borderRadius: BorderRadius.circular(18),
+                child: InkWell(
+                  borderRadius: BorderRadius.circular(18),
+                  onTap: () => setState(() => _showCompass = true),
+                  child: Padding(
+                    padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
+                    child: Row(
+                      children: [
+                        Container(
+                          padding: const EdgeInsets.all(10),
+                          decoration: BoxDecoration(
+                            color: themeColor.withValues(alpha: 0.12),
+                            shape: BoxShape.circle,
+                          ),
+                          child: const Icon(
+                            Icons.explore_rounded,
+                            color: themeColor,
+                            size: 24,
+                          ),
+                        ),
+                        const SizedBox(width: 14),
+                        const Expanded(
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Text(
+                                'Kıble Yönünü Bul',
+                                style: TextStyle(
+                                  fontSize: 16,
+                                  fontWeight: FontWeight.w900,
+                                  color: themeColor,
+                                ),
+                              ),
+                              SizedBox(height: 2),
+                              Text(
+                                'Pusula ile Kabe yönünü göster',
+                                style: TextStyle(
+                                  fontSize: 12,
+                                  fontWeight: FontWeight.w600,
+                                  color: Color(0xFF00695C),
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
+                        const Icon(Icons.chevron_right_rounded, color: themeColor),
+                      ],
+                    ),
+                  ),
+                ),
+              ).animate().fadeIn(duration: 350.ms),
+              const SizedBox(height: 16),
               // Geri Sayım Hero Kartı
               Container(
                 padding: const EdgeInsets.all(20),

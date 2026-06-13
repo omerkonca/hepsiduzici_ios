@@ -24,7 +24,19 @@ CityContent normalizeCityContentMedia(CityContent content) {
     outages: content.outages,
     transportation: content.transportation,
     fuel: content.fuel,
-    branding: content.branding,
+    branding: content.branding != null
+        ? BrandingInfo(
+            appName: content.branding!.appName,
+            tagline: content.branding!.tagline,
+            logoUrl: content.branding!.logoUrl,
+            primaryColor: content.branding!.primaryColor,
+            primaryDarkColor: content.branding!.primaryDarkColor,
+            accentBlueColor: content.branding!.accentBlueColor,
+            splashBackgroundColor: content.branding!.splashBackgroundColor,
+            heroCardBg: MediaUrlResolver.resolvedOrNull(content.branding!.heroCardBg),
+            exploreHeaderBg: MediaUrlResolver.resolvedOrNull(content.branding!.exploreHeaderBg),
+          )
+        : null,
     quickActions: content.quickActions,
     moreSections: content.moreSections,
     newsSources: content.newsSources,

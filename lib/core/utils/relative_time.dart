@@ -23,6 +23,16 @@ class RelativeTime {
     return '$dayMonth ${fetchedAt.year}';
   }
 
+  /// Bildirim merkezi: gelecek etkinlikler için "Yaklaşıyor", geçmiş için [format].
+  static String formatInbox(DateTime dateTime, {DateTime? now}) {
+    final n = now ?? DateTime.now();
+    if (dateTime.isAfter(n)) {
+      final dayMonth = '${dateTime.day} ${_months[dateTime.month - 1]}';
+      return 'Yaklaşıyor · $dayMonth ${_hhmm(dateTime)}';
+    }
+    return format(dateTime, now: n);
+  }
+
   /// "14:35" tarzi sade saat.
   static String hhmm(DateTime t) => _hhmm(t);
 

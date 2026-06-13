@@ -597,7 +597,9 @@ class _PharmacyScreenState extends ConsumerState<PharmacyScreen> {
                                           Container(
                                             padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 2),
                                             decoration: BoxDecoration(
-                                              color: Colors.green.shade900.withValues(alpha: 0.15),
+                                              color: p.dateLabel == 'Yarın'
+                                                  ? Colors.blue.shade900.withValues(alpha: 0.15)
+                                                  : Colors.green.shade900.withValues(alpha: 0.15),
                                               borderRadius: BorderRadius.circular(6),
                                             ),
                                             child: Row(
@@ -606,18 +608,18 @@ class _PharmacyScreenState extends ConsumerState<PharmacyScreen> {
                                                 Container(
                                                   width: 6,
                                                   height: 6,
-                                                  decoration: const BoxDecoration(
-                                                    color: Colors.green,
+                                                  decoration: BoxDecoration(
+                                                    color: p.dateLabel == 'Yarın' ? Colors.blue : Colors.green,
                                                     shape: BoxShape.circle,
                                                   ),
                                                 ),
                                                 const SizedBox(width: 4),
-                                                const Text(
-                                                  'BUGÜN NÖBETÇİ (7/24)',
+                                                Text(
+                                                  p.dateLabel == 'Yarın' ? 'YARIN NÖBETÇİ' : 'BUGÜN NÖBETÇİ (7/24)',
                                                   style: TextStyle(
                                                     fontSize: 10,
                                                     fontWeight: FontWeight.bold,
-                                                    color: Colors.green,
+                                                    color: p.dateLabel == 'Yarın' ? Colors.blue : Colors.green,
                                                   ),
                                                 ),
                                               ],

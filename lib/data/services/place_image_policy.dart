@@ -12,7 +12,6 @@ class PlaceImagePolicy {
     'yt3.googleusercontent.com',
   };
 
-  /// Sorunlu veya yanlış eşleşmeye açık yerler için elle onaylı görseller.
   static const Map<String, String> _approvedByPlaceName = {
     'düziçi ulu cami':
         'https://upload.wikimedia.org/wikipedia/commons/thumb/9/9a/Sabanc%C4%B1_Merkez_Camii.jpg/960px-Sabanc%C4%B1_Merkez_Camii.jpg',
@@ -21,6 +20,16 @@ class PlaceImagePolicy {
     'taş köprü (fettahoğluları)':
         'https://upload.wikimedia.org/wikipedia/commons/thumb/c/c2/Stone_Bridge_%28Adana%29.jpg/960px-Stone_Bridge_%28Adana%29.jpg',
     'karasu şelalesi': 'assets/images/karasu_selalesi.jpg',
+    'yeşil şelalesi': 'assets/images/yesil_selalesi.jpg',
+    'kocakesme şelalesi': 'assets/images/kocakesme_selalesi.jpg',
+    'delioğlan şelalesi': 'assets/images/delioglan_selalesi.jpg',
+    'uyuz pınarı': 'assets/images/uyuz_pinari.jpg',
+    'harun reşit kalesi': 'assets/images/harun_resit.jpg',
+    'karatepe-aslantaş açık hava müzesi': 'assets/images/karatepe.jpg',
+    'karatepe-aslantaş açık hava müzesi ve milli parkı': 'assets/images/karatepe.jpg',
+    'kastabala (hierapolis) antik kenti': 'assets/images/kastabala.jpg',
+    'toprakkale kalesi': 'assets/images/toprakkale.jpg',
+    "deve mağarası, deve kanyonu ve adem'in şelalesi (kısık kanyonu rotası)": 'assets/images/deve_kanyonu.jpg',
   };
 
   static String? approvedImageFor(ExplorePlace place) {
@@ -40,7 +49,7 @@ class PlaceImagePolicy {
 
     // Web Admin Panelinden yüklenen resimler (Cloudinary veya Yerel Upload) her zaman önceliklidir.
     if (raw != null && raw.isNotEmpty && (raw.contains('cloudinary.com') || raw.contains('/uploads/') || raw.contains(':5050'))) {
-      return raw;
+      return MediaUrlResolver.resolve(raw);
     }
 
     if (raw == null || raw.isEmpty) {

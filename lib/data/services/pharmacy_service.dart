@@ -101,65 +101,72 @@ class PharmacyService {
     return null;
   }
 
+  static List<Pharmacy> _parseTab(String html, String tabId, String dateLabel) {
+    final List<Pharmacy> pharmacies = [];
+    final int startIdx = html.indexOf('id="$tabId"');
+    if (startIdx == -1) return pharmacies;
+
+    final int tableEndIdx = html.indexOf('</table>', startIdx);
+    if (tableEndIdx == -1) return pharmacies;
+
+    final String tabHtml = html.substring(startIdx, tableEndIdx);
+
+    final rangeMatch = RegExp(
+      r'''class=["']d-flex alert alert-warning[^>]*>([\s\S]*?)</div>''',
+      caseSensitive: false,
+    ).firstMatch(tabHtml);
+    final dateRange = rangeMatch != null
+        ? rangeMatch.group(1)!.replaceAll(RegExp(r'<[^>]+>'), ' ').trim()
+        : '';
+
+    final RegExp nameRegExp = RegExp(
+      r'''<span class=["']isim["']>([^<]+)</span>''',
+      caseSensitive: false,
+    );
+    final Iterable<RegExpMatch> nameMatches = nameRegExp.allMatches(tabHtml);
+
+    for (final RegExpMatch nameMatch in nameMatches) {
+      final String name = nameMatch.group(1)!.trim();
+      final int nameIdx = nameMatch.start;
+
+      final String rest = tabHtml.substring(nameIdx);
+      final RegExp detailRegExp = RegExp(
+        r'''class=['"]col-lg-6['"]>([\s\S]*?)</div>[\s\S]*?class=['"]col-lg-3[^'"]*['"]>([\s\S]*?)</div>''',
+        caseSensitive: false,
+      );
+      final RegExpMatch? detailMatch = detailRegExp.firstMatch(rest);
+
+      if (detailMatch != null) {
+        String address = detailMatch.group(1)!;
+        address = address
+            .replaceAll(RegExp(r'<[^>]+>'), ' ')
+            .replaceAll(RegExp(r'\s+'), ' ')
+            .trim();
+
+        String phone = detailMatch.group(2)!;
+        phone = phone
+            .replaceAll(RegExp(r'<[^>]+>'), ' ')
+            .replaceAll(RegExp(r'\s+'), ' ')
+            .trim();
+
+        pharmacies.add(Pharmacy(
+          name: name,
+          address: address,
+          phone: phone,
+          dateLabel: dateLabel,
+          dateRange: dateRange.isNotEmpty ? dateRange : null,
+        ));
+      }
+    }
+    return pharmacies;
+  }
+
   /// Resmi sayfanın HTML içeriğinden nöbetçi eczaneleri ayıklayan robust algoritma
   static List<Pharmacy> parsePharmaciesFromHtml(String html) {
     final List<Pharmacy> pharmacies = [];
     try {
-      final int bugunStartIdx = html.indexOf('id="nav-bugun"');
-      if (bugunStartIdx == -1) return pharmacies;
-
-      final int tableEndIdx = html.indexOf('</table>', bugunStartIdx);
-      if (tableEndIdx == -1) return pharmacies;
-
-      final String bugunHtml = html.substring(bugunStartIdx, tableEndIdx);
-
-      final rangeMatch = RegExp(
-        r'''class=["']d-flex alert alert-warning[^>]*>([\s\S]*?)</div>''',
-        caseSensitive: false,
-      ).firstMatch(bugunHtml);
-      final dateRange = rangeMatch != null
-          ? rangeMatch.group(1)!.replaceAll(RegExp(r'<[^>]+>'), ' ').trim()
-          : '';
-
-      final RegExp nameRegExp = RegExp(
-        r'''<span class=["']isim["']>([^<]+)</span>''',
-        caseSensitive: false,
-      );
-      final Iterable<RegExpMatch> nameMatches = nameRegExp.allMatches(bugunHtml);
-
-      for (final RegExpMatch nameMatch in nameMatches) {
-        final String name = nameMatch.group(1)!.trim();
-        final int nameIdx = nameMatch.start;
-
-        final String rest = bugunHtml.substring(nameIdx);
-        final RegExp detailRegExp = RegExp(
-          r'''class=['"]col-lg-6['"]>([\s\S]*?)</div>[\s\S]*?class=['"]col-lg-3[^'"]*['"]>([\s\S]*?)</div>''',
-          caseSensitive: false,
-        );
-        final RegExpMatch? detailMatch = detailRegExp.firstMatch(rest);
-
-        if (detailMatch != null) {
-          String address = detailMatch.group(1)!;
-          address = address
-              .replaceAll(RegExp(r'<[^>]+>'), ' ')
-              .replaceAll(RegExp(r'\s+'), ' ')
-              .trim();
-
-          String phone = detailMatch.group(2)!;
-          phone = phone
-              .replaceAll(RegExp(r'<[^>]+>'), ' ')
-              .replaceAll(RegExp(r'\s+'), ' ')
-              .trim();
-
-          pharmacies.add(Pharmacy(
-            name: name,
-            address: address,
-            phone: phone,
-            dateLabel: 'Bugün',
-            dateRange: dateRange.isNotEmpty ? dateRange : null,
-          ));
-        }
-      }
+      pharmacies.addAll(_parseTab(html, 'nav-bugun', 'Bugün'));
+      pharmacies.addAll(_parseTab(html, 'nav-yarin', 'Yarın'));
     } catch (e) {
       // ignore: avoid_print
       print('HTML Ayrıştırma Hatası: $e');

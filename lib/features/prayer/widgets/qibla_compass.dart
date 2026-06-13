@@ -125,7 +125,15 @@ class _QiblaCompassState extends State<QiblaCompass> {
 
   // Pusula Sensörü Başlatma
   void _initCompass() {
-    _compassSubscription = FlutterCompass.events?.listen((event) {
+    final events = FlutterCompass.events;
+    if (events == null) {
+      if (mounted) {
+        setState(() => _hasSensors = false);
+      }
+      return;
+    }
+
+    _compassSubscription = events.listen((event) {
       if (!mounted) return;
       
       final heading = event.heading;
@@ -185,7 +193,14 @@ class _QiblaCompassState extends State<QiblaCompass> {
       return _buildNoSensorFallback();
     }
 
-    return Column(
+    final compassHeight = math.min(
+      MediaQuery.sizeOf(context).height * 0.42,
+      360.0,
+    );
+
+    return SingleChildScrollView(
+      padding: const EdgeInsets.only(bottom: 16),
+      child: Column(
       children: [
         // Kalibrasyon uyarısı ve GPS durumu
         Container(
@@ -227,7 +242,8 @@ class _QiblaCompassState extends State<QiblaCompass> {
         const SizedBox(height: 24),
 
         // Pusula Alanı
-        Expanded(
+        SizedBox(
+          height: compassHeight,
           child: Center(
             child: Stack(
               alignment: Alignment.center,
@@ -484,6 +500,7 @@ class _QiblaCompassState extends State<QiblaCompass> {
           ),
         ),
       ],
+      ),
     );
   }
 
@@ -522,7 +539,8 @@ class _QiblaCompassState extends State<QiblaCompass> {
     final theme = Theme.of(context);
     final darkColor = theme.brightness == Brightness.dark ? AppColors.darkSurface : Colors.white;
 
-    return Center(
+    return SingleChildScrollView(
+      padding: const EdgeInsets.symmetric(vertical: 16),
       child: Container(
         margin: const EdgeInsets.all(24),
         padding: const EdgeInsets.all(24),

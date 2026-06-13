@@ -1,9 +1,11 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_animate/flutter_animate.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:intl/intl.dart';
 import '../../app/providers.dart';
 import '../../core/theme/app_colors.dart';
+import '../../core/utils/relative_time.dart';
 import '../../core/utils/target_router.dart';
 import '../../data/models/app_notification.dart';
 import '../../data/models/custom_reminder.dart';
@@ -23,9 +25,19 @@ class NotificationCenterScreen extends ConsumerStatefulWidget {
 
 class _NotificationCenterScreenState extends ConsumerState<NotificationCenterScreen> {
   bool _markedOnExit = false;
+  Timer? _relativeTimeTicker;
+
+  @override
+  void initState() {
+    super.initState();
+    _relativeTimeTicker = Timer.periodic(const Duration(minutes: 1), (_) {
+      if (mounted) setState(() {});
+    });
+  }
 
   @override
   void dispose() {
+    _relativeTimeTicker?.cancel();
     _markInboxSeen();
     super.dispose();
   }
@@ -544,7 +556,7 @@ class _NotificationList extends StatelessWidget {
                           ),
                           const SizedBox(height: 6),
                           Text(
-                            _formatRelativeDate(item.dateTime),
+                            RelativeTime.formatInbox(item.dateTime),
                             style: TextStyle(
                               fontSize: 11,
                               fontWeight: FontWeight.w600,
@@ -561,16 +573,5 @@ class _NotificationList extends StatelessWidget {
           ).animate().fadeIn(delay: (index * 35).ms).slideY(begin: 0.04, end: 0);
         },
     );
-  }
-
-  static String _formatRelativeDate(DateTime d) {
-    final diff = DateTime.now().difference(d);
-    if (diff.isNegative) {
-      return 'Yaklaşıyor · ${DateFormat('d MMM, HH:mm', 'tr_TR').format(d)}';
-    }
-    if (diff.inDays > 0) return diff.inDays == 1 ? 'Dün' : '${diff.inDays} gün önce';
-    if (diff.inHours > 0) return '${diff.inHours} saat önce';
-    if (diff.inMinutes > 0) return '${diff.inMinutes} dk önce';
-    return 'Az önce';
   }
 }

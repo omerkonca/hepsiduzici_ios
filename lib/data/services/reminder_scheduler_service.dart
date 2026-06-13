@@ -1,5 +1,3 @@
-import 'package:flutter_local_notifications/flutter_local_notifications.dart';
-
 import '../models/custom_reminder.dart';
 import '../models/pharmacy.dart';
 import '../models/prayer_times.dart';
@@ -14,8 +12,6 @@ class ReminderSchedulerService {
   final ReminderStorageService _storage;
 
   static const int _prayerIdBase = 20000;
-  static const int _pharmacySaturdayId = 30001;
-  static const int _pharmacySundayId = 30002;
   static const int _customIdBase = 40000;
 
   Future<void> syncAll({
@@ -56,39 +52,49 @@ class ReminderSchedulerService {
   }
 
   Future<void> syncPharmacyReminders(List<Pharmacy>? pharmacies) async {
-    await _notifications.cancelReminder(_pharmacySaturdayId);
-    await _notifications.cancelReminder(_pharmacySundayId);
+    for (var id = 30001; id <= 30010; id++) {
+      await _notifications.cancelReminder(id);
+    }
     if (!await _storage.getPharmacyRemindersEnabled()) return;
 
-    final name = pharmacies?.isNotEmpty == true ? pharmacies!.first.name : 'Nöbetçi eczane';
-    final body = pharmacies?.isNotEmpty == true
-        ? 'Bugün nöbetçi: $name'
-        : 'Bugünün nöbetçi eczanesini uygulamadan kontrol edin.';
-
     final now = DateTime.now();
-    await _scheduleWeekendPharmacy(
-      id: _pharmacySaturdayId,
-      weekday: DateTime.saturday,
-      title: 'Hafta sonu nöbetçi eczane',
-      body: body,
-      now: now,
-    );
-    await _scheduleWeekendPharmacy(
-      id: _pharmacySundayId,
-      weekday: DateTime.sunday,
-      title: 'Pazar nöbetçi eczane',
-      body: body,
-      now: now,
-    );
+
+    for (var weekOffset = 0; weekOffset < 4; weekOffset++) {
+      final satTarget = _getUpcomingWeekday(DateTime.saturday, now, weekOffset);
+      final satBody = _getPharmacyBody(
+        targetDate: satTarget,
+        pharmacies: pharmacies,
+        now: now,
+      );
+      await _notifications.scheduleZonedReminder(
+        id: 30001 + (weekOffset * 2),
+        title: 'Hafta sonu nöbetçi eczane',
+        body: satBody,
+        scheduledAt: satTarget,
+        channelId: 'pharmacy_reminders',
+        channelName: 'Nöbetçi Eczane Hatırlatıcıları',
+        channelDescription: 'Hafta sonu nöbetçi eczane bildirimleri',
+      );
+
+      final sunTarget = _getUpcomingWeekday(DateTime.sunday, now, weekOffset);
+      final sunBody = _getPharmacyBody(
+        targetDate: sunTarget,
+        pharmacies: pharmacies,
+        now: now,
+      );
+      await _notifications.scheduleZonedReminder(
+        id: 30002 + (weekOffset * 2),
+        title: 'Pazar nöbetçi eczane',
+        body: sunBody,
+        scheduledAt: sunTarget,
+        channelId: 'pharmacy_reminders',
+        channelName: 'Nöbetçi Eczane Hatırlatıcıları',
+        channelDescription: 'Hafta sonu nöbetçi eczane bildirimleri',
+      );
+    }
   }
 
-  Future<void> _scheduleWeekendPharmacy({
-    required int id,
-    required int weekday,
-    required String title,
-    required String body,
-    required DateTime now,
-  }) async {
+  DateTime _getUpcomingWeekday(int weekday, DateTime now, int weekOffset) {
     var target = DateTime(now.year, now.month, now.day, 9, 0);
     while (target.weekday != weekday) {
       target = target.add(const Duration(days: 1));
@@ -96,17 +102,38 @@ class ReminderSchedulerService {
     if (target.isBefore(now)) {
       target = target.add(const Duration(days: 7));
     }
+    if (weekOffset > 0) {
+      target = target.add(Duration(days: 7 * weekOffset));
+    }
+    return target;
+  }
 
-    await _notifications.scheduleZonedReminder(
-      id: id,
-      title: title,
-      body: body,
-      scheduledAt: target,
-      channelId: 'pharmacy_reminders',
-      channelName: 'Nöbetçi Eczane Hatırlatıcıları',
-      channelDescription: 'Hafta sonu nöbetçi eczane bildirimleri',
-      matchComponents: DateTimeComponents.dayOfWeekAndTime,
-    );
+  String _getPharmacyBody({
+    required DateTime targetDate,
+    required List<Pharmacy>? pharmacies,
+    required DateTime now,
+  }) {
+    final targetDateOnly = DateTime(targetDate.year, targetDate.month, targetDate.day);
+    final nowDateOnly = DateTime(now.year, now.month, now.day);
+    final tomorrowDateOnly = nowDateOnly.add(const Duration(days: 1));
+
+    if (pharmacies != null && pharmacies.isNotEmpty) {
+      if (targetDateOnly == nowDateOnly) {
+        final todayPharmacy = pharmacies.firstWhere(
+          (p) => p.dateLabel == 'Bugün',
+          orElse: () => pharmacies.first,
+        );
+        return 'Bugün nöbetçi: ${todayPharmacy.name}';
+      } else if (targetDateOnly == tomorrowDateOnly) {
+        final hasTomorrow = pharmacies.any((p) => p.dateLabel == 'Yarın');
+        if (hasTomorrow) {
+          final tomorrowPharmacy = pharmacies.firstWhere((p) => p.dateLabel == 'Yarın');
+          return 'Bugün nöbetçi: ${tomorrowPharmacy.name}';
+        }
+      }
+    }
+
+    return 'Bugünün nöbetçi eczanesini uygulamadan kontrol edin.';
   }
 
   Future<void> syncCustomReminders() async {

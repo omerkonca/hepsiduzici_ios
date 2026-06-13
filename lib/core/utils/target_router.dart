@@ -21,6 +21,7 @@ import '../../features/services/outages_screen.dart';
 import '../../features/services/closed_roads_screen.dart';
 import '../../features/services/taxi_call_screen.dart';
 import '../../features/services/transportation_screen.dart';
+import '../../features/more/citizen_report_screen.dart';
 import '../../features/more/contact_screen.dart';
 import '../../features/more/news_sources_screen.dart';
 import '../../features/more/admin_panel_screen.dart';
@@ -139,6 +140,10 @@ class TargetRouter {
         return;
       case 'contact':
         await _pushPage(context, const ContactScreen());
+        return;
+      case 'citizen_report':
+      case 'ihbar':
+        await _pushPage(context, const CitizenReportScreen());
         return;
       case 'news_sources':
         await _pushPage(context, const NewsSourcesScreen());

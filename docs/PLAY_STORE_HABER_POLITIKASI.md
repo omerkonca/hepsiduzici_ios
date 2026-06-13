@@ -31,21 +31,11 @@ Red sebebi: iletişim bilgileri kolay bulunamıyor.
 
 Uygulama haber toplayıcı ise **Haberler ve Dergiler** doğru kategoridir. Beyan formu ile uyumlu olmalı.
 
-### 4) (Önerilir) Telefon numarası
-
-Politika e-posta **veya** telefon ister. Telefon eklemek isterseniz:
-
-1. `lib/core/config/app_config.dart` içinde `contactPhone` default değerini güncelleyin
-2. `backend/public/iletisim.html` dosyasına telefon satırı ekleyin
-3. Yeni sürüm yükleyin
-
-Build sırasında: `--dart-define=CONTACT_PHONE=05XXXXXXXXX`
-
-### 5) Backend deploy
+### 4) Backend deploy
 
 `iletisim.html` değişiklikleri için Render'da backend'i yeniden deploy edin.
 
-### 6) Yeni sürüm
+### 5) Yeni sürüm
 
 1. Yeni APK/AAB yükleyin
 2. **Politika durumu** → reddi **Çözüldü olarak işaretle** / yeniden gönderin

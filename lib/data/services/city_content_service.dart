@@ -76,12 +76,76 @@ class CityContentService {
       transportation: remote.transportation,
       fuel: remote.fuel ?? bundled.fuel,
       branding: remote.branding ?? bundled.branding,
-      quickActions: remote.quickActions.isNotEmpty ? remote.quickActions : bundled.quickActions,
-      moreSections: remote.moreSections.isNotEmpty ? remote.moreSections : bundled.moreSections,
+      quickActions: _patchQuickActions(remote.quickActions, bundled.quickActions),
+      moreSections: _patchMoreSections(remote.moreSections, bundled.moreSections),
       newsSources: remote.newsSources.isNotEmpty ? remote.newsSources : bundled.newsSources,
       cityServices: _patchCityServices(remote.cityServices, bundled.cityServices),
       headerMedia: remote.headerMedia.isNotEmpty ? remote.headerMedia : bundled.headerMedia,
     );
+  }
+
+  /// Uzak menüde eksik kalan uygulama ekranlarını paket verisinden tamamlar.
+  List<QuickActionItem> _patchQuickActions(
+    List<QuickActionItem> remote,
+    List<QuickActionItem> bundled,
+  ) {
+    if (remote.isEmpty) return bundled;
+
+    final remoteTargets = remote
+        .map((action) => action.target)
+        .where((target) => target.isNotEmpty)
+        .toSet();
+
+    final patched = List<QuickActionItem>.from(remote);
+    for (final action in bundled) {
+      if (action.target.isEmpty || remoteTargets.contains(action.target)) continue;
+      patched.add(action);
+      remoteTargets.add(action.target);
+    }
+    return patched;
+  }
+
+  /// Uzak menüde eksik kalan uygulama ekranlarını paket verisinden tamamlar.
+  List<MoreSectionItem> _patchMoreSections(
+    List<MoreSectionItem> remote,
+    List<MoreSectionItem> bundled,
+  ) {
+    if (remote.isEmpty) return bundled;
+
+    final remoteTargets = remote
+        .expand((section) => section.tiles)
+        .map((tile) => tile.target)
+        .where((target) => target.isNotEmpty)
+        .toSet();
+
+    final patched = remote
+        .map(
+          (section) => MoreSectionItem(
+            title: section.title,
+            tiles: List<MoreTileItem>.from(section.tiles),
+          ),
+        )
+        .toList();
+
+    for (final bundledSection in bundled) {
+      for (final tile in bundledSection.tiles) {
+        if (tile.target.isEmpty || remoteTargets.contains(tile.target)) continue;
+
+        final sectionIndex = patched.indexWhere((section) => section.title == bundledSection.title);
+        if (sectionIndex >= 0) {
+          final section = patched[sectionIndex];
+          patched[sectionIndex] = MoreSectionItem(
+            title: section.title,
+            tiles: [tile, ...section.tiles],
+          );
+        } else {
+          patched.add(MoreSectionItem(title: bundledSection.title, tiles: [tile]));
+        }
+        remoteTargets.add(tile.target);
+      }
+    }
+
+    return patched;
   }
 
   List<CityServiceItem> _patchCityServices(

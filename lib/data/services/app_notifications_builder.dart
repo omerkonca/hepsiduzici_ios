@@ -61,7 +61,7 @@ class AppNotificationsBuilder {
             id: outageId(item.title),
             title: item.title,
             body: item.subtitle,
-            dateTime: outages.fetchedAt,
+            dateTime: item.date ?? outages.fetchedAt,
             icon: isWater ? Icons.water_drop_rounded : Icons.bolt_rounded,
             color: isWater ? const Color(0xFF1E88E5) : const Color(0xFFF5A623),
             type: AppNotificationType.outage,
@@ -95,7 +95,6 @@ class AppNotificationsBuilder {
     }
 
     if (news != null) {
-      final fetchedAt = news.fetchedAt;
       final recentNews = [...news.data]
         ..sort((a, b) => b.createdAt.compareTo(a.createdAt));
 
@@ -110,16 +109,13 @@ class AppNotificationsBuilder {
           if (source != null && source.isNotEmpty) source,
           if (summary != null && summary.isNotEmpty) summary,
         ].join(' · ');
-        final inboxTime = item.createdAt.isAfter(fetchedAt.subtract(const Duration(minutes: 30)))
-            ? item.createdAt
-            : fetchedAt;
 
         list.add(
           AppNotification(
             id: newsId(item.id),
             title: age.inHours < 24 ? 'Yeni haber: ${item.title}' : item.title,
             body: body.isNotEmpty ? body : 'Detaylar için dokunun.',
-            dateTime: inboxTime,
+            dateTime: item.createdAt,
             icon: Icons.newspaper_rounded,
             color: const Color(0xFF00897B),
             type: AppNotificationType.news,

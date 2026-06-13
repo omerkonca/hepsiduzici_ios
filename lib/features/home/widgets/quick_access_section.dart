@@ -18,6 +18,8 @@ class QuickAccessSection extends StatelessWidget {
           Color(0xFF2B7BB9), 'screen:transport'),
       _AccessItem('Belediye', Icons.account_balance_rounded,
           Color(0xFF3D8B37), 'screen:municipality'),
+      _AccessItem('İhbar', Icons.campaign_rounded, Color(0xFFE65100),
+          'screen:citizen_report'),
       _AccessItem('Haberler', Icons.article_rounded, Color(0xFFE0453A),
           'screen:news'),
       _AccessItem('Namaz Vakitleri', Icons.mosque_rounded,

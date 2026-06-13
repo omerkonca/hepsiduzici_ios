@@ -272,7 +272,7 @@ class _StoryThumb extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    if (!imageUrl.startsWith('http')) {
+    if (imageUrl.startsWith('assets/')) {
       return Image.asset(
         imageUrl,
         fit: BoxFit.cover,

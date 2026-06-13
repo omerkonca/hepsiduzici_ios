@@ -1,4 +1,7 @@
-platform :ios, '12.0'
+platform :ios, '13.0'
+
+# google_mobile_ads + use_frameworks! birlikte kullanıldığında gerekli
+$RNGoogleMobileAdsAsStaticFramework = true
 
 ENV['COCOAPODS_DISABLE_STATS'] = 'true'
 

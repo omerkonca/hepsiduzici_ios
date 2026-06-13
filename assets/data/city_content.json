@@ -2413,6 +2413,14 @@
         "color": "#1565C0"
       },
       {
+        "id": "ihbar",
+        "icon": "campaign_rounded",
+        "title": "İhbar",
+        "subtitle": "Sorun & öneri bildir",
+        "target": "screen:citizen_report",
+        "color": "#E65100"
+      },
+      {
         "id": "haber",
         "icon": "newspaper_rounded",
         "title": "Haberler",
@@ -2495,6 +2503,13 @@
       {
         "title": "Destek ve Ayarlar",
         "tiles": [
+          {
+            "icon": "campaign_rounded",
+            "title": "İhbar ve Öneri",
+            "subtitle": "Sorun, tavsiye paylaş — fotoğraf ekle",
+            "color": "#E65100",
+            "target": "screen:citizen_report"
+          },
           {
             "icon": "support_agent_rounded",
             "title": "Bize Ulaşın",
